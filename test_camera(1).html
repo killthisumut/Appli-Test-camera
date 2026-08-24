@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test caméra</title>
+<style>
+  body { margin:0; background:#111; color:#eee; font-family:sans-serif; }
+  #diag { padding:10px; font-size:14px; line-height:1.5; background:#000; white-space:pre-wrap; }
+  #wrap { position:relative; width:100%; height:70vh; background:#000; }
+  video { width:100%; height:100%; object-fit:contain; }
+  button {
+    position:absolute; bottom:16px; right:16px;
+    width:60px; height:60px; border-radius:50%;
+    background:#fff; border:3px solid #333; font-size:24px;
+  }
+  #startBtn { display:block; margin:16px auto; padding:14px 24px; font-size:18px; }
+</style>
+</head>
+<body>
+  <div id="diag">Diagnostic :
+- protocole de la page : <span id="proto"></span>
+- navigator.mediaDevices présent : <span id="hasMD"></span>
+</div>
+  <button id="startBtn">Démarrer le test caméra</button>
+  <div id="wrap">
+    <video id="video" autoplay playsinline muted></video>
+    <button id="switchBtn" style="display:none;">🔄</button>
+  </div>
+
+<script>
+  const diag = document.getElementById('diag');
+  const video = document.getElementById('video');
+  const startBtn = document.getElementById('startBtn');
+  const switchBtn = document.getElementById('switchBtn');
+  let facing = 'environment';
+  let currentStream = null;
+
+  document.getElementById('proto').textContent = location.protocol;
+  document.getElementById('hasMD').textContent =
+    (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) ? 'oui' : 'NON';
+
+  function log(msg) {
+    diag.textContent += '\n' + msg;
+  }
+
+  async function startCamera() {
+    if (currentStream) {
+      currentStream.getTracks().forEach(t => t.stop());
+    }
+    log('Tentative d\'accès caméra (facingMode: ' + facing + ')...');
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: facing },
+        audio: false
+      });
+      currentStream = stream;
+      video.srcObject = stream;
+      log('SUCCÈS : flux caméra obtenu.');
+      switchBtn.style.display = 'block';
+    } catch (err) {
+      log('ÉCHEC : ' + err.name + ' — ' + err.message);
+    }
+  }
+
+  startBtn.addEventListener('click', startCamera);
+  switchBtn.addEventListener('click', () => {
+    facing = (facing === 'environment') ? 'user' : 'environment';
+    startCamera();
+  });
+</script>
+</body>
+</html>
