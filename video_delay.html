@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>Vidéo Delay</title>
+
+<!-- Permet l'ouverture en plein écran depuis l'icône d'écran d'accueil (iOS) -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Vidéo Delay">
+<!-- Équivalent pour Android/Chrome -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#000000">
+
+<style>
+  html, body {
+    margin: 0; padding: 0; width: 100%; height: 100%;
+    background: #000; overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-user-select: none; user-select: none;
+  }
+  #displayCanvas {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: contain;
+  }
+  #startOverlay {
+    position: absolute; inset: 0;
+    background: #000; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 16px; z-index: 20;
+  }
+  #startOverlay button {
+    padding: 16px 28px; font-size: 18px; border-radius: 10px;
+    border: none; background: #2d7dff; color: #fff;
+  }
+  #errorMsg {
+    color: #ff6b6b; font-size: 14px; max-width: 80%; text-align: center; white-space: pre-wrap;
+  }
+  #bufferOverlay {
+    position: absolute; inset: 0;
+    display: none; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.55); color: #fff; font-size: 20px;
+    text-align: center; z-index: 10; pointer-events: none;
+  }
+  #delaySelect {
+    position: absolute; top: env(safe-area-inset-top, 14px); right: 14px;
+    z-index: 30; font-size: 16px; padding: 8px 10px;
+    border-radius: 8px; border: none; background: rgba(255,255,255,0.9);
+  }
+  #switchBtn {
+    position: absolute; bottom: calc(env(safe-area-inset-bottom, 14px) + 14px); right: 20px;
+    z-index: 30; width: 62px; height: 62px; border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.85); background: rgba(30,30,30,0.6);
+    color: #fff; font-size: 26px; display: flex; align-items: center; justify-content: center;
+  }
+  video, canvas.hidden { display: none; }
+</style>
+</head>
+<body>
+
+  <video id="camera" autoplay playsinline muted></video>
+  <canvas id="captureCanvas" class="hidden" width="320" height="240"></canvas>
+  <canvas id="displayCanvas"></canvas>
+
+  <div id="bufferOverlay"></div>
+
+  <select id="delaySelect">
+    <option value="5">5 s</option>
+    <option value="10">10 s</option>
+    <option value="15">15 s</option>
+    <option value="20">20 s</option>
+    <option value="30" selected>30 s</option>
+    <option value="40">40 s</option>
+    <option value="50">50 s</option>
+    <option value="60">60 s</option>
+    <option value="70">70 s</option>
+    <option value="80">80 s</option>
+    <option value="90">90 s</option>
+    <option value="100">100 s</option>
+    <option value="110">110 s</option>
+    <option value="120">120 s</option>
+  </select>
+
+  <button id="switchBtn">🔄</button>
+
+  <div id="startOverlay">
+    <button id="startBtn">Démarrer Vidéo Delay</button>
+    <div id="errorMsg"></div>
+  </div>
+
+<script>
+  // ----- Configuration -----
+  const CAPTURE_FPS = 10;              // fréquence de capture/lecture du buffer
+  const CAPTURE_W = 320, CAPTURE_H = 240;
+  const MAX_DELAY_S = 120;             // doit couvrir la plus grande valeur du menu
+  const JPEG_QUALITY = 0.55;
+
+  // ----- Éléments -----
+  const video = document.getElementById('camera');
+  const captureCanvas = document.getElementById('captureCanvas');
+  const captureCtx = captureCanvas.getContext('2d');
+  const displayCanvas = document.getElementById('displayCanvas');
+  const displayCtx = displayCanvas.getContext('2d');
+  const delaySelect = document.getElementById('delaySelect');
+  const switchBtn = document.getElementById('switchBtn');
+  const startOverlay = document.getElementById('startOverlay');
+  const startBtn = document.getElementById('startBtn');
+  const errorMsg = document.getElementById('errorMsg');
+  const bufferOverlay = document.getElementById('bufferOverlay');
+
+  // ----- État -----
+  let facing = 'environment';
+  let currentStream = null;
+  let buffer = [];              // { t: timestamp_ms, blob: Blob }
+  let delaySeconds = parseInt(delaySelect.value, 10);
+  let captureTimer = null;
+  let displayTimer = null;
+  let lastGoodBitmap = null;
+
+  function resizeDisplayCanvas() {
+    displayCanvas.width = window.innerWidth;
+    displayCanvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeDisplayCanvas);
+  resizeDisplayCanvas();
+
+  async function startCamera() {
+    if (currentStream) {
+      currentStream.getTracks().forEach(t => t.stop());
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: facing, width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: false
+      });
+      currentStream = stream;
+      video.srcObject = stream;
+      return true;
+    } catch (err) {
+      errorMsg.textContent = 'Erreur caméra : ' + err.name + ' — ' + err.message;
+      return false;
+    }
+  }
+
+  function captureFrame() {
+    if (video.readyState < 2) return; // pas encore de frame dispo
+    captureCtx.drawImage(video, 0, 0, CAPTURE_W, CAPTURE_H);
+    captureCanvas.toBlob((blob) => {
+      if (!blob) return;
+      const now = Date.now();
+      buffer.push({ t: now, blob });
+      const cutoff = now - (MAX_DELAY_S + 2) * 1000;
+      while (buffer.length && buffer[0].t < cutoff) buffer.shift();
+    }, 'image/jpeg', JPEG_QUALITY);
+  }
+
+  function findDelayedFrame() {
+    const targetT = Date.now() - delaySeconds * 1000;
+    if (buffer.length === 0) return null;
+    if (buffer[0].t > targetT) return null; // pas encore assez ancien
+    let chosen = buffer[0];
+    for (let i = 0; i < buffer.length; i++) {
+      if (buffer[i].t <= targetT) chosen = buffer[i];
+      else break;
+    }
+    return chosen;
+  }
+
+  async function renderTick() {
+    const frame = findDelayedFrame();
+    if (!frame) {
+      const oldest = buffer.length ? (Date.now() - buffer[0].t) / 1000 : 0;
+      const remaining = Math.max(0, Math.ceil(delaySeconds - oldest));
+      bufferOverlay.style.display = 'flex';
+      bufferOverlay.textContent = remaining > 0
+        ? `Chargement du différé… ${remaining}s`
+        : 'Chargement du différé…';
+      return;
+    }
+    bufferOverlay.style.display = 'none';
+    try {
+      const bitmap = await createImageBitmap(frame.blob);
+      const dw = displayCanvas.width, dh = displayCanvas.height;
+      const scale = Math.min(dw / bitmap.width, dh / bitmap.height);
+      const w = bitmap.width * scale, h = bitmap.height * scale;
+      displayCtx.fillStyle = '#000';
+      displayCtx.fillRect(0, 0, dw, dh);
+      displayCtx.drawImage(bitmap, (dw - w) / 2, (dh - h) / 2, w, h);
+      bitmap.close();
+    } catch (e) { /* frame corrompue, on ignore */ }
+  }
+
+  function startLoops() {
+    if (captureTimer) clearInterval(captureTimer);
+    if (displayTimer) clearInterval(displayTimer);
+    captureTimer = setInterval(captureFrame, 1000 / CAPTURE_FPS);
+    displayTimer = setInterval(renderTick, 1000 / CAPTURE_FPS);
+  }
+
+  startBtn.addEventListener('click', async () => {
+    errorMsg.textContent = '';
+    const ok = await startCamera();
+    if (ok) {
+      startOverlay.style.display = 'none';
+      startLoops();
+    }
+  });
+
+  delaySelect.addEventListener('change', () => {
+    delaySeconds = parseInt(delaySelect.value, 10);
+  });
+
+  switchBtn.addEventListener('click', async () => {
+    facing = (facing === 'environment') ? 'user' : 'environment';
+    await startCamera();
+  });
+</script>
+</body>
+</html>
