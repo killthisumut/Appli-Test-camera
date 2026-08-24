@@ -61,7 +61,7 @@
 <body>
 
   <video id="camera" autoplay playsinline muted></video>
-  <canvas id="captureCanvas" class="hidden" width="320" height="240"></canvas>
+  <canvas id="captureCanvas" class="hidden" width="640" height="480"></canvas>
   <canvas id="displayCanvas"></canvas>
 
   <div id="bufferOverlay"></div>
@@ -93,9 +93,9 @@
 <script>
   // ----- Configuration -----
   const CAPTURE_FPS = 10;              // fréquence de capture/lecture du buffer
-  const CAPTURE_W = 320, CAPTURE_H = 240;
+  const CAPTURE_W = 640, CAPTURE_H = 480;
   const MAX_DELAY_S = 120;             // doit couvrir la plus grande valeur du menu
-  const JPEG_QUALITY = 0.55;
+  const JPEG_QUALITY = 0.75;
 
   // ----- Éléments -----
   const video = document.getElementById('camera');
