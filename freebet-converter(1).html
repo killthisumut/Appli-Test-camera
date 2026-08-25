@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FreeBet Converter</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1117;--bg2:#1e2334;--card:#22283a;--border:#2e3450;
+  --accent:#e8213a;--accent2:#ff6b35;--gold:#f5c842;--green:#2ecc71;
+  --blue:#3b8ef0;--muted:#7a84a0;--text:#f0f2f8;--inp:#151a28}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+  background-image:radial-gradient(ellipse 80% 40% at 50% -10%,rgba(232,33,58,.15) 0%,transparent 60%),
+  radial-gradient(ellipse 50% 30% at 90% 80%,rgba(255,107,53,.08) 0%,transparent 50%);
+  padding-bottom:60px}
+header{text-align:center;padding:32px 20px 18px}
+header::after{content:'';display:block;width:70px;height:3px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));margin:12px auto 0;border-radius:2px}
+.logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.4rem;
+  letter-spacing:2px;text-transform:uppercase;
+  background:linear-gradient(120deg,#fff 30%,var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.subtitle{color:var(--muted);font-size:.88rem;letter-spacing:3px;text-transform:uppercase;margin-top:5px}
+.wrap{max-width:900px;margin:0 auto;padding:0 14px}
+input,textarea{font-family:'Barlow',sans-serif;background:var(--inp);border:1px solid var(--border);
+  border-radius:9px;color:var(--text);outline:none;transition:border-color .2s}
+input:focus{border-color:var(--accent)}
+textarea:focus{border-color:var(--blue)!important}
+.box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px;margin-bottom:18px}
+.box-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.9rem;
+  text-transform:uppercase;letter-spacing:2px;margin-bottom:4px}
+/* FB */
+.fb-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.fb-lbl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;
+  text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);white-space:nowrap}
+.fb-lbl span{color:var(--gold)}
+.fb-wrap{position:relative;flex:1;min-width:150px}
+.fb-wrap::before{content:'FB';position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  font-family:'Barlow Condensed',sans-serif;font-weight:800;color:var(--gold);pointer-events:none}
+#fbAmount{width:100%;padding:10px 12px 10px 40px;font-size:1.1rem;font-weight:600}
+/* Paste */
+#pasteText{width:100%;height:120px;padding:10px 12px;font-size:.85rem;line-height:1.5;resize:vertical;border-radius:10px}
+.paste-row{display:flex;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap}
+.s-ok{color:var(--green);font-size:.84rem}
+.s-err{color:var(--accent);font-size:.84rem}
+/* Buttons */
+.btn{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;
+  letter-spacing:1.5px;border:none;border-radius:10px;cursor:pointer;transition:all .18s;color:#fff}
+.btn:hover{opacity:.88;transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn-blue{background:linear-gradient(120deg,var(--blue),#5ba4f5);padding:9px 22px;font-size:.9rem}
+.btn-red{background:linear-gradient(120deg,var(--accent),var(--accent2));padding:13px 38px;font-size:1.05rem;
+  box-shadow:0 4px 22px rgba(232,33,58,.35)}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);padding:7px 14px;font-size:.82rem}
+.btn-ghost:hover{color:var(--accent);border-color:var(--accent);transform:none;opacity:1}
+.btn-add{background:var(--bg2);color:var(--text);border:1px solid var(--border);padding:7px 16px;font-size:.85rem}
+.btn-add:hover{border-color:var(--accent);color:var(--accent);transform:none;opacity:1}
+/* Matches */
+.matches-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.matches-hdr-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.2rem;
+  text-transform:uppercase;letter-spacing:2px}
+.hdr-actions{display:flex;gap:8px}
+.match-card{background:var(--card);border:1px solid var(--border);border-radius:14px;
+  margin-bottom:10px;overflow:hidden;animation:slideIn .22s ease}
+.match-card.imp{border-color:rgba(59,142,240,.45)}
+@keyframes slideIn{from{opacity:0;transform:translateY(-7px)}to{opacity:1;transform:translateY(0)}}
+.card-hdr{background:var(--bg2);padding:9px 14px;display:flex;align-items:center;
+  justify-content:space-between;border-bottom:1px solid var(--border)}
+.card-num{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.78rem;
+  letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.imp-badge{font-size:.65rem;background:rgba(59,142,240,.2);color:var(--blue);
+  border:1px solid rgba(59,142,240,.3);border-radius:4px;padding:1px 5px;margin-left:6px}
+.btn-rm{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;
+  letter-spacing:1px;text-transform:uppercase;background:transparent;color:var(--muted);
+  border:1px solid var(--border);border-radius:6px;cursor:pointer;padding:3px 10px;transition:all .18s}
+.btn-rm:hover{color:var(--accent);border-color:var(--accent)}
+.card-teams{display:flex;align-items:center;gap:8px;padding:10px 14px;flex-wrap:wrap}
+.team-in{flex:1;min-width:100px;padding:7px 10px;font-size:.88rem}
+.vs{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:.88rem;color:var(--accent)}
+.odds-row{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid var(--border)}
+.odd-cell{padding:9px 10px;border-right:1px solid var(--border);display:flex;flex-direction:column;gap:4px}
+.odd-cell:last-child{border-right:none}
+.odd-lbl{font-size:.64rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;
+  font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.odd-in{padding:6px;width:100%;font-size:1rem;font-weight:700;font-family:'Barlow Condensed',sans-serif;
+  color:var(--accent);text-align:center;border-radius:6px}
+.odd-in:focus{color:#fff;border-color:var(--accent)!important;background:rgba(232,33,58,.08)}
+/* Calc */
+.calc-sec{text-align:center;margin:24px 0}
+.err-msg{background:rgba(232,33,58,.1);border:1px solid rgba(232,33,58,.4);border-radius:9px;
+  padding:12px 16px;color:var(--accent);text-align:center;margin-top:12px;font-weight:500;font-size:.9rem}
+/* Results */
+.banner{background:linear-gradient(135deg,#1a2a1a,#1e3a20);border:1px solid var(--green);
+  border-radius:14px;padding:22px 24px;margin-bottom:18px;text-align:center}
+.banner-lbl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;
+  letter-spacing:3px;text-transform:uppercase;color:var(--green);margin-bottom:8px}
+.rate{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:3.4rem;color:#fff;line-height:1}
+.rate span{color:var(--green);font-size:2rem}
+.match-names{font-size:.88rem;color:var(--muted);margin-top:7px}
+.euros{margin-top:12px;font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;
+  font-weight:700;color:var(--gold);letter-spacing:1px;text-transform:uppercase}
+.best3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.best-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center}
+.best-lbl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;
+  letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+.best-teams{font-weight:600;font-size:.85rem;line-height:1.4}
+.best-odds{margin-top:7px;display:flex;justify-content:center;gap:5px;flex-wrap:wrap}
+.pill{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;color:var(--accent);
+  background:rgba(232,33,58,.1);border:1px solid rgba(232,33,58,.3);border-radius:5px;padding:2px 8px}
+.sec-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.1rem;
+  text-transform:uppercase;letter-spacing:2px;margin-bottom:12px}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;
+  overflow:hidden;border:1px solid var(--border);font-size:.84rem}
+th{background:var(--bg2);padding:10px;text-align:left;font-family:'Barlow Condensed',sans-serif;
+  font-weight:700;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:8px 10px;border-bottom:1px solid rgba(46,52,80,.5);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.tc{color:var(--accent);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem}
+.tf{color:var(--gold);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.95rem}
+.tg{color:var(--green);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem}
+.tm{color:var(--muted);font-weight:600}
+@media(max-width:560px){
+  .logo{font-size:1.9rem}.best3{grid-template-columns:1fr}
+  .odds-row{grid-template-columns:1fr}
+  .odd-cell{border-right:none;border-bottom:1px solid var(--border)}
+  .odd-cell:last-child{border-bottom:none}
+  .card-teams{flex-direction:column}.team-in{min-width:100%}
+  table{font-size:.76rem}th,td{padding:7px 7px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">FreeBet Converter</div>
+  <div class="subtitle">Optimisation de conversion FB → €</div>
+</header>
+
+<div class="wrap">
+
+  <!-- FB amount -->
+  <div class="box">
+    <div class="fb-row">
+      <div class="fb-lbl">Montant à convertir <span>FreeBets</span></div>
+      <div class="fb-wrap">
+        <input type="number" id="fbAmount" placeholder="Ex : 200" min="0" step="any">
+      </div>
+    </div>
+  </div>
+
+  <!-- Paste import -->
+  <div class="box">
+    <div class="box-title" style="color:var(--blue)">📡 Import depuis FreeBet Extractor</div>
+    <div style="font-size:.8rem;color:var(--muted);margin-bottom:10px;line-height:1.5">
+      Dans Firefox → extension → <strong style="color:var(--text)">"Copier pour Claude.ai"</strong>
+      ou <strong style="color:var(--text)">"Copier en JSON"</strong> → colle ici.
+    </div>
+    <textarea id="pasteText" placeholder="Colle ici le texte copié depuis FreeBet Extractor…
+
+Exemple :
+1. Portugal vs Ouzbékistan — 1.14 / 8.50 / 15.00
+2. Angleterre vs Ghana — 1.18 / 7.25 / 13.00
+3. Brésil vs Haïti — 1.10 / 7.25 / 18.00"></textarea>
+    <div class="paste-row">
+      <button class="btn btn-blue" onclick="importFromText()">✦ Importer les matchs</button>
+      <div id="pasteStatus"></div>
+    </div>
+  </div>
+
+  <!-- Matches -->
+  <div class="matches-hdr">
+    <div class="matches-hdr-title">Matchs (<span id="matchCount">3</span>)</div>
+    <div class="hdr-actions">
+      <button class="btn btn-ghost" onclick="clearAll()">🗑 Tout effacer</button>
+      <button class="btn btn-add" onclick="addMatch()">+ Ajouter</button>
+    </div>
+  </div>
+  <div id="matchesList"></div>
+
+  <!-- Calc -->
+  <div class="calc-sec">
+    <button class="btn btn-red" onclick="calculate()">⚡ Calculer la meilleure conversion</button>
+    <div id="errMsg"></div>
+  </div>
+
+  <!-- Results -->
+  <div id="results" style="display:none">
+    <div class="banner">
+      <div class="banner-lbl">🏆 Taux de conversion optimal</div>
+      <div class="rate" id="rateEl">—<span>%</span></div>
+      <div class="match-names" id="namesEl"></div>
+      <div class="euros" id="eurosEl"></div>
+    </div>
+    <div class="sec-title" style="margin-bottom:13px">Meilleure combinaison</div>
+    <div class="best3" id="best3El"></div>
+    <div class="sec-title">📋 Les 27 paris à placer</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Issue combinée</th><th>Côte</th><th>Mise (FB)</th><th>Gain (€)</th></tr></thead>
+        <tbody id="tblBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ── State ── */
+let _id = 0;
+const matches = {};
+
+/* ── Parse texte collé depuis l'extension ── */
+function parseExtractedText(raw) {
+  const results = [], seen = new Set();
+  const add = (t1, t2, o1, o2, o3) => {
+    t1 = String(t1).trim(); t2 = String(t2).trim();
+    const n1 = parseFloat(String(o1).replace(',','.')),
+          n2 = parseFloat(String(o2).replace(',','.')),
+          n3 = parseFloat(String(o3).replace(',','.'));
+    if (!t1||!t2||t1===t2||isNaN(n1)||isNaN(n2)||isNaN(n3)) return;
+    if (n1<=1||n2<=1||n3<=1) return;
+    const key = t1.toLowerCase()+'|'+t2.toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    results.push({t1,t2,o1:n1,o2:n2,o3:n3});
+  };
+
+  // Format 1 : "1. Portugal vs Ouzbékistan — 1.14 / 8.50 / 15.00"
+  const re1 = /^\d+[\.\)]\s*(.+?)\s+vs\s+(.+?)\s*[—\-–]+\s*([\d.,]+)\s*\/\s*([\d.,]+)\s*\/\s*([\d.,]+)/gim;
+  let m;
+  while ((m = re1.exec(raw)) !== null) add(m[1],m[2],m[3],m[4],m[5]);
+  if (results.length > 0) return results;
+
+  // Format 2 : JSON [{"team1":…,"odd1":…}]
+  try {
+    const json = JSON.parse(raw.trim());
+    if (Array.isArray(json)) {
+      json.forEach(e => add(e.team1||'', e.team2||'', e.odd1, e.odd2, e.odd3));
+      if (results.length > 0) return results;
+    }
+  } catch(e) {}
+
+  // Format 3 : lignes libres "Portugal vs Ouzbékistan 1.14 8.50 15.00"
+  raw.split('\n').forEach(line => {
+    const mm = line.trim().match(/(?:\d+[\.\)]\s*)?(.+?)\s+vs\s+(.+?)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)/i);
+    if (mm) add(mm[1],mm[2],mm[3],mm[4],mm[5]);
+  });
+
+  return results;
+}
+
+function importFromText() {
+  const raw = document.getElementById('pasteText').value.trim();
+  const st  = document.getElementById('pasteStatus');
+  if (!raw) { st.className='s-err'; st.textContent='Colle d\'abord le texte de l\'extension.'; return; }
+  const parsed = parseExtractedText(raw);
+  if (!parsed.length) { st.className='s-err'; st.textContent='Aucun match reconnu. Vérifie le format.'; return; }
+  parsed.forEach(p => addMatch({ t1:p.t1, t2:p.t2, o1:fmt(p.o1), o2:fmt(p.o2), o3:fmt(p.o3), imported:true }));
+  st.className='s-ok'; st.textContent=`✓ ${parsed.length} match${parsed.length>1?'s importés':'importé'} !`;
+  document.getElementById('pasteText').value = '';
+}
+
+/* ── Helpers ── */
+const fmt  = n => isNaN(+n) ? '' : parseFloat(n).toFixed(2).replace('.', ',');
+const pOdd = s => parseFloat(String(s).replace(',', '.'));
+const esc  = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+function sanitizeOdd(inp) {
+  let v = inp.value.replace(/[^0-9.,]/g,'');
+  const p = v.replace(',','.').split('.');
+  if (p.length > 2) v = p[0]+'.'+p.slice(1).join('');
+  inp.value = v;
+}
+
+function handleOddKey(e, id, n) {
+  if (e.key !== 'Enter') return;
+  e.preventDefault();
+  if (n < 3) document.getElementById(`o${n+1}-${id}`)?.focus();
+}
+
+/* ── Match management ── */
+function addMatch(data={}) {
+  const id = ++_id;
+  matches[id] = { id, t1:data.t1||'', t2:data.t2||'', o1:data.o1||'', o2:data.o2||'', o3:data.o3||'', imported:data.imported||false };
+  const list = document.getElementById('matchesList');
+  const idx  = Object.keys(matches).length - 1;
+  const m    = matches[id];
+  const l1   = m.t1 ? `Victoire ${m.t1}` : 'Victoire Équipe 1';
+  const l3   = m.t2 ? `Victoire ${m.t2}` : 'Victoire Équipe 2';
+  const badge= m.imported ? '<span class="imp-badge">📡 Importé</span>' : '';
+  const div  = document.createElement('div');
+  div.className = 'match-card' + (m.imported ? ' imp' : '');
+  div.id = `card-${id}`;
+  div.innerHTML = `
+    <div class="card-hdr">
+      <span class="card-num" id="num-${id}">Match ${idx+1}${badge}</span>
+      <button class="btn-rm" onclick="removeMatch(${id})">✕ Supprimer</button>
+    </div>
+    <div class="card-teams">
+      <input class="team-in" id="t1-${id}" placeholder="Équipe 1" value="${esc(m.t1)}"
+        oninput="matches[${id}].t1=this.value;updLbl(${id})">
+      <span class="vs">VS</span>
+      <input class="team-in" id="t2-${id}" placeholder="Équipe 2" value="${esc(m.t2)}"
+        oninput="matches[${id}].t2=this.value;updLbl(${id})">
+    </div>
+    <div class="odds-row">
+      <div class="odd-cell">
+        <div class="odd-lbl" id="lbl1-${id}">${l1}</div>
+        <input class="odd-in" id="o1-${id}" placeholder="0,00" value="${m.o1}"
+          oninput="sanitizeOdd(this);matches[${id}].o1=this.value"
+          onkeydown="handleOddKey(event,${id},1)">
+      </div>
+      <div class="odd-cell">
+        <div class="odd-lbl">Match Nul</div>
+        <input class="odd-in" id="o2-${id}" placeholder="0,00" value="${m.o2}"
+          oninput="sanitizeOdd(this);matches[${id}].o2=this.value"
+          onkeydown="handleOddKey(event,${id},2)">
+      </div>
+      <div class="odd-cell">
+        <div class="odd-lbl" id="lbl3-${id}">${l3}</div>
+        <input class="odd-in" id="o3-${id}" placeholder="0,00" value="${m.o3}"
+          oninput="sanitizeOdd(this);matches[${id}].o3=this.value"
+          onkeydown="handleOddKey(event,${id},3)">
+      </div>
+    </div>`;
+  list.appendChild(div);
+  updateCount();
+}
+
+function updLbl(id) {
+  const m = matches[id];
+  document.getElementById(`lbl1-${id}`).textContent = m.t1 ? `Victoire ${m.t1}` : 'Victoire Équipe 1';
+  document.getElementById(`lbl3-${id}`).textContent = m.t2 ? `Victoire ${m.t2}` : 'Victoire Équipe 2';
+}
+
+function removeMatch(id) {
+  delete matches[id];
+  document.getElementById(`card-${id}`)?.remove();
+  renumber();
+}
+
+function renumber() {
+  Object.keys(matches).forEach((id, i) => {
+    const el = document.getElementById(`num-${id}`);
+    if (el) el.innerHTML = `Match ${i+1}${matches[id].imported ? '<span class="imp-badge">📡 Importé</span>' : ''}`;
+  });
+  updateCount();
+}
+
+function clearAll() {
+  Object.keys(matches).forEach(id => delete matches[id]);
+  document.getElementById('matchesList').innerHTML = '';
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('errMsg').innerHTML = '';
+  document.getElementById('pasteStatus').textContent = '';
+  updateCount();
+}
+
+function updateCount() {
+  document.getElementById('matchCount').textContent = Object.keys(matches).length;
+}
+
+/* ── Calculation ── */
+function calcRate(m1, m2, m3) {
+  let sum = 0;
+  for (let i=0;i<3;i++) for (let j=0;j<3;j++) for (let k=0;k<3;k++) {
+    const c = m1.o[i]*m2.o[j]*m3.o[k];
+    if (c<=1) return 0;
+    sum += 1/(c-1);
+  }
+  return sum===0 ? 0 : 1/sum;
+}
+
+function calculate() {
+  document.getElementById('errMsg').innerHTML = '';
+  document.getElementById('results').style.display = 'none';
+  const fbv = parseFloat(document.getElementById('fbAmount').value);
+  if (!fbv||fbv<=0) { showErr('Veuillez entrer un montant de FreeBets valide.'); return; }
+  const list = Object.values(matches);
+  if (list.length < 3) { showErr('Veuillez ajouter au moins 3 matchs.'); return; }
+  const parsed = list.map(m => ({ ...m, o:[pOdd(m.o1),pOdd(m.o2),pOdd(m.o3)] }));
+  for (const m of parsed) for (const o of m.o)
+    if (isNaN(o)||o<=1) { showErr(`Côtes invalides : "${m.t1||'?'} vs ${m.t2||'?'}" (doivent être > 1).`); return; }
+  let bestRate=0, bestTriple=null;
+  for (let a=0;a<parsed.length-2;a++)
+    for (let b=a+1;b<parsed.length-1;b++)
+      for (let c=b+1;c<parsed.length;c++) {
+        const r = calcRate(parsed[a],parsed[b],parsed[c]);
+        if (r>bestRate) { bestRate=r; bestTriple=[parsed[a],parsed[b],parsed[c]]; }
+      }
+  if (!bestTriple||bestRate===0) { showErr('Impossible de calculer. Vérifiez que toutes les côtes sont > 1.'); return; }
+  renderResults(bestTriple, bestRate, fbv, fbv*bestRate);
+}
+
+function showErr(msg) {
+  document.getElementById('errMsg').innerHTML = `<div class="err-msg">${msg}</div>`;
+}
+
+/* ── Render ── */
+function renderResults(triple, rate, fb, G) {
+  const [m1,m2,m3] = triple;
+  document.getElementById('rateEl').innerHTML = `${(rate*100).toFixed(2)}<span>%</span>`;
+  document.getElementById('namesEl').textContent = triple.map(m=>`${m.t1||'Éq.1'} vs ${m.t2||'Éq.2'}`).join('  ·  ');
+  document.getElementById('eurosEl').textContent = `Gain garanti : ${G.toFixed(2)} € pour ${fb} FB`;
+
+  document.getElementById('best3El').innerHTML = triple.map((m,i) => `
+    <div class="best-card">
+      <div class="best-lbl">Match ${i+1}</div>
+      <div class="best-teams">${esc(m.t1||'Équipe 1')}<br><span style="color:var(--muted);font-size:.75rem">vs</span><br>${esc(m.t2||'Équipe 2')}</div>
+      <div class="best-odds">${m.o.map(o=>`<span class="pill">${o.toFixed(2)}</span>`).join('')}</div>
+    </div>`).join('');
+
+  const lbl = [
+    [`Victoire ${m1.t1||'Éq.1'}`,'Match Nul',`Victoire ${m1.t2||'Éq.2'}`],
+    [`Victoire ${m2.t1||'Éq.1'}`,'Match Nul',`Victoire ${m2.t2||'Éq.2'}`],
+    [`Victoire ${m3.t1||'Éq.1'}`,'Match Nul',`Victoire ${m3.t2||'Éq.2'}`],
+  ];
+  let html='', n=1, tot=0;
+  for (let i=0;i<3;i++) for (let j=0;j<3;j++) for (let k=0;k<3;k++) {
+    const cote=m1.o[i]*m2.o[j]*m3.o[k], mise=G/(cote-1);
+    tot+=mise;
+    html+=`<tr>
+      <td class="tm">${n++}</td>
+      <td style="font-size:.8rem;line-height:1.4"><strong>${esc(lbl[0][i])} · ${esc(lbl[1][j])} · ${esc(lbl[2][k])}</strong></td>
+      <td class="tc">${cote.toFixed(2)}</td>
+      <td class="tf">${mise.toFixed(2)} FB</td>
+      <td class="tg">${G.toFixed(2)} €</td>
+    </tr>`;
+  }
+  html+=`<tr style="background:rgba(245,200,66,.06)">
+    <td colspan="3" style="padding:8px 10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted)">Total FB utilisés</td>
+    <td class="tf">${tot.toFixed(2)} FB</td><td></td>
+  </tr>`;
+  document.getElementById('tblBody').innerHTML = html;
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ── Init ── */
+addMatch(); addMatch(); addMatch();
+</script>
+</body>
+</html>
