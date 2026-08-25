@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>EPS – Compteur & Calculateur</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&display=swap');
 /* =====================================================
@@ -1076,6 +1078,12 @@ label.s-lbl{display:block;margin-bottom:6px;font-weight:600;color:#495057;font-s
 #chronoBottomBar{flex-shrink:0}
 #waveBottomBar{flex-shrink:0}
 #mainBottomBar{flex-shrink:0}
+.hidden{display:none !important;}
+#qr-render-classes:not(:empty){background:#fff;border-radius:12px;margin-top:8px;display:flex;justify-content:center;padding:10px;}
+.eco-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;margin-top:12px;}
+.eco-card p{margin:0 0 8px;font-size:.78rem;color:var(--muted);}
+.eco-row{display:flex;gap:8px;flex-wrap:wrap;}
+.eco-row button,.eco-row label{flex:1;min-width:120px;text-align:center;padding:9px 8px;border-radius:9px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:var(--text);font-family:'Nunito',sans-serif;font-weight:700;font-size:.78rem;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -1376,6 +1384,20 @@ label.s-lbl{display:block;margin-bottom:6px;font-weight:600;color:#495057;font-s
         <button class="bar-btn" style="background:var(--success);color:#fff;padding:6px 12px;font-size:.8rem" id="btnNewClass">＋</button>
       </div>
       <div class="class-list" id="classList"></div>
+      <div class="eco-card">
+        <p>🔗 Import / export vers tes autres applis EPS</p>
+        <div class="eco-row">
+          <button onclick="exportClassesEco()">⬇ Exporter (JSON)</button>
+          <label>⬆ Importer<input type="file" accept="application/json" style="display:none;" onchange="importClassesEco(event)"></label>
+        </div>
+        <div class="eco-row" style="margin-top:8px;">
+          <button onclick="exportClassesEcoQR()">📱 QR export</button>
+          <button onclick="startEcoQRScan()">📷 Scanner QR</button>
+        </div>
+        <div id="qr-render-classes"></div>
+        <video id="eco-scan-video" class="hidden" playsinline style="width:100%;border-radius:10px;"></video>
+        <canvas id="eco-scan-canvas" class="hidden"></canvas>
+      </div>
     </div>
     <div class="gestion-main" style="display:flex;flex-direction:column;overflow:hidden">
       <div class="gestion-main-header">
@@ -1824,6 +1846,128 @@ function getAllSaves(){return JSON.parse(localStorage.getItem('eps_saves')||'[]'
 function writeSaves(s){localStorage.setItem('eps_saves',JSON.stringify(s));}
 function getClasses(){return JSON.parse(localStorage.getItem('eps_classes')||'[]');}
 function saveClasses(c){localStorage.setItem('eps_classes',JSON.stringify(c));}
+function downloadJSON(obj, filename){
+  const blob = new Blob([JSON.stringify(obj, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+function buildClassesExportPayload(){
+  const classes = getClasses();
+  const infos = getClassInfos();
+  return {
+    type:'eps-classes-export', version:1, source:'eps_run',
+    exportedAt:new Date().toISOString(),
+    classes: classes.map(cls=>({
+      name: cls.name,
+      students: (cls.students||[]).map(name=>{
+        const info = (infos[cls.id]||{})[name] || {};
+        return {prenom:name, nom:'', genre:info.genre||''};
+      })
+    }))
+  };
+}
+function exportClassesEco(){
+  downloadJSON(buildClassesExportPayload(), 'classes-eps-run.json');
+}
+function exportClassesEcoQR(){
+  const data = buildClassesExportPayload();
+  const json = JSON.stringify(data);
+  const holder = document.getElementById('qr-render-classes');
+  if(!holder) return;
+  holder.innerHTML = '';
+  if(json.length > 2200){
+    holder.innerHTML = '<p style="font-size:11px;color:var(--muted);text-align:center;">Trop de données pour un QR code — utilise le fichier exporté.</p>';
+    return;
+  }
+  try{ new QRCode(holder, {text: json, width:200, height:200}); }
+  catch(e){ holder.innerHTML = '<p style="font-size:11px;color:var(--muted);">QR indisponible hors-ligne — utilise le fichier exporté.</p>'; }
+}
+function ecoStudentName(st){
+  const prenom = st.prenom || st.name || '';
+  return (st.nom ? (prenom+' '+st.nom) : prenom).trim();
+}
+function applyClassesImportEco(data){
+  const incomingClasses = data.classes || (Array.isArray(data)? data : []);
+  if(!Array.isArray(incomingClasses)) throw new Error('format invalide');
+  const classes = getClasses();
+  const infos = getClassInfos();
+  let count = 0;
+  incomingClasses.forEach(c=>{
+    if(!c.name) return;
+    let target = classes.find(x=>x.name.toLowerCase()===String(c.name).toLowerCase());
+    if(!target){ target = {id:Date.now()+Math.floor(Math.random()*1000), name:c.name, students:[]}; classes.push(target); }
+    if(!infos[target.id]) infos[target.id] = {};
+    const incomingStudents = Array.isArray(c.students) ? c.students : [];
+    incomingStudents.forEach(st=>{
+      const name = ecoStudentName(st);
+      if(!name) return;
+      const exists = target.students.some(n=>n.toLowerCase()===name.toLowerCase());
+      if(!exists){
+        target.students.push(name);
+        count++;
+      }
+      if(st.genre) infos[target.id][name] = {...(infos[target.id][name]||{genre:'',vitesse:''}), genre:st.genre};
+    });
+  });
+  saveClasses(classes);
+  saveClassInfos(infos);
+  renderGestion();
+  return count;
+}
+function importClassesEco(evt){
+  const file = evt.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    try{
+      const count = applyClassesImportEco(JSON.parse(e.target.result));
+      showToast(count>0 ? `${count} élève(s) importé(s)` : 'Classes importées (aucun nouvel élève)');
+    }catch(err){ showToast('Fichier invalide : '+err.message); }
+  };
+  reader.readAsText(file);
+}
+let ecoScanStream = null;
+function startEcoQRScan(){
+  const video = document.getElementById('eco-scan-video');
+  const canvas = document.getElementById('eco-scan-canvas');
+  video.classList.remove('hidden');
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}).then(stream=>{
+    ecoScanStream = stream;
+    video.srcObject = stream;
+    video.play();
+    requestAnimationFrame(function tick(){
+      if(!ecoScanStream) return;
+      if(video.readyState === video.HAVE_ENOUGH_DATA){
+        canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0,0, canvas.width, canvas.height);
+        const img = ctx.getImageData(0,0,canvas.width,canvas.height);
+        const code = jsQR(img.data, img.width, img.height);
+        if(code){
+          try{
+            const data = JSON.parse(code.data);
+            stopEcoQRScan();
+            const count = applyClassesImportEco(data);
+            showToast(count>0 ? `${count} élève(s) importé(s) via QR` : 'Classes importées via QR code');
+            return;
+          }catch(e){/* pas un QR valide, on continue */}
+        }
+      }
+      requestAnimationFrame(tick);
+    });
+  }).catch(err=>{
+    showToast("Impossible d'accéder à la caméra : "+err.message);
+    video.classList.add('hidden');
+  });
+}
+function stopEcoQRScan(){
+  if(ecoScanStream){ ecoScanStream.getTracks().forEach(t=>t.stop()); ecoScanStream=null; }
+  const video = document.getElementById('eco-scan-video');
+  if(video){ video.classList.add('hidden'); }
+}
 function getFractSessions(){return JSON.parse(localStorage.getItem('eps_fract_sessions')||'[]');}
 function writeFractSessions(s){localStorage.setItem('eps_fract_sessions',JSON.stringify(s));}
 function getModeLabel(mode){return mode==='team'?'Biathlon équipe':mode==='indiv'?'Biathlon individuel':mode==='demifond'?'Évaluation Demi-fond':mode==='classicIndiv'?'Compteur individuel/équipe':'Compteur par équipe';}
