@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Escalade EPS</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+:root{
+  --bg:#EDEAE2;
+  --bg-alt:#E2DDCF;
+  --card:#F7F5EF;
+  --ink:#22262B;
+  --ink-soft:#5B584F;
+  --line:#D9D3C3;
+  --rope:#C98A3E;
+  --rope-dark:#A66E2C;
+  --wall:#2F5D8A;
+  --wall-dark:#234A6E;
+  --red:#C4432B;
+  --red-bg:#F3DBD3;
+  --yellow:#C98F1F;
+  --yellow-bg:#F4E6C4;
+  --green:#3C8A5B;
+  --green-bg:#DAEADF;
+  --radius:16px;
+  --shadow:0 2px 10px rgba(34,38,43,.08);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  min-height:100vh;
+  -webkit-tap-highlight-color:transparent;
+  overscroll-behavior:none;
+}
+h1,h2,h3,.display{font-family:'Space Grotesk',sans-serif; letter-spacing:-.01em;}
+#app{max-width:900px;margin:0 auto;padding:18px 16px 60px;min-height:100vh;}
+button{font-family:inherit;cursor:pointer;}
+.hidden{display:none!important;}
+
+/* ---------- topbar ---------- */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 4px 18px;
+}
+.topbar .brand{display:flex;align-items:center;gap:10px;}
+.topbar .brand svg{width:34px;height:34px;flex:none;}
+.topbar .brand-text{display:flex;flex-direction:column;line-height:1.1;}
+.topbar .brand-text .app-name{font-family:'Space Grotesk';font-weight:700;font-size:18px;}
+.topbar .brand-text .app-sub{font-size:11px;color:var(--ink-soft);}
+.topbar-actions{display:flex;gap:8px;}
+.icon-btn{
+  background:var(--card);border:1px solid var(--line);border-radius:12px;
+  width:40px;height:40px;display:flex;align-items:center;justify-content:center;
+  color:var(--ink);
+}
+.icon-btn svg{width:18px;height:18px;}
+
+/* ---------- generic layout ---------- */
+.screen-title{display:flex;align-items:center;gap:10px;margin:4px 0 18px;}
+.screen-title h2{margin:0;font-size:20px;}
+.back-btn{
+  background:none;border:none;color:var(--ink);display:flex;align-items:center;
+  padding:6px;border-radius:10px;
+}
+.back-btn:hover{background:var(--bg-alt);}
+.back-btn svg{width:20px;height:20px;}
+
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px;box-shadow:var(--shadow);margin-bottom:12px;
+}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:520px){.grid-2{grid-template-columns:1fr;}}
+
+.btn{
+  border-radius:12px;border:none;padding:14px 18px;font-weight:600;font-size:15px;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-primary{background:var(--rope);color:#fff;}
+.btn-primary:active{background:var(--rope-dark);}
+.btn-secondary{background:var(--wall);color:#fff;}
+.btn-secondary:active{background:var(--wall-dark);}
+.btn-outline{background:transparent;border:1.5px solid var(--line);color:var(--ink);}
+.btn-outline:active{background:var(--bg-alt);}
+.btn-danger{background:var(--red);color:#fff;}
+.btn-ghost{background:none;border:none;color:var(--ink-soft);font-weight:500;}
+.btn-block{width:100%;}
+.btn-lg{padding:20px;font-size:17px;}
+.btn:disabled{opacity:.4;}
+
+input[type=text],input[type=password],input[type=number],select,textarea{
+  width:100%;padding:12px 14px;border-radius:11px;border:1.5px solid var(--line);
+  font-size:15px;font-family:inherit;background:#fff;color:var(--ink);
+}
+label.field-label{font-size:12px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px;display:block;}
+.field{margin-bottom:14px;}
+
+/* ---------- home ---------- */
+.home-hero{
+  text-align:center;padding:18px 10px 26px;
+}
+.home-hero svg{width:80px;height:80px;}
+.home-hero h1{font-size:26px;margin:10px 0 4px;}
+.home-hero p{color:var(--ink-soft);margin:0;font-size:14px;}
+.home-choices{display:flex;flex-direction:column;gap:14px;}
+.mode-tile{
+  display:flex;align-items:center;gap:16px;padding:20px;border-radius:var(--radius);
+  border:1.5px solid var(--line);background:var(--card);box-shadow:var(--shadow);text-align:left;
+}
+.mode-tile .tile-icon{
+  width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex:none;
+}
+.mode-tile .tile-icon svg{width:28px;height:28px;color:#fff;}
+.mode-tile.tile-eleve .tile-icon{background:var(--rope);}
+.mode-tile.tile-prof .tile-icon{background:var(--wall);}
+.mode-tile.tile-histo .tile-icon{background:#8A7B5C;}
+.mode-tile.tile-gestion .tile-icon{background:#6B6459;}
+.mode-tile .tile-text strong{display:block;font-size:16px;margin-bottom:2px;}
+.mode-tile .tile-text span{font-size:13px;color:var(--ink-soft);}
+
+/* ---------- route-tag (signature element) ---------- */
+.tag{
+  display:inline-flex;align-items:center;justify-content:center;
+  border-radius:10px;font-family:'Space Grotesk';font-weight:700;
+  border:2px solid transparent;
+}
+.tag-num{width:44px;height:44px;font-size:17px;background:var(--card);border-color:var(--line);color:var(--ink);}
+.tag-num.selected{background:var(--wall);border-color:var(--wall);color:#fff;}
+.tag-grade{padding:10px 6px;font-size:14px;background:var(--card);border-color:var(--line);color:var(--ink);min-width:56px;}
+.tag-grade.selected{background:var(--rope);border-color:var(--rope);color:#fff;}
+.tag-mini{width:30px;height:30px;font-size:12px;border-radius:8px;}
+
+.badge-state{width:14px;height:14px;border-radius:50%;display:inline-block;flex:none;}
+.badge-state.st-rouge{background:var(--red);}
+.badge-state.st-jaune{background:var(--yellow);}
+.badge-state.st-vert{background:var(--green);}
+.badge-state.st-suspendu{background:repeating-linear-gradient(45deg,#8a8a8a,#8a8a8a 3px,#c9c4b5 3px,#c9c4b5 6px);}
+
+.badge-pill{
+  display:inline-flex;align-items:center;gap:6px;padding:6px 12px 6px 8px;border-radius:999px;
+  font-size:12px;font-weight:700;
+}
+.badge-pill.st-rouge{background:var(--red);color:#fff;}
+.badge-pill.st-jaune{background:var(--yellow);color:#fff;}
+.badge-pill.st-vert{background:var(--green);color:#fff;}
+.badge-pill.st-suspendu{background:#6b675c;color:#fff;}
+.badge-dot{
+  width:30px;height:30px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:12px;color:#fff;flex:none;box-shadow:0 1px 3px rgba(0,0,0,.18);
+}
+.badge-dot.st-rouge{background:var(--red);}
+.badge-dot.st-jaune{background:var(--yellow);}
+.badge-dot.st-vert{background:var(--green);}
+.badge-dot.st-suspendu{background:#77746a;}
+
+/* ---------- choice grid (wizard) ---------- */
+.choice-grid{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0;}
+.wizard-progress{font-size:12px;color:var(--ink-soft);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;}
+.wizard-question{font-size:19px;font-weight:700;margin:0 0 14px;font-family:'Space Grotesk';}
+.recap-bar{
+  display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:var(--bg-alt);border-radius:14px;margin-bottom:18px;
+}
+.recap-chip{
+  background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:13px;
+  display:flex;align-items:center;gap:6px;font-weight:600;
+}
+.recap-chip .lbl{color:var(--ink-soft);font-weight:500;}
+
+/* ---------- lists ---------- */
+.list-row{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:13px 14px;border-radius:12px;background:var(--card);border:1px solid var(--line);margin-bottom:8px;
+}
+.list-row .row-main{display:flex;align-items:center;gap:12px;min-width:0;}
+.list-row .row-title{font-weight:600;font-size:15px;}
+.list-row .row-sub{font-size:12px;color:var(--ink-soft);}
+.row-badges{display:flex;gap:6px;}
+
+table.recap-table{width:100%;border-collapse:collapse;font-size:13px;}
+table.recap-table th{
+  text-align:left;padding:8px 6px;border-bottom:2px solid var(--line);font-size:11px;
+  text-transform:uppercase;color:var(--ink-soft);letter-spacing:.03em;
+}
+table.recap-table td{padding:9px 6px;border-bottom:1px solid var(--line);}
+table.recap-table tr:active{background:var(--bg-alt);}
+
+.competency-row{
+  display:flex;align-items:center;justify-content:space-between;padding:11px 4px;border-bottom:1px solid var(--line);
+  gap:10px;
+}
+.competency-row:last-child{border-bottom:none;}
+.competency-row .comp-label{font-size:14px;flex:1;}
+.tristate{display:flex;border-radius:10px;overflow:hidden;border:1.5px solid var(--line);flex:none;}
+.tristate button{border:none;padding:8px 10px;font-size:12px;font-weight:700;background:#fff;color:var(--ink-soft);}
+.tristate button.on-non{background:var(--red);color:#fff;}
+.tristate button.on-encours{background:var(--yellow);color:#fff;}
+.tristate button.on-oui{background:var(--green);color:#fff;}
+
+.section-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);margin:20px 0 8px;}
+.section-label:first-child{margin-top:0;}
+
+.modal-backdrop{
+  position:fixed;inset:0;background:rgba(34,38,43,.55);display:flex;align-items:center;justify-content:center;
+  padding:20px;z-index:100;
+}
+.modal{
+  background:var(--card);border-radius:18px;padding:22px;max-width:400px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.25);
+  max-height:85vh;overflow-y:auto;
+}
+.modal h3{margin-top:0;}
+.toast{
+  position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+  background:var(--ink);color:#fff;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;
+  z-index:200;box-shadow:0 6px 20px rgba(0,0,0,.25);
+}
+.empty-state{text-align:center;padding:40px 20px;color:var(--ink-soft);}
+.empty-state svg{width:50px;height:50px;opacity:.4;margin-bottom:10px;}
+.stat-row{display:flex;gap:10px;margin-bottom:14px;}
+.stat-box{flex:1;background:var(--bg-alt);border-radius:12px;padding:12px;text-align:center;}
+.stat-box .num{font-family:'Space Grotesk';font-weight:700;font-size:22px;}
+.stat-box .lbl{font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;}
+.tabs{display:flex;gap:6px;margin-bottom:16px;background:var(--bg-alt);border-radius:12px;padding:4px;}
+.tabs button{flex:1;border:none;background:none;padding:9px;border-radius:9px;font-weight:600;font-size:13px;color:var(--ink-soft);}
+.tabs button.active{background:var(--card);color:var(--ink);box-shadow:var(--shadow);}
+.warn-banner{
+  background:var(--red-bg);color:var(--red);padding:10px 14px;border-radius:12px;font-size:13px;font-weight:600;
+  margin-bottom:12px;display:flex;gap:8px;align-items:flex-start;
+}
+.session-banner{
+  background:var(--wall);color:#fff;border-radius:14px;padding:12px 16px;display:flex;align-items:center;
+  justify-content:space-between;margin-bottom:14px;
+}
+.session-banner .live-dot{width:9px;height:9px;background:#fff;border-radius:50%;display:inline-block;margin-right:7px;
+  animation:pulse 1.4s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+.link-btn{background:none;border:none;color:var(--wall);font-weight:600;font-size:13px;text-decoration:underline;padding:4px;}
+#qr-render{display:flex;justify-content:center;padding:14px;background:#fff;border-radius:12px;margin:12px 0;}
+video#scan-video{width:100%;border-radius:12px;background:#000;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="modal-root"></div>
+<div id="toast-root"></div>
+
+<script>
+/* =====================================================================
+   ESCALADE EPS — application autonome (localStorage)
+   ===================================================================== */
+
+/* ---------- Référentiel de compétences (fixe) ---------- */
+const COMMUNES = [
+  {id:'c1', label:"Savoir mettre en baudrier seul (même emmêlé)"},
+  {id:'c2', label:"Reconnaître les différentes voies et leurs cordes respectives"},
+  {id:'c3', label:"Ne pas se mettre trop proche des camarades des autres groupes"},
+];
+const COMP_GRIMPEUR = [
+  {id:'g1', label:"Nœud de 8"},
+  {id:'g2', label:"Double nœud de 8"},
+  {id:'g3', label:"Nœud d'arrêt"},
+  {id:'g4', label:"Vérifier que les cordes ne sont pas vrillées"},
+  {id:'g5', label:"Co-vérification avec les assureurs / contre-assureurs"},
+  {id:'g6', label:"Attendre le feu vert de l'enseignant"},
+  {id:'g7', label:"Communication normée avec l'assureur"},
+  {id:'g8', label:"Pieds contre le mur au moment de la descente"},
+  {id:'g9', label:"Réception : se remettre sur les pieds"},
+];
+const COMP_ASSUREUR = [
+  {id:'a1', label:"Vérifier que les cordes ne sont pas vrillées"},
+  {id:'a2', label:"S'encorder avec le descendeur"},
+  {id:'a3', label:"Maîtriser l'assurage en 5 temps"},
+  {id:'a4', label:"Co-vérification avec grimpeur / contre-assureur"},
+  {id:'a5', label:"Attendre le feu vert de l'enseignant"},
+  {id:'a6', label:"Communication normée"},
+  {id:'a7', label:"Maîtrise de la descente en \u00ab piston \u00bb"},
+  {id:'a8', label:"Descendre le grimpeur doucement"},
+  {id:'a9', label:"Ramener au sol doucement, sans à-coup"},
+];
+const COMP_CONTRE = [
+  {id:'ca1', label:"Vérifier que les cordes ne sont pas vrillées"},
+  {id:'ca2', label:"Se positionner au bon endroit par rapport à l'assureur"},
+  {id:'ca3', label:"Co-vérification avec grimpeur / assureur"},
+  {id:'ca4', label:"Garder la corde en U sans jamais qu'elle touche le sol"},
+  {id:'ca5', label:"Aider le grimpeur en lui donnant des conseils"},
+];
+const BREVETS = {
+  grimpeur:{key:'grimpeur', label:'Permis de grimper', role:'grimpeur', specific:COMP_GRIMPEUR},
+  assureur:{key:'assureur', label:"Permis d'assurer", role:'assureur', specific:COMP_ASSUREUR},
+  contre:{key:'contre', label:'Permis de contre-assurer', role:'contre-assureur', specific:COMP_CONTRE},
+};
+function allCompsForBrevet(key){ return COMMUNES.concat(BREVETS[key].specific); }
+
+const COMM_PHRASES = [
+  ["Le grimpeur (avant de partir)", "« Prêt ? »"],
+  ["L'assureur répond", "« Vas-y ! »"],
+  ["Le grimpeur répond au moment de partir", "« Parti ! »"],
+  ["Le grimpeur (pour que l'assureur reprenne la corde)", "« Récupère ! »"],
+  ["Le grimpeur (pour que l'assureur donne du mou)", "« Du mou ! »"],
+  ["Le grimpeur (pour que l'assureur tende la corde, vite)", "« Sec ! »"],
+];
+
+const GRADES = ["Toutes prises","3a","3b","3c","4a","4b","4c","5a","5b","5c","6a","6a+","6b","6b+","6c","6c+","7a"];
+const HAUTEURS = ["1ère dégaine","2e dégaine","3e dégaine","4e dégaine","5e dégaine","6e dégaine","7e dégaine","8e dégaine","9e dégaine","10e dégaine","Sommet"];
+
+/* ---------- Stockage ---------- */
+const DB_KEY = 'escalade_db_v1';
+function defaultDB(){
+  return {
+    password: null, // null = pas encore défini
+    classes: [], // {id,name}
+    students: [], // {id,prenom,nom,genre,classId}
+    voies: Array.from({length:20},(_,i)=>({numero:i+1, cotation:''})),
+    brevetData: {}, // studentId -> { commune:{cid:'oui'/'non'/'encours'}, grimpeur:{...specific}, assureur:{...}, contre:{...},
+                     //   suspensions:{grimpeur:{active,sessionsRemaining}, assureur:{...}, contre:{...}} }
+    classSettings: {}, // classId -> {targetGrimpeur, targetAssureur, targetContre}
+    sessions: [], // {id,classId,date,startedAt,endedAt,entries:[],disqualifs:[]}
+    currentSessionId: null,
+  };
+}
+let DB = loadDB();
+function loadDB(){
+  try{
+    const raw = localStorage.getItem(DB_KEY);
+    if(!raw) return defaultDB();
+    const parsed = JSON.parse(raw);
+    const db = Object.assign(defaultDB(), parsed);
+    migrateStudents(db);
+    return db;
+  }catch(e){ return defaultDB(); }
+}
+function migrateStudents(db){
+  // ancien format : classes[].students = [{id,name}]
+  if(!Array.isArray(db.students)) db.students = [];
+  (db.classes||[]).forEach(c=>{
+    if(Array.isArray(c.students)){
+      c.students.forEach(old=>{
+        db.students.push({id:old.id, prenom:old.name||'', nom:'', genre:'', classId:c.id});
+      });
+      delete c.students;
+    }
+  });
+}
+function saveDB(){ localStorage.setItem(DB_KEY, JSON.stringify(DB)); }
+
+/* ---------- Élèves : helpers ---------- */
+function studentsOfClass(classId){
+  return DB.students.filter(s=>s.classId===classId).slice().sort(sortByFamilyName);
+}
+function sortByFamilyName(a,b){
+  const ka = (a.nom||a.prenom||'').toLocaleLowerCase('fr');
+  const kb = (b.nom||b.prenom||'').toLocaleLowerCase('fr');
+  return ka.localeCompare(kb, 'fr');
+}
+function studentFullName(s){
+  if(!s) return 'Élève supprimé';
+  return s.nom ? (s.prenom+' '+s.nom.toUpperCase()) : s.prenom;
+}
+function studentFirstName(s){ return s? s.prenom : 'Élève supprimé'; }
+function getStudent(id){ return DB.students.find(s=>s.id===id); }
+function capName(s){
+  return s.split('-').map(p=> p? p.charAt(0).toLocaleUpperCase('fr')+p.slice(1).toLocaleLowerCase('fr') : p).join('-');
+}
+function parseBulkNames(text){
+  return text.split(/[\s,;\/]+/).map(t=>t.trim()).filter(Boolean).map(capName);
+}
+
+function uid(prefix){ return prefix + '_' + Math.random().toString(36).slice(2,9) + Date.now().toString(36).slice(-4); }
+
+function getStudentBrevet(studentId){
+  if(!DB.brevetData[studentId]){
+    DB.brevetData[studentId] = {commune:{}, grimpeur:{}, assureur:{}, contre:{},
+      suspensions:{grimpeur:null, assureur:null, contre:null}};
+  }
+  const bd = DB.brevetData[studentId];
+  if(!bd.suspensions) bd.suspensions = {grimpeur:null, assureur:null, contre:null};
+  return bd;
+}
+function getCompState(studentId, brevetKey, compId){
+  const bd = getStudentBrevet(studentId);
+  const isCommune = COMMUNES.some(c=>c.id===compId);
+  const bucket = isCommune ? bd.commune : bd[brevetKey];
+  return bucket[compId] || 'non';
+}
+function setCompState(studentId, brevetKey, compId, val){
+  const bd = getStudentBrevet(studentId);
+  const isCommune = COMMUNES.some(c=>c.id===compId);
+  const bucket = isCommune ? bd.commune : bd[brevetKey];
+  bucket[compId] = val;
+  saveDB();
+}
+function brevetProgress(studentId, brevetKey){
+  const comps = allCompsForBrevet(brevetKey);
+  let oui=0;
+  comps.forEach(c=>{ if(getCompState(studentId, brevetKey, c.id)==='oui') oui++; });
+  return {oui, total:comps.length, pct: comps.length? oui/comps.length : 0};
+}
+function brevetStatus(studentId, brevetKey){
+  const bd = getStudentBrevet(studentId);
+  const susp = bd.suspensions[brevetKey];
+  if(susp && susp.active) return 'suspendu';
+  const p = brevetProgress(studentId, brevetKey);
+  if(p.pct >= 0.999) return 'vert';
+  if(p.pct >= 0.4) return 'jaune';
+  return 'rouge';
+}
+function isBrevetValidated(studentId, brevetKey){
+  return brevetStatus(studentId, brevetKey) === 'vert';
+}
+
+/* ---------- Séance courante ---------- */
+function currentSession(){
+  if(!DB.currentSessionId) return null;
+  return DB.sessions.find(s=>s.id===DB.currentSessionId) || null;
+}
+function startSession(classId){
+  const s = {id:uid('sess'), classId, date:new Date().toISOString(), startedAt:Date.now(), endedAt:null, entries:[], disqualifs:[]};
+  DB.sessions.push(s);
+  DB.currentSessionId = s.id;
+  saveDB();
+  return s;
+}
+function endSession(){
+  const s = currentSession();
+  if(!s) return;
+  s.endedAt = Date.now();
+  // décrément des suspensions pour les élèves ayant participé
+  const participants = new Set();
+  s.entries.forEach(e=>{ participants.add(e.studentId); (e.cordee||[]).forEach(m=>participants.add(m.studentId)); });
+  participants.forEach(sid=>{
+    const bd = getStudentBrevet(sid);
+    ['grimpeur','assureur','contre'].forEach(k=>{
+      const sus = bd.suspensions[k];
+      if(sus && sus.active){
+        sus.sessionsRemaining -= 1;
+        if(sus.sessionsRemaining<=0){ sus.active=false; }
+      }
+    });
+  });
+  DB.currentSessionId = null;
+  saveDB();
+}
+
+/* ---------- Disqualifications ---------- */
+function logDisqualif(classId, voieNumero, membres){
+  const s = currentSession();
+  if(!s) return;
+  s.disqualifs.push({id:uid('dq'), timestamp:Date.now(), voieNumero, membres});
+  saveDB();
+}
+function countRecentDisqualifs(studentId){
+  let n=0;
+  DB.sessions.forEach(s=> s.disqualifs.forEach(d=>{
+    if(d.membres.some(m=>m.studentId===studentId)) n++;
+  }));
+  return n;
+}
+
+/* ---------- Navigation / état UI ---------- */
+let UI = {
+  screen:'home',
+  authed:false, // session prof/gestion déverrouillée (en mémoire, pas persistant)
+  gestionClassId:null,
+  profClassId:null,
+  profStudentId:null,
+  profBrevetKey:null,
+  eleveClassId:null,
+  eleveStudentId:null,
+  eleveRole:null,
+  eleveStep:0,
+  eleveWizard:{voie:null, grade:null, hauteur:null, cordee:{}},
+  histoSessionId:null,
+  histoTab:'liste',
+};
+
+function nav(screen, extra){ UI = Object.assign(UI, {screen}, extra||{}); render(); window.scrollTo(0,0); }
+
+function showToast(msg){
+  const root = document.getElementById('toast-root');
+  root.innerHTML = '<div class="toast">'+esc(msg)+'</div>';
+  setTimeout(()=>{ root.innerHTML=''; }, 2200);
+}
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function jsAttr(s){ return esc(String(s==null?'':s).replace(/\\/g,'\\\\').replace(/'/g,"\\'")); }
+
+/* ---------- Password gate ---------- */
+function requireAuth(afterScreen, extra){
+  if(UI.authed){ nav(afterScreen, extra); return; }
+  openModal(passwordModal(afterScreen, extra));
+}
+function passwordModal(afterScreen, extra){
+  const firstTime = !DB.password;
+  return `
+  <div class="modal">
+    <h3>${firstTime? "Définir un mot de passe" : "Mode protégé"}</h3>
+    <p style="color:var(--ink-soft);font-size:14px;margin-top:-6px;">
+      ${firstTime? "Ce mot de passe protégera le mode prof et la gestion des classes." : "Entre le mot de passe pour continuer."}
+    </p>
+    <div class="field">
+      <input type="password" id="pw-input" placeholder="Mot de passe" autofocus>
+    </div>
+    ${firstTime? `<div class="field"><input type="password" id="pw-input2" placeholder="Confirmer le mot de passe"></div>` : ''}
+    <div id="pw-error" style="color:var(--red);font-size:13px;margin-bottom:10px;"></div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-outline btn-block" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary btn-block" onclick="submitPassword('${afterScreen}', ${JSON.stringify(extra||{}).replace(/"/g,'&quot;')})">Valider</button>
+    </div>
+  </div>`;
+}
+function submitPassword(afterScreen, extraStr){
+  const extra = typeof extraStr==='string' ? JSON.parse(extraStr.replace(/&quot;/g,'"')) : (extraStr||{});
+  const pw = document.getElementById('pw-input').value;
+  const errEl = document.getElementById('pw-error');
+  if(!DB.password){
+    const pw2 = document.getElementById('pw-input2').value;
+    if(!pw || pw.length<3){ errEl.textContent='Le mot de passe doit faire au moins 3 caractères.'; return; }
+    if(pw!==pw2){ errEl.textContent='Les mots de passe ne correspondent pas.'; return; }
+    DB.password = pw; saveDB();
+  } else {
+    if(pw !== DB.password){ errEl.textContent='Mot de passe incorrect.'; return; }
+  }
+  UI.authed = true;
+  closeModal();
+  nav(afterScreen, extra);
+}
+
+/* ---------- Modal helpers ---------- */
+function openModal(html){ document.getElementById('modal-root').innerHTML = '<div class="modal-backdrop" onclick="if(event.target===this)closeModal()">'+html+'</div>'; }
+function closeModal(){ document.getElementById('modal-root').innerHTML=''; }
+
+let _pendingConfirmAction = null;
+function confirmModal(message, action, opts){
+  opts = opts || {};
+  _pendingConfirmAction = action;
+  openModal(`
+  <div class="modal">
+    <h3>${esc(opts.title || 'Confirmation')}</h3>
+    <p style="color:var(--ink-soft);font-size:14px;margin-top:-6px;">${esc(message)}</p>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-outline btn-block" onclick="cancelPendingConfirm()">Annuler</button>
+      <button class="btn ${opts.danger===false?'btn-primary':'btn-danger'} btn-block" onclick="runPendingConfirm()">${esc(opts.confirmLabel || 'Confirmer')}</button>
+    </div>
+  </div>`);
+}
+function runPendingConfirm(){
+  const action = _pendingConfirmAction;
+  _pendingConfirmAction = null;
+  closeModal();
+  if(action) action();
+}
+function cancelPendingConfirm(){
+  _pendingConfirmAction = null;
+  closeModal();
+}
+function alertModal(message, title){
+  openModal(`
+  <div class="modal">
+    <h3>${esc(title||'Information')}</h3>
+    <p style="color:var(--ink-soft);font-size:14px;margin-top:-6px;">${esc(message)}</p>
+    <button class="btn btn-primary btn-block" onclick="closeModal()">OK</button>
+  </div>`);
+}
+function promptModal(title, currentValue, onSave, opts){
+  opts = opts || {};
+  openModal(`
+  <div class="modal">
+    <h3>${esc(title)}</h3>
+    <div class="field"><input type="text" id="prompt-input" value="${esc(currentValue||'')}"></div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-outline btn-block" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary btn-block" onclick="submitPromptModal()">${esc(opts.confirmLabel||'Enregistrer')}</button>
+    </div>
+  </div>`);
+  _pendingPromptSave = onSave;
+  setTimeout(()=>{ const el=document.getElementById('prompt-input'); if(el){ el.focus(); el.select(); } }, 30);
+}
+let _pendingPromptSave = null;
+function submitPromptModal(){
+  const val = document.getElementById('prompt-input').value.trim();
+  const save = _pendingPromptSave;
+  _pendingPromptSave = null;
+  closeModal();
+  if(val && save) save(val);
+}
+
+/* =====================================================================
+   RENDER
+   ===================================================================== */
+function render(){
+  const app = document.getElementById('app');
+  app.innerHTML = topbar() + screenHTML();
+}
+
+function topbar(){
+  const s = currentSession();
+  return `
+  <div class="topbar">
+    <div class="brand" onclick="nav('home')" style="cursor:pointer;">
+      ${logoSvg()}
+      <div class="brand-text">
+        <span class="app-name">Escalade</span>
+        <span class="app-sub">Suivi EPS</span>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      ${s? `<span class="badge-pill st-vert" style="margin-right:4px;"><span class="live-dot" style="width:7px;height:7px;background:var(--green);border-radius:50%;display:inline-block;"></span>Séance en cours</span>`:''}
+      <button class="icon-btn" title="Accueil" onclick="nav('home')">${homeIcon()}</button>
+    </div>
+  </div>`;
+}
+
+function screenHTML(){
+  switch(UI.screen){
+    case 'home': return homeScreen();
+    case 'gestion-classes': return gestionClassesScreen();
+    case 'gestion-classe-detail': return gestionClasseDetailScreen();
+    case 'prof-classes': return profClassesScreen();
+    case 'prof-eleves': return profElevesScreen();
+    case 'prof-eleve-detail': return profEleveDetailScreen();
+    case 'prof-voies': return profVoiesScreen();
+    case 'prof-transfert': return profTransfertScreen();
+    case 'eleve-no-session': return eleveNoSessionScreen();
+    case 'eleve-eleves': return eleveElevesScreen();
+    case 'eleve-role': return eleveRoleScreen();
+    case 'eleve-wizard': return eleveWizardScreen();
+    case 'histo': return histoScreen();
+    case 'histo-session': return histoSessionScreen();
+    default: return homeScreen();
+  }
+}
+
+/* ---------- HOME ---------- */
+function homeScreen(){
+  return `
+  <div class="home-hero">
+    ${logoSvg(72)}
+    <h1>Escalade</h1>
+    <p>Permis de grimper &amp; permis d'assurer — suivi de séance</p>
+  </div>
+  <div class="home-choices">
+    <button class="mode-tile tile-eleve" onclick="goEleveMode()">
+      <div class="tile-icon">${climberIcon()}</div>
+      <div class="tile-text"><strong>Mode Élève</strong><span>Saisir une voie grimpée, assurée ou contre-assurée</span></div>
+    </button>
+    <button class="mode-tile tile-prof" onclick="requireAuth('prof-classes')">
+      <div class="tile-icon">${lockIcon()}</div>
+      <div class="tile-text"><strong>Mode Prof</strong><span>Valider les permis, gérer les séances</span></div>
+    </button>
+    <button class="mode-tile tile-histo" onclick="nav('histo')">
+      <div class="tile-icon">${historyIcon()}</div>
+      <div class="tile-text"><strong>Historique des séances</strong><span>Consultation libre, sans mot de passe</span></div>
+    </button>
+    <button class="mode-tile tile-gestion" onclick="requireAuth('gestion-classes')">
+      <div class="tile-icon">${usersIcon()}</div>
+      <div class="tile-text"><strong>Gestion des classes</strong><span>Classes, élèves, import / export</span></div>
+    </button>
+  </div>
+  ${currentSession()? sessionQuickBar() : ''}
+  `;
+}
+function sessionQuickBar(){
+  const s = currentSession();
+  const cls = DB.classes.find(c=>c.id===s.classId);
+  return `<div class="card" style="margin-top:16px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div><strong>Séance en cours</strong><br><span style="color:var(--ink-soft);font-size:13px;">${esc(cls?cls.name:'')} — ${s.entries.length} saisie(s)</span></div>
+      <button class="btn btn-outline" onclick="requireAuth('prof-eleves', {profClassId:'${s.classId}'})">Gérer</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- GESTION CLASSES ---------- */
+function gestionClassesScreen(){
+  return `
+  ${screenTitle('Gestion des classes', 'home')}
+  <div class="card">
+    <div class="field" style="display:flex;gap:8px;margin-bottom:0;">
+      <input type="text" id="new-class-name" placeholder="Nom de la classe (ex. 3e A)">
+      <button class="btn btn-primary" onclick="addClass()">Ajouter</button>
+    </div>
+  </div>
+  ${DB.classes.length===0? emptyState("Aucune classe pour l'instant", usersIcon()) : DB.classes.map(c=>`
+    <div class="list-row">
+      <div class="row-main" style="cursor:pointer;flex:1;" onclick="nav('gestion-classe-detail',{gestionClassId:'${c.id}'})">
+        <div>
+          <div class="row-title">${esc(c.name)}</div>
+          <div class="row-sub">${studentsOfClass(c.id).length} élève(s)</div>
+        </div>
+      </div>
+      <button class="icon-btn" onclick="renameClass('${c.id}')">${editIcon()}</button>
+      <button class="icon-btn" onclick="deleteClass('${c.id}')">${trashIcon()}</button>
+    </div>`).join('')}
+  <div class="section-label">Écosystème d'applications</div>
+  <div class="card">
+    <p style="margin-top:0;font-size:13px;color:var(--ink-soft);">Importe ou exporte tes classes pour les partager avec tes autres applications EPS.</p>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-outline btn-block" onclick="exportClasses()">Exporter (JSON)</button>
+      <label class="btn btn-outline btn-block" style="text-align:center;">
+        Importer
+        <input type="file" accept="application/json" style="display:none;" onchange="importClasses(event)">
+      </label>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:10px;">
+      <button class="btn btn-outline btn-block" onclick="exportClassesQR()">Exporter (QR code)</button>
+      <button class="btn btn-outline btn-block" onclick="startQRScan(handleClassesQRData)">Scanner un QR code</button>
+    </div>
+    <div id="qr-render-classes"></div>
+    <video id="scan-video" class="hidden" playsinline></video>
+    <canvas id="scan-canvas" class="hidden"></canvas>
+  </div>`;
+}
+function addClass(){
+  const input = document.getElementById('new-class-name');
+  const name = input.value.trim();
+  if(!name) return;
+  DB.classes.push({id:uid('cls'), name, students:[]});
+  saveDB(); render();
+}
+function renameClass(id){
+  const c = DB.classes.find(x=>x.id===id);
+  promptModal('Nouveau nom de la classe', c.name, (name)=>{
+    c.name = name; saveDB(); render();
+  });
+}
+function deleteClass(id){
+  confirmModal('Supprimer cette classe et tous ses élèves ?', ()=>{
+    DB.classes = DB.classes.filter(c=>c.id!==id);
+    DB.students = DB.students.filter(s=>s.classId!==id);
+    saveDB(); render();
+  }, {confirmLabel:'Supprimer'});
+}
+/* ---------- Export / import inter-applications (format commun) ---------- */
+function buildClassesExportPayload(){
+  return {
+    type:'eps-classes-export', version:1, source:'escalade',
+    exportedAt:new Date().toISOString(),
+    classes: DB.classes.map(c=>({
+      name:c.name,
+      students: studentsOfClass(c.id).map(s=>({prenom:s.prenom, nom:s.nom||'', genre:s.genre||''}))
+    }))
+  };
+}
+function exportClasses(){
+  downloadJSON(buildClassesExportPayload(), 'classes-escalade.json');
+}
+function exportClassesQR(){
+  const data = buildClassesExportPayload();
+  const json = JSON.stringify(data);
+  const holder = document.getElementById('qr-render-classes');
+  if(!holder) return;
+  holder.innerHTML='';
+  if(json.length > 2200){
+    holder.innerHTML = '<p style="font-size:12px;color:var(--ink-soft);text-align:center;">Trop de données pour un QR code — utilise le fichier exporté.</p>';
+    return;
+  }
+  try{ new QRCode(holder, {text: json, width:220, height:220}); }
+  catch(e){ holder.innerHTML = '<p style="font-size:12px;color:var(--ink-soft);">QR indisponible hors-ligne — utilise le fichier exporté.</p>'; }
+}
+function applyClassesImport(data){
+  const incomingClasses = data.classes || (Array.isArray(data)? data : []);
+  if(!Array.isArray(incomingClasses)) throw new Error('format invalide');
+  const flatStudents = data.students; // ancien format escalade : students séparés avec classId
+  let count = 0;
+  incomingClasses.forEach(c=>{
+    let target = DB.classes.find(x=>x.name.toLowerCase()===String(c.name||'').toLowerCase());
+    if(!target){ target = {id:uid('cls'), name:c.name}; DB.classes.push(target); }
+    let incomingStudents = [];
+    if(Array.isArray(c.students)){
+      // format commun (ou ancien format imbriqué) : students dans la classe
+      incomingStudents = c.students.map(st=>({prenom:st.prenom||st.name||'', nom:st.nom||'', genre:st.genre||''}));
+    } else if(Array.isArray(flatStudents)){
+      // ancien format escalade : students séparés, rattachés par classId
+      incomingStudents = flatStudents.filter(st=>st.classId===c.id).map(st=>({prenom:st.prenom||st.name||'', nom:st.nom||'', genre:st.genre||''}));
+    }
+    incomingStudents.forEach(st=>{
+      if(!st.prenom) return;
+      const exists = DB.students.find(x=>x.classId===target.id && x.prenom.toLowerCase()===st.prenom.toLowerCase() && (x.nom||'').toLowerCase()===(st.nom||'').toLowerCase());
+      if(!exists){ DB.students.push({id:uid('stu'), prenom:st.prenom, nom:st.nom, genre:st.genre, classId:target.id}); count++; }
+    });
+  });
+  saveDB(); render();
+  return count;
+}
+function importClasses(evt){
+  const file = evt.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    try{
+      const count = applyClassesImport(JSON.parse(e.target.result));
+      showToast(count>0 ? count+' élève(s) importé(s)' : 'Classes importées (aucun nouvel élève)');
+    }catch(err){ alertModal("Fichier invalide : "+err.message, 'Erreur'); }
+  };
+  reader.readAsText(file);
+}
+function handleClassesQRData(data){
+  try{
+    const count = applyClassesImport(data);
+    showToast(count>0 ? count+' élève(s) importé(s) via QR code' : 'Classes importées via QR code');
+  }catch(err){ alertModal('QR code invalide : '+err.message, 'Erreur'); }
+}
+
+function gestionClasseDetailScreen(){
+  const c = DB.classes.find(x=>x.id===UI.gestionClassId);
+  if(!c) return emptyState('Classe introuvable', usersIcon());
+  const students = studentsOfClass(c.id);
+  return `
+  ${screenTitle(c.name, 'gestion-classes')}
+  <div class="card">
+    <label class="field-label">Ajouter des élèves (prénoms)</label>
+    <p style="font-size:12px;color:var(--ink-soft);margin:0 0 8px;">Sépare les prénoms par un espace, une virgule, un point-virgule ou un slash. Un tiret reste à l'intérieur d'un prénom composé (ex. « Jean-Pierre »).</p>
+    <textarea id="bulk-student-input" rows="2" placeholder="ex. Léa, Noah Jean-Pierre; Inès/Adam"></textarea>
+    <button class="btn btn-primary btn-block" style="margin-top:10px;" onclick="addStudentsBulk('${c.id}')">Ajouter à la classe</button>
+  </div>
+  ${students.length===0? emptyState('Aucun élève', usersIcon()) : students.map(s=>`
+    <div class="list-row" style="cursor:pointer;" onclick="openEditStudent('${s.id}')">
+      <div>
+        <div class="row-title">${esc(studentFullName(s))}</div>
+        ${!s.nom? `<div class="row-sub">Nom de famille non renseigné</div>` : ''}
+      </div>
+      <span>${editIcon()}</span>
+    </div>`).join('')}
+  `;
+}
+function addStudentsBulk(classId){
+  const input = document.getElementById('bulk-student-input');
+  const names = parseBulkNames(input.value);
+  if(names.length===0) return;
+  names.forEach(prenom=>{
+    DB.students.push({id:uid('stu'), prenom, nom:'', genre:'', classId});
+  });
+  saveDB(); render();
+  showToast(names.length>1? names.length+' élèves ajoutés' : 'Élève ajouté');
+}
+function openEditStudent(studentId){
+  const s = getStudent(studentId);
+  if(!s) return;
+  openModal(`
+  <div class="modal">
+    <h3>Modifier l'élève</h3>
+    <div class="field">
+      <label class="field-label">Prénom</label>
+      <input type="text" id="edit-prenom" value="${esc(s.prenom)}">
+    </div>
+    <div class="field">
+      <label class="field-label">Nom de famille</label>
+      <input type="text" id="edit-nom" value="${esc(s.nom||'')}">
+    </div>
+    <div class="field">
+      <label class="field-label">Genre</label>
+      <select id="edit-genre">
+        <option value="" ${!s.genre?'selected':''}>Non précisé</option>
+        <option value="F" ${s.genre==='F'?'selected':''}>Fille</option>
+        <option value="M" ${s.genre==='M'?'selected':''}>Garçon</option>
+        <option value="Autre" ${s.genre==='Autre'?'selected':''}>Autre</option>
+      </select>
+    </div>
+    <div class="field">
+      <label class="field-label">Classe</label>
+      <select id="edit-classe">
+        ${DB.classes.map(c=>`<option value="${c.id}" ${s.classId===c.id?'selected':''}>${esc(c.name)}</option>`).join('')}
+      </select>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:6px;">
+      <button class="btn btn-danger" onclick="deleteStudentConfirm('${s.id}')">${trashIcon()}</button>
+      <button class="btn btn-outline btn-block" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary btn-block" onclick="saveStudentEdit('${s.id}')">Enregistrer</button>
+    </div>
+  </div>`);
+}
+function saveStudentEdit(studentId){
+  const s = getStudent(studentId);
+  if(!s) return;
+  const prenom = document.getElementById('edit-prenom').value.trim();
+  if(!prenom){ alertModal('Le prénom est obligatoire.', 'Champ manquant'); return; }
+  s.prenom = prenom;
+  s.nom = document.getElementById('edit-nom').value.trim();
+  s.genre = document.getElementById('edit-genre').value;
+  s.classId = document.getElementById('edit-classe').value;
+  saveDB(); closeModal(); render();
+}
+function deleteStudentConfirm(studentId){
+  confirmModal('Supprimer cet élève ? Son historique de séances sera conservé mais ne sera plus rattaché à un nom.', ()=>{
+    DB.students = DB.students.filter(s=>s.id!==studentId);
+    saveDB(); render();
+  }, {confirmLabel:'Supprimer'});
+}
+
+/* ---------- PROF : liste des classes ---------- */
+function profClassesScreen(){
+  return `
+  ${screenTitle('Mode Prof', 'home')}
+  <div class="grid-2" style="margin-bottom:16px;">
+    <button class="btn btn-secondary" onclick="nav('prof-voies')">${routeIcon()} Configurer les voies</button>
+    <button class="btn btn-secondary" onclick="nav('prof-transfert')">${phoneIcon()} Transfert téléphone</button>
+  </div>
+  ${currentSession()? sessionControlCard() : ''}
+  <div class="section-label">Choisir une classe</div>
+  ${DB.classes.length===0? emptyState('Aucune classe. Ajoute-en une dans « Gestion des classes ».', usersIcon()) : DB.classes.map(c=>`
+    <div class="list-row" style="cursor:pointer;" onclick="selectProfClass('${c.id}')">
+      <div class="row-title">${esc(c.name)}</div>
+      <div class="row-sub">${studentsOfClass(c.id).length} élève(s) →</div>
+    </div>`).join('')}
+  `;
+}
+function selectProfClass(classId){
+  const s = currentSession();
+  if(s && s.classId !== classId){
+    confirmModal("Une séance est en cours pour une autre classe. La quitter pour changer de classe ?", ()=>{
+      nav('prof-eleves', {profClassId:classId});
+    }, {confirmLabel:'Changer de classe'});
+    return;
+  }
+  nav('prof-eleves', {profClassId:classId});
+}
+function sessionControlCard(){
+  const s = currentSession();
+  const cls = DB.classes.find(c=>c.id===s.classId);
+  return `<div class="session-banner">
+    <div><span class="live-dot"></span><strong>Séance en cours</strong> — ${esc(cls?cls.name:'')}</div>
+    <button class="btn btn-outline" style="background:#fff;" onclick="confirmEndSession()">Fin de séance</button>
+  </div>`;
+}
+function confirmEndSession(){
+  confirmModal("Clôturer la séance ? Les résultats seront enregistrés dans l'historique.", ()=>{
+    endSession();
+    showToast('Séance terminée et enregistrée');
+    nav('prof-classes');
+  }, {confirmLabel:'Clôturer la séance', danger:false});
+}
+
+/* ---------- PROF : liste des élèves d'une classe ---------- */
+function profElevesScreen(){
+  const c = DB.classes.find(x=>x.id===UI.profClassId);
+  if(!c) return emptyState('Classe introuvable', usersIcon());
+  const s = currentSession();
+  const inSession = s && s.classId===c.id;
+  const students = studentsOfClass(c.id);
+  return `
+  ${screenTitle(c.name, 'prof-classes')}
+  ${inSession? sessionControlCard() : `
+    <div class="card">
+      <button class="btn btn-primary btn-block" onclick="startSessionFor('${c.id}')">${playIcon()} Démarrer une séance pour cette classe</button>
+    </div>`}
+  ${warnBanner(students)}
+  <div class="section-label">Élèves</div>
+  ${students.length===0? emptyState('Aucun élève dans cette classe', usersIcon()) : students.map(st=>{
+    return `<div class="list-row" style="cursor:pointer;" onclick="nav('prof-eleve-detail',{profClassId:'${c.id}',profStudentId:'${st.id}'})">
+      <div class="row-main">
+        <div class="row-title">${esc(studentFullName(st))}</div>
+      </div>
+      <div class="row-badges">
+        ${['grimpeur','assureur','contre'].map(k=>miniBadge(st.id,k)).join('')}
+      </div>
+    </div>`;
+  }).join('')}
+  `;
+}
+function warnBanner(students){
+  const flagged = students.filter(st=>countRecentDisqualifs(st.id) > 2);
+  if(flagged.length===0) return '';
+  return `<div class="warn-banner">${warnIcon()}<span><strong>Vigilance :</strong> ${flagged.map(s=>esc(studentFirstName(s))).join(', ')} — plus de 2 disqualifications de cordée enregistrées. Envisager une suspension.</span></div>`;
+}
+function miniBadge(studentId, brevetKey){
+  const st = brevetStatus(studentId, brevetKey);
+  const icons = {grimpeur:'G', assureur:'A', contre:'C'};
+  return `<span class="badge-dot st-${st}" title="${BREVETS[brevetKey].label}">${icons[brevetKey]}</span>`;
+}
+function startSessionFor(classId){
+  startSession(classId);
+  showToast('Séance démarrée');
+  render();
+}
+
+/* ---------- PROF : détail élève / permis ---------- */
+function profEleveDetailScreen(){
+  const c = DB.classes.find(x=>x.id===UI.profClassId);
+  const st = getStudent(UI.profStudentId);
+  if(!c || !st) return emptyState('Élève introuvable', usersIcon());
+  const bk = UI.profBrevetKey || 'grimpeur';
+  return `
+  ${screenTitle(studentFullName(st), 'prof-eleves')}
+  <div class="tabs">
+    ${['grimpeur','assureur','contre'].map(k=>`<button class="${bk===k?'active':''}" onclick="nav('prof-eleve-detail',{profClassId:'${c.id}',profStudentId:'${st.id}',profBrevetKey:'${k}'})">${BREVETS[k].label}</button>`).join('')}
+  </div>
+  ${brevetDetailCard(st.id, bk)}
+  `;
+}
+function brevetDetailCard(studentId, brevetKey){
+  const bd = getStudentBrevet(studentId);
+  const susp = bd.suspensions[brevetKey];
+  const p = brevetProgress(studentId, brevetKey);
+  const status = brevetStatus(studentId, brevetKey);
+  const comps = allCompsForBrevet(brevetKey);
+  const nDisq = countRecentDisqualifs(studentId);
+  return `
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="badge-state st-${status}"></span>
+        <strong>${p.oui}/${p.total} compétences validées</strong>
+      </div>
+      <span class="badge-pill st-${status}">${status==='suspendu'?'Suspendu':status==='vert'?'Validé':status==='jaune'?'Fragile':'Non maîtrisé'}</span>
+    </div>
+    ${susp && susp.active? `<div class="warn-banner">${warnIcon()}<span>Permis suspendu — ${susp.sessionsRemaining} séance(s) restante(s) avant réévaluation.
+      <button class="link-btn" onclick="liftSuspension('${studentId}','${brevetKey}')">Lever la suspension</button></span></div>` : ''}
+    ${nDisq>2? `<div class="warn-banner">${warnIcon()}<span>${nDisq} disqualifications de cordée enregistrées pour cet élève.</span></div>` : ''}
+    ${comps.map(comp=>`
+      <div class="competency-row">
+        <span class="comp-label">${esc(comp.label)}</span>
+        <div class="tristate">
+          <button class="${getCompState(studentId,brevetKey,comp.id)==='non'?'on-non':''}" onclick="setCompStateUI('${studentId}','${brevetKey}','${comp.id}','non')">NON</button>
+          <button class="${getCompState(studentId,brevetKey,comp.id)==='encours'?'on-encours':''}" onclick="setCompStateUI('${studentId}','${brevetKey}','${comp.id}','encours')">EN COURS</button>
+          <button class="${getCompState(studentId,brevetKey,comp.id)==='oui'?'on-oui':''}" onclick="setCompStateUI('${studentId}','${brevetKey}','${comp.id}','oui')">OUI</button>
+        </div>
+      </div>`).join('')}
+    <div style="margin-top:14px;">
+      <button class="btn btn-outline btn-block" onclick="openSuspendModal('${studentId}','${brevetKey}')">${lockIcon()} Suspendre ce permis</button>
+    </div>
+  </div>
+  <details class="card"><summary style="cursor:pointer;font-weight:600;">Rappel : termes de communication normée</summary>
+    <table class="recap-table" style="margin-top:10px;">
+      ${COMM_PHRASES.map(p=>`<tr><td style="color:var(--ink-soft);">${esc(p[0])}</td><td style="font-weight:600;">${esc(p[1])}</td></tr>`).join('')}
+    </table>
+  </details>
+  `;
+}
+function setCompStateUI(studentId, brevetKey, compId, val){
+  setCompState(studentId, brevetKey, compId, val);
+  render();
+}
+function openSuspendModal(studentId, brevetKey){
+  openModal(`
+  <div class="modal">
+    <h3>Suspendre ${esc(BREVETS[brevetKey].label.toLowerCase())}</h3>
+    <p style="color:var(--ink-soft);font-size:14px;margin-top:-6px;">Le permis sera masqué le temps indiqué, puis reviendra automatiquement à son état antérieur.</p>
+    <div class="field">
+      <label class="field-label">Nombre de séances (participées)</label>
+      <input type="number" id="susp-n" min="1" value="2">
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-outline btn-block" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-danger btn-block" onclick="confirmSuspend('${studentId}','${brevetKey}')">Suspendre</button>
+    </div>
+  </div>`);
+}
+function confirmSuspend(studentId, brevetKey){
+  const n = parseInt(document.getElementById('susp-n').value,10) || 1;
+  const bd = getStudentBrevet(studentId);
+  bd.suspensions[brevetKey] = {active:true, sessionsRemaining:n};
+  saveDB(); closeModal(); render();
+  showToast('Permis suspendu pour '+n+' séance(s)');
+}
+function liftSuspension(studentId, brevetKey){
+  const bd = getStudentBrevet(studentId);
+  bd.suspensions[brevetKey] = null;
+  saveDB(); render();
+}
+
+/* ---------- PROF : voies ---------- */
+function profVoiesScreen(){
+  return `
+  ${screenTitle('Configuration des voies', 'prof-classes')}
+  <div class="card">
+    <p style="margin-top:0;font-size:13px;color:var(--ink-soft);">Associe une cotation à chaque numéro de voie. Modifiable à tout moment.</p>
+    ${DB.voies.map(v=>`
+      <div class="competency-row">
+        <span class="comp-label"><span class="tag tag-mini" style="margin-right:8px;">${v.numero}</span>Voie ${v.numero}</span>
+        <select style="width:120px;" onchange="setVoieGrade(${v.numero}, this.value)">
+          <option value="">—</option>
+          ${GRADES.map(g=>`<option value="${g}" ${v.cotation===g?'selected':''}>${g}</option>`).join('')}
+        </select>
+      </div>`).join('')}
+  </div>`;
+}
+function setVoieGrade(numero, grade){
+  const v = DB.voies.find(x=>x.numero===numero);
+  v.cotation = grade;
+  saveDB();
+}
+
+/* ---------- PROF : transfert téléphone ---------- */
+function profTransfertScreen(){
+  return `
+  ${screenTitle('Transfert téléphone ↔ tablette', 'prof-classes')}
+  <div class="card">
+    <h3 style="margin-top:0;">Depuis ce téléphone</h3>
+    <p style="font-size:13px;color:var(--ink-soft);">Exporte les validations de permis saisies ici, pour les importer sur la tablette.</p>
+    <button class="btn btn-primary btn-block" onclick="exportBrevetsTransfer()">Exporter les permis (fichier + QR code)</button>
+    <div id="qr-render"></div>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0;">Sur la tablette</h3>
+    <p style="font-size:13px;color:var(--ink-soft);">Importe le fichier reçu, ou scanne le QR code affiché sur le téléphone.</p>
+    <div style="display:flex;gap:10px;margin-bottom:10px;">
+      <label class="btn btn-outline btn-block" style="text-align:center;">
+        Importer un fichier
+        <input type="file" accept="application/json" style="display:none;" onchange="importBrevetsTransfer(event)">
+      </label>
+      <button class="btn btn-outline btn-block" onclick="startQRScan(handleBrevetsQRData)">Scanner un QR code</button>
+    </div>
+    <video id="scan-video" class="hidden" playsinline></video>
+    <canvas id="scan-canvas" class="hidden"></canvas>
+  </div>`;
+}
+function exportBrevetsTransfer(){
+  const data = {type:'escalade-brevets-transfer', exportedAt:new Date().toISOString(), brevetData:DB.brevetData};
+  downloadJSON(data, 'permis-transfert.json');
+  const json = JSON.stringify(data);
+  const holder = document.getElementById('qr-render');
+  holder.innerHTML='';
+  if(json.length > 2200){
+    holder.innerHTML = '<p style="font-size:12px;color:var(--ink-soft);text-align:center;">Trop de données pour un QR code — utilise le fichier exporté.</p>';
+    return;
+  }
+  try{ new QRCode(holder, {text: json, width:220, height:220}); }
+  catch(e){ holder.innerHTML = '<p style="font-size:12px;color:var(--ink-soft);">QR indisponible hors-ligne — utilise le fichier exporté.</p>'; }
+}
+function mergeBrevetData(incoming){
+  Object.keys(incoming).forEach(studentId=>{
+    if(!DB.brevetData[studentId]) DB.brevetData[studentId] = incoming[studentId];
+    else {
+      const local = DB.brevetData[studentId];
+      const inc = incoming[studentId];
+      ['commune','grimpeur','assureur','contre'].forEach(bucket=>{
+        Object.assign(local[bucket], inc[bucket]||{});
+      });
+      if(inc.suspensions) Object.assign(local.suspensions, inc.suspensions);
+    }
+  });
+  saveDB();
+}
+function importBrevetsTransfer(evt){
+  const file = evt.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    try{
+      const data = JSON.parse(e.target.result);
+      mergeBrevetData(data.brevetData || {});
+      showToast('Permis mis à jour depuis le fichier');
+      render();
+    }catch(err){ alertModal('Fichier invalide : '+err.message, 'Erreur'); }
+  };
+  reader.readAsText(file);
+}
+function handleBrevetsQRData(data){
+  mergeBrevetData(data.brevetData || {});
+  showToast('Permis mis à jour via QR code');
+  render();
+}
+let scanStream = null;
+function startQRScan(onData){
+  const handler = onData || handleBrevetsQRData;
+  const video = document.getElementById('scan-video');
+  const canvas = document.getElementById('scan-canvas');
+  video.classList.remove('hidden');
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}).then(stream=>{
+    scanStream = stream;
+    video.srcObject = stream;
+    video.play();
+    requestAnimationFrame(function tick(){
+      if(!scanStream) return;
+      if(video.readyState === video.HAVE_ENOUGH_DATA){
+        canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0,0, canvas.width, canvas.height);
+        const img = ctx.getImageData(0,0,canvas.width,canvas.height);
+        const code = jsQR(img.data, img.width, img.height);
+        if(code){
+          try{
+            const data = JSON.parse(code.data);
+            stopQRScan();
+            handler(data);
+            return;
+          }catch(e){/* pas un QR valide, on continue */}
+        }
+      }
+      requestAnimationFrame(tick);
+    });
+  }).catch(err=>{
+    alertModal("Impossible d'accéder à la caméra : "+err.message, 'Erreur');
+    video.classList.add('hidden');
+  });
+}
+function stopQRScan(){
+  if(scanStream){ scanStream.getTracks().forEach(t=>t.stop()); scanStream=null; }
+  const video = document.getElementById('scan-video');
+  if(video){ video.classList.add('hidden'); }
+}
+
+/* ---------- ELEVE : choix classe ---------- */
+function goEleveMode(){
+  const s = currentSession();
+  if(!s){ nav('eleve-no-session'); return; }
+  nav('eleve-eleves', {eleveClassId:s.classId});
+}
+function eleveNoSessionScreen(){
+  return `
+  ${screenTitle('Mode Élève', 'home')}
+  <div class="warn-banner">${warnIcon()}<span>Aucune séance n'est actuellement ouverte. Demande au professeur de démarrer la séance pour ta classe avant de saisir une voie.</span></div>
+  `;
+}
+function eleveElevesScreen(){
+  const c = DB.classes.find(x=>x.id===UI.eleveClassId);
+  if(!c) return emptyState('Classe introuvable', usersIcon());
+  const students = studentsOfClass(c.id);
+  return `
+  ${screenTitle(c.name, 'home')}
+  <div class="section-label">Qui es-tu ?</div>
+  ${students.map(st=>`<div class="list-row" style="cursor:pointer;" onclick="nav('eleve-role',{eleveStudentId:'${st.id}'})">
+      <div class="row-main">
+        <div class="row-title">${esc(studentFirstName(st))}</div>
+      </div>
+      <div class="row-badges">
+        ${['grimpeur','assureur','contre'].map(k=>miniBadge(st.id,k)).join('')}
+      </div>
+    </div>`).join('')}
+  `;
+}
+function eleveRoleScreen(){
+  const c = DB.classes.find(x=>x.id===UI.eleveClassId);
+  const st = getStudent(UI.eleveStudentId);
+  return `
+  ${screenTitle(studentFirstName(st), 'eleve-eleves')}
+  <div class="wizard-question">Quel était ton rôle sur cette voie ?</div>
+  <div class="choice-grid">
+    <button class="tag tag-grade" style="min-width:140px;" onclick="startWizard('grimpeur')">🧗 Grimpeur</button>
+    <button class="tag tag-grade" style="min-width:140px;" onclick="startWizard('assureur')">🪢 Assureur</button>
+    <button class="tag tag-grade" style="min-width:140px;" onclick="startWizard('contre-assureur')">👀 Contre-assureur</button>
+  </div>`;
+}
+function startWizard(role){
+  UI.eleveRole = role;
+  UI.eleveStep = 0;
+  UI.eleveWizard = {voie:null, grade:null, hauteur:null, cordee:{}};
+  nav('eleve-wizard');
+}
+
+/* ---------- ELEVE : wizard ---------- */
+function wizardSteps(){
+  // étapes : cordée (2 rôles restants) puis voie, difficulté, hauteur
+  const others = ['grimpeur','assureur','contre-assureur'].filter(r=>r!==UI.eleveRole);
+  return [
+    {type:'cordee', role:others[0]},
+    {type:'cordee', role:others[1]},
+    {type:'voie'},
+    {type:'grade'},
+    {type:'hauteur'},
+    {type:'recap'},
+  ];
+}
+function eleveWizardScreen(){
+  const steps = wizardSteps();
+  const step = steps[UI.eleveStep];
+  const c = DB.classes.find(x=>x.id===UI.eleveClassId);
+  const meStudent = getStudent(UI.eleveStudentId);
+
+  let body = '';
+  if(step.type==='cordee'){
+    const excludeIds = [UI.eleveStudentId, ...Object.values(UI.eleveWizard.cordee).map(m=>m.studentId)];
+    const candidates = studentsOfClass(UI.eleveClassId).filter(s=>!excludeIds.includes(s.id));
+    body = `
+    <div class="wizard-progress">Étape ${UI.eleveStep+1} / ${steps.length}</div>
+    <div class="wizard-question">Qui était ${roleLabel(step.role)} ?</div>
+    <div class="choice-grid">
+      ${candidates.map(s=>`
+        <button class="tag tag-grade" onclick="setCordee('${step.role}','${s.id}')">${esc(studentFirstName(s))}</button>`).join('')}
+    </div>`;
+  } else if(step.type==='voie'){
+    body = `
+    <div class="wizard-progress">Étape ${UI.eleveStep+1} / ${steps.length}</div>
+    <div class="wizard-question">Numéro de la voie ?</div>
+    <div class="choice-grid">
+      ${DB.voies.map(v=>`<button class="tag tag-num ${UI.eleveWizard.voie===v.numero?'selected':''}" onclick="setWizardVal('voie',${v.numero})">${v.numero}</button>`).join('')}
+    </div>`;
+  } else if(step.type==='grade'){
+    body = `
+    <div class="wizard-progress">Étape ${UI.eleveStep+1} / ${steps.length}</div>
+    <div class="wizard-question">Quelle difficulté ?</div>
+    <div class="choice-grid">
+      ${GRADES.map(g=>`<button class="tag tag-grade ${UI.eleveWizard.grade===g?'selected':''}" onclick="setWizardVal('grade','${g}')">${g}</button>`).join('')}
+    </div>`;
+  } else if(step.type==='hauteur'){
+    body = `
+    <div class="wizard-progress">Étape ${UI.eleveStep+1} / ${steps.length}</div>
+    <div class="wizard-question">Jusqu'où es-tu allé ?</div>
+    <div class="choice-grid">
+      ${HAUTEURS.map(h=>`<button class="tag tag-grade ${UI.eleveWizard.hauteur===h?'selected':''}" onclick="setWizardVal('hauteur','${h}')">${h}</button>`).join('')}
+    </div>`;
+  } else if(step.type==='recap'){
+    body = `
+    <div class="wizard-question">Vérifie et valide</div>
+    <div class="card">
+      <table class="recap-table">
+        <tr><td>Grimpeur</td><td><strong>${esc(roleName('grimpeur', meStudent))}</strong></td></tr>
+        <tr><td>Assureur</td><td><strong>${esc(roleName('assureur', meStudent))}</strong></td></tr>
+        <tr><td>Contre-assureur</td><td><strong>${esc(roleName('contre-assureur', meStudent))}</strong></td></tr>
+        <tr><td>Voie</td><td><strong>N°${UI.eleveWizard.voie}</strong></td></tr>
+        <tr><td>Difficulté</td><td><strong>${esc(UI.eleveWizard.grade)}</strong></td></tr>
+        <tr><td>Hauteur atteinte</td><td><strong>${esc(UI.eleveWizard.hauteur)}</strong></td></tr>
+      </table>
+    </div>
+    <button class="btn btn-primary btn-block btn-lg" onclick="validateEntry()">✓ Valider la saisie</button>
+    `;
+  }
+
+  return `
+  ${screenTitle('Nouvelle saisie', 'eleve-role')}
+  ${recapBar(steps)}
+  ${body}
+  <div style="margin-top:16px;">
+    ${UI.eleveStep>0? `<button class="btn btn-ghost" onclick="wizardBack()">← Étape précédente</button>` : ''}
+  </div>
+  `;
+}
+function roleLabel(r){ return r==='grimpeur'?'le grimpeur':r==='assureur'?"l'assureur":'le contre-assureur'; }
+function roleName(role, meStudent){
+  if(UI.eleveRole===role) return studentFirstName(meStudent) + ' (toi)';
+  const entry = Object.values(UI.eleveWizard.cordee).find(m=>m.role===role);
+  return entry? studentFirstName(getStudent(entry.studentId)) : '—';
+}
+function recapBar(steps){
+  const w = UI.eleveWizard;
+  const chips = [];
+  Object.entries(w.cordee).forEach(([role,m])=>{
+    chips.push({label:roleLabelShort(role), value: studentFirstName(getStudent(m.studentId)), stepIdx: steps.findIndex(s=>s.type==='cordee'&&s.role===role)});
+  });
+  if(w.voie) chips.push({label:'Voie', value:'N°'+w.voie, stepIdx: steps.findIndex(s=>s.type==='voie')});
+  if(w.grade) chips.push({label:'Difficulté', value:w.grade, stepIdx: steps.findIndex(s=>s.type==='grade')});
+  if(w.hauteur) chips.push({label:'Hauteur', value:w.hauteur, stepIdx: steps.findIndex(s=>s.type==='hauteur')});
+  if(chips.length===0) return '';
+  return `<div class="recap-bar">${chips.map(ch=>`<button class="recap-chip" onclick="jumpToStep(${ch.stepIdx})"><span class="lbl">${ch.label}:</span> ${esc(ch.value)}</button>`).join('')}</div>`;
+}
+function roleLabelShort(r){ return r==='grimpeur'?'Grimpeur':r==='assureur'?'Assureur':'Contre-ass.'; }
+function jumpToStep(idx){ if(idx>=0){ UI.eleveStep = idx; render(); } }
+function setCordee(role, studentId){
+  UI.eleveWizard.cordee[role] = {role, studentId};
+  UI.eleveStep++;
+  render();
+}
+function setWizardVal(key, val){
+  UI.eleveWizard[key] = val;
+  UI.eleveStep++;
+  render();
+}
+function wizardBack(){ UI.eleveStep = Math.max(0, UI.eleveStep-1); render(); }
+
+function validateEntry(){
+  const s = currentSession();
+  if(!s){ alertModal("Aucune séance ouverte. Demande au professeur de démarrer la séance.", 'Séance fermée'); return; }
+  const meStudent = getStudent(UI.eleveStudentId);
+  const cordeeArr = [{role:UI.eleveRole, studentId:meStudent.id}]
+    .concat(Object.values(UI.eleveWizard.cordee).map(m=>({role:m.role, studentId:m.studentId})));
+  const entry = {
+    id:uid('entry'), timestamp:Date.now(), studentId:meStudent.id, role:UI.eleveRole,
+    voieNumero:UI.eleveWizard.voie, grade:UI.eleveWizard.grade, hauteur:UI.eleveWizard.hauteur,
+    cordee:cordeeArr,
+  };
+  s.entries.push(entry);
+  saveDB();
+  showToast('Voie enregistrée — bravo !');
+  nav('eleve-eleves', {eleveClassId:s.classId});
+}
+
+/* ---------- HISTORIQUE ---------- */
+function histoScreen(){
+  const sessions = DB.sessions.slice().sort((a,b)=> new Date(b.date)-new Date(a.date));
+  return `
+  ${screenTitle('Historique des séances', 'home')}
+  ${sessions.length===0? emptyState('Aucune séance enregistrée pour le moment', historyIcon()) : sessions.map(s=>{
+    const cls = DB.classes.find(c=>c.id===s.classId);
+    const dt = new Date(s.date);
+    return `<div class="list-row" style="cursor:pointer;" onclick="nav('histo-session',{histoSessionId:'${s.id}'})">
+      <div>
+        <div class="row-title">${esc(cls?cls.name:'Classe supprimée')}</div>
+        <div class="row-sub">${dt.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})} — ${s.entries.length} saisie(s)${!s.endedAt?' — en cours':''}</div>
+      </div>
+      <span>→</span>
+    </div>`;
+  }).join('')}
+  `;
+}
+function histoSessionScreen(){
+  const s = DB.sessions.find(x=>x.id===UI.histoSessionId);
+  if(!s) return emptyState('Séance introuvable', historyIcon());
+  const cls = DB.classes.find(c=>c.id===s.classId);
+  const dt = new Date(s.date);
+  // agrégats par élève
+  const stats = {};
+  (cls? studentsOfClass(cls.id) : []).forEach(st=> stats[st.id] = {studentId:st.id, grimpeur:0, assureur:0, contre:0});
+  s.entries.forEach(e=>{
+    e.cordee.forEach(m=>{
+      if(!stats[m.studentId]) stats[m.studentId] = {studentId:m.studentId, grimpeur:0, assureur:0, contre:0};
+      if(m.role==='grimpeur') stats[m.studentId].grimpeur++;
+      else if(m.role==='assureur') stats[m.studentId].assureur++;
+      else stats[m.studentId].contre++;
+    });
+  });
+  return `
+  ${screenTitle(cls?cls.name:'Séance', 'histo')}
+  <p style="color:var(--ink-soft);font-size:13px;margin-top:-10px;">${dt.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</p>
+  <div class="stat-row">
+    <div class="stat-box"><div class="num">${s.entries.length}</div><div class="lbl">Voies saisies</div></div>
+    <div class="stat-box"><div class="num">${s.disqualifs.length}</div><div class="lbl">Disqualifs.</div></div>
+    <div class="stat-box"><div class="num">${s.endedAt? 'Clôturée':'En cours'}</div><div class="lbl">Statut</div></div>
+  </div>
+  <div class="section-label">Récapitulatif par élève</div>
+  <div class="card" style="overflow-x:auto;">
+    <table class="recap-table">
+      <tr><th>Élève</th><th>Grimpées</th><th>Assurées</th><th>Contre-ass.</th></tr>
+      ${Object.values(stats).map(st=>`<tr><td>${esc(studentFullName(getStudent(st.studentId)))}</td><td>${st.grimpeur}</td><td>${st.assureur}</td><td>${st.contre}</td></tr>`).join('')}
+    </table>
+  </div>
+  <div class="section-label">Détail des voies</div>
+  ${s.entries.length===0? emptyState('Aucune voie saisie', routeIcon()) : s.entries.map(e=>`
+    <div class="list-row" style="cursor:pointer;" onclick="openEntryDetail('${s.id}','${e.id}')">
+      <div class="row-main">
+        <span class="tag tag-mini">${e.voieNumero}</span>
+        <div>
+          <div class="row-title">${esc(studentFullName(getStudent(e.studentId)))} · ${esc(e.grade)}</div>
+          <div class="row-sub">${roleLabelShort(e.role)} — ${esc(e.hauteur)}</div>
+        </div>
+      </div>
+      <span>→</span>
+    </div>`).join('')}
+  `;
+}
+function openEntryDetail(sessionId, entryId){
+  const s = DB.sessions.find(x=>x.id===sessionId);
+  const e = s.entries.find(x=>x.id===entryId);
+  openModal(`
+  <div class="modal">
+    <h3>Voie N°${e.voieNumero} — ${esc(e.grade)}</h3>
+    <table class="recap-table">
+      ${e.cordee.map(m=>`<tr><td>${roleLabelShort(m.role)}</td><td><strong>${esc(studentFullName(getStudent(m.studentId)))}</strong></td></tr>`).join('')}
+      <tr><td>Hauteur atteinte</td><td><strong>${esc(e.hauteur)}</strong></td></tr>
+      <tr><td>Heure</td><td>${new Date(e.timestamp).toLocaleTimeString('fr-FR')}</td></tr>
+    </table>
+    <button class="btn btn-outline btn-block" style="margin-top:14px;" onclick="closeModal()">Fermer</button>
+  </div>`);
+}
+
+/* ---------- helpers UI ---------- */
+function screenTitle(title, backScreen){
+  return `<div class="screen-title">
+    <button class="back-btn" onclick="nav('${backScreen}')">${backIcon()}</button>
+    <h2>${esc(title)}</h2>
+  </div>`;
+}
+function emptyState(text, iconSvg){
+  return `<div class="empty-state">${iconSvg}<p>${esc(text)}</p></div>`;
+}
+function downloadJSON(obj, filename){
+  const blob = new Blob([JSON.stringify(obj,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* ---------- icônes SVG ---------- */
+function logoSvg(size){
+  size = size||34;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="24" cy="24" r="22" fill="#C98A3E"/>
+    <path d="M14 34 L22 18 L27 26 L31 20 L36 34" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <circle cx="22" cy="14" r="3.4" fill="#fff"/>
+  </svg>`;
+}
+function climberIcon(){ return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="1.6"/><path d="M9 8l3 2 3-2M12 10v4M12 14l-3 6M12 14l3 6M9 12l-4 2M15 12l4 2"/></svg>`; }
+function lockIcon(){ return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>`; }
+function historyIcon(){ return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M4 7l1-4 4 1"/></svg>`; }
+function usersIcon(){ return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17.5" cy="9" r="2.6"/><path d="M15.7 14.2c2.4.4 4.3 2.5 4.3 5.8"/></svg>`; }
+function homeIcon(){ return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg>`; }
+function backIcon(){ return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>`; }
+function editIcon(){ return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>`; }
+function trashIcon(){ return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>`; }
+function playIcon(){ return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M10 8l6 4-6 4z" fill="currentColor" stroke="none"/></svg>`; }
+function warnIcon(){ return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg>`; }
+function routeIcon(){ return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.2"/><circle cx="18" cy="18" r="2.2"/><path d="M8 6h5a3 3 0 0 1 3 3v0a3 3 0 0 1-3 3H9a3 3 0 0 0-3 3v0a3 3 0 0 0 3 3h7"/></svg>`; }
+function phoneIcon(){ return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></svg>`; }
+
+/* ---------- init ---------- */
+render();
+</script>
+</body>
+</html>
