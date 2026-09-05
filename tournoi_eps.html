@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>EPS Tournois</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js"></script>
+<style>
+/* ═══════════════════════════════════════════════
+   THEME VARIABLES
+═══════════════════════════════════════════════ */
+:root {
+  --bg:       #F0F4FB;
+  --bg2:      #FFFFFF;
+  --bg3:      #E8EDF6;
+  --surface:  #FFFFFF;
+  --border:   #D5DCF0;
+  --text:     #1A2540;
+  --muted:    #7A8BAE;
+  --accent:   #5B9CF6;
+  --accent2:  #4880D8;
+  --green:    #38C47A;
+  --red:      #F05A5A;
+  --yellow:   #F5A623;
+  --purple:   #9B7AE8;
+  --shadow-sm: 0 1px 4px rgba(0,0,0,.08);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.10);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,.14);
+  --r: 10px; --rs: 7px;
+  --hdr: 52px;
+  --trans: .2s ease;
+}
+[data-theme="dark"] {
+  --bg:       #0D1117;
+  --bg2:      #161B22;
+  --bg3:      #21262D;
+  --surface:  #161B22;
+  --border:   #30363D;
+  --text:     #E6EDF3;
+  --muted:    #7D8590;
+  --accent:   #58A6FF;
+  --accent2:  #388BFD;
+  --green:    #3FB950;
+  --red:      #F85149;
+  --yellow:   #E3B341;
+  --purple:   #BC8CFF;
+  --shadow-sm: 0 1px 4px rgba(0,0,0,.3);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.4);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,.5);
+}
+
+/* ═══════════════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(--text);transition:background var(--trans),color var(--trans);height:100dvh;}
+@supports not (height: 100dvh) {
+  body { height: 100vh; }
+}
+
+/* ═══════════════════════════════════════════════
+   SCROLLBAR
+═══════════════════════════════════════════════ */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px;}
+::-webkit-scrollbar-track{background:transparent;}
+
+/* ═══════════════════════════════════════════════
+   APP SHELL
+═══════════════════════════════════════════════ */
+.app{display:flex;flex-direction:column;height:100dvh;overflow:hidden;}
+@supports not (height: 100dvh) {
+  .app { height: 100vh; }
+}
+
+/* ═══════════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════════ */
+.app-hdr{
+  background:var(--bg2);height:var(--hdr);min-height:var(--hdr);
+  display:flex;align-items:center;gap:10px;padding:0 18px;
+  border-bottom:1px solid var(--border);flex-shrink:0;z-index:50;
+  box-shadow:var(--shadow-sm);
+}
+.hdr-logo{font-family:'Poppins',sans-serif;font-weight:800;font-size:17px;color:var(--accent);letter-spacing:-.3px;cursor:pointer;}
+.hdr-logo span{color:var(--text);}
+.hdr-sep{width:1px;height:22px;background:var(--border);flex-shrink:0;}
+.hdr-mode{font-size:12px;font-weight:600;color:var(--muted);padding:3px 10px;background:var(--bg3);border-radius:20px;}
+.hdr-class-badge{font-size:11px;font-weight:600;color:var(--green);background:rgba(56,196,122,.1);border:1px solid rgba(56,196,122,.25);padding:3px 10px;border-radius:20px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:6px;}
+.theme-btn{background:none;border:1px solid var(--border);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all var(--trans);}
+.theme-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--bg3);}
+.home-btn{background:var(--bg3);border:1px solid var(--border);padding:5px 12px;border-radius:8px;cursor:pointer;font-family:'Poppins',sans-serif;font-size:11px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:4px;transition:all var(--trans);}
+.home-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* ── BOUTON PROJECTION ─────────────────────────────────────────────────────── */
+.proj-btn{background:none;border:1px solid var(--border);width:32px;height:32px;border-radius:8px;cursor:not-allowed;font-size:15px;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all var(--trans);}
+.proj-btn.enabled{cursor:pointer;}
+.proj-btn.enabled:hover{border-color:var(--accent);color:var(--accent);background:var(--bg3);}
+.proj-btn.has-display{color:var(--accent);border-color:var(--accent);background:rgba(91,156,246,.08);}
+
+/* Menu projection */
+.proj-menu{position:absolute;top:calc(var(--hdr) + 8px);right:18px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);overflow:hidden;box-shadow:var(--shadow-md);z-index:100;display:none;}
+.proj-menu.show{display:block;}
+.proj-menu-item{padding:10px 16px;font-size:12px;font-weight:600;color:var(--text);cursor:pointer;border-bottom:1px solid var(--border);transition:all var(--trans);display:flex;align-items:center;gap:8px;white-space:nowrap;}
+.proj-menu-item:last-child{border-bottom:none;}
+.proj-menu-item:hover{background:var(--bg3);color:var(--accent);}
+
+/* ═══════════════════════════════════════════════
+   SCREENS
+═══════════════════════════════════════════════ */
+.screen{display:none;flex:1;overflow-y:auto;flex-direction:column;}
+.screen.active{display:flex;}
+
+/* ═══════════════════════════════════════════════
+   ── HOME SCREEN ──
+═══════════════════════════════════════════════ */
+#screen-home{overflow-y:auto;align-items:center;padding:20px 16px 40px;}
+.home-inner{width:100%;max-width:780px;padding-top:16px;}
+.home-title{font-size:clamp(22px,4vw,36px);font-weight:800;color:var(--text);letter-spacing:-.5px;margin-bottom:4px;}
+.home-sub{color:var(--muted);font-size:14px;margin-bottom:28px;}
+.home-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:28px;}
+.mode-card{background:var(--bg2);border:2px solid var(--border);border-radius:14px;padding:20px 18px;cursor:pointer;transition:all .18s;display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden;}
+.mode-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--card-accent,var(--accent));transform:scaleX(0);transition:transform .18s;}
+.mode-card:hover{border-color:var(--card-accent,var(--accent));box-shadow:var(--shadow-md);transform:translateY(-2px);}
+.mode-card:hover::before{transform:scaleX(1);}
+.mode-icon{font-size:2rem;line-height:1;}
+.mode-name{font-size:15px;font-weight:700;color:var(--text);}
+.mode-desc{font-size:12px;color:var(--muted);line-height:1.55;}
+.mode-card.class{--card-accent:#38C47A;}
+.mode-card.swiss{--card-accent:#5B9CF6;}
+.mode-card.atp{--card-accent:#E3B341;}
+.mode-card.elim{--card-accent:#F05A5A;}
+.mode-card.ranked{--card-accent:#9B7AE8;}
+
+/* Loaded class display on home */
+.home-class-section{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px 18px;display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.hcs-info{flex:1;}
+.hcs-label{font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.5px;}
+.hcs-name{font-size:15px;font-weight:700;color:var(--green);}
+.hcs-count{font-size:12px;color:var(--muted);}
+.hcs-none{font-size:14px;font-weight:500;color:var(--muted);}
+
+/* ═══════════════════════════════════════════════
+   ── CLASS MANAGEMENT SCREEN ──
+═══════════════════════════════════════════════ */
+#screen-class{overflow-y:auto;padding:20px 18px 40px;}
+.class-inner{max-width:720px;margin:0 auto;}
+.page-title{font-size:20px;font-weight:800;margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+.page-sub{font-size:13px;color:var(--muted);margin-bottom:22px;}
+
+/* Card components */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:14px;}
+.card-title{font-size:13px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:600px){.g2{grid-template-columns:1fr;}}
+
+/* Form elements */
+.fr{margin-bottom:10px;}
+.fr label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;}
+.fr input,.fr select,.fr textarea{width:100%;background:var(--bg3);border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 12px;color:var(--text);font-family:'Poppins',sans-serif;font-size:13px;outline:none;transition:border-color var(--trans);}
+.fr input:focus,.fr select:focus,.fr textarea:focus{border-color:var(--accent);}
+.fr textarea{resize:vertical;min-height:80px;font-size:12px;}
+.fr input::placeholder,.fr textarea::placeholder{color:var(--muted);}
+.fi{display:flex;gap:8px;align-items:flex-end;}.fi>*{flex:1;}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:8px 16px;border:none;border-radius:var(--rs);cursor:pointer;font-family:'Poppins',sans-serif;font-size:12px;font-weight:600;transition:all var(--trans);white-space:nowrap;}
+.btn:hover:not(:disabled){filter:brightness(.93);transform:translateY(-1px);}
+.btn:active:not(:disabled){transform:translateY(0);}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none;filter:none;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-green{background:var(--green);color:#fff;}
+.btn-red{background:var(--red);color:#fff;}
+.btn-gray{background:var(--bg3);color:var(--text);border:1px solid var(--border);}
+.btn-gray:hover{border-color:var(--accent);color:var(--accent);}
+.btn-yellow{background:var(--yellow);color:#fff;}
+.btn-block{width:100%;}
+.btn-sm{padding:5px 10px;font-size:11px;}
+.btn-grp{display:flex;gap:7px;flex-wrap:wrap;}
+
+/* Class list items */
+.cls-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:var(--rs);margin-bottom:6px;cursor:pointer;transition:all var(--trans);}
+.cls-item:hover{border-color:var(--accent);background:var(--bg2);}
+.cls-item.active-class{border-color:var(--green);background:rgba(56,196,122,.06);}
+.cls-item-info{flex:1;}
+.cls-item-name{font-weight:700;font-size:14px;color:var(--text);}
+.cls-item-meta{font-size:11px;color:var(--muted);}
+.cls-item-del{color:var(--red);cursor:pointer;font-weight:600;font-size:11px;transition:all var(--trans);}
+.cls-item-del:hover{transform:scale(1.2);}
+
+/* ATP mode icon */
+.atp-icon{font-size:13px;font-weight:700;color:var(--accent);background:rgba(91,156,246,.12);width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+/* ═══════════════════════════════════════════════
+   ── ATP SCREEN ──
+═══════════════════════════════════════════════ */
+#screen-atp{overflow-y:auto;padding:20px 18px 40px;}
+.atp-inner{max-width:720px;margin:0 auto;}
+
+/* ATP match form */
+.atp-form-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:14px;}
+.atp-match-form{margin-bottom:14px;}
+.atp-players{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:flex-end;margin-bottom:14px;}
+.atp-score{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.atp-score-input{width:100%;background:var(--bg3);border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 12px;color:var(--text);font-family:'Poppins',sans-serif;font-size:13px;outline:none;transition:border-color var(--trans);text-align:center;}
+.atp-score-input:focus{border-color:var(--accent);}
+.atp-vs{text-align:center;font-weight:700;color:var(--muted);font-size:14px;}
+
+/* ATP rankings */
+.atp-rankings{margin-top:20px;}
+.atp-rank-item{display:grid;grid-template-columns:40px 1fr auto;gap:12px;align-items:center;padding:12px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:8px;}
+.atp-rank-pos{font-weight:800;font-size:18px;color:var(--accent);}
+.atp-rank-info{flex:1;}
+.atp-rank-name{font-weight:700;font-size:13px;color:var(--text);}
+.atp-rank-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+.atp-rank-points{font-weight:800;font-size:16px;color:var(--green);}
+.atp-rank-item.winner .atp-rank-name{color:var(--green);}
+
+/* ═══════════════════════════════════════════════
+   ── PROJECTION OVERLAY (AFFICHAGE) ──
+═══════════════════════════════════════════════ */
+.display-mode{background:#000;color:#fff;display:flex;flex-direction:column;height:100dvh;overflow:hidden;padding:0;}
+@supports not (height: 100dvh) {
+  .display-mode { height: 100vh; }
+}
+.display-header{padding:20px;text-align:center;border-bottom:1px solid rgba(255,255,255,.1);}
+.display-title{font-size:clamp(28px,5vw,48px);font-weight:800;margin-bottom:8px;letter-spacing:-.5px;}
+.display-subtitle{font-size:clamp(16px,2.5vw,24px);color:rgba(255,255,255,.6);margin-bottom:4px;}
+.display-info{font-size:clamp(12px,1.5vw,16px);color:rgba(255,255,255,.4);}
+
+.display-content{flex:1;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:20px;}
+.display-inner{width:100%;height:100%;display:flex;flex-direction:column;}
+
+/* Message "Aucun tournois" */
+.display-empty{display:flex;align-items:center;justify-content:center;height:100%;width:100%;}
+.display-empty-msg{font-size:clamp(24px,4vw,48px);color:rgba(255,255,255,.3);text-align:center;font-weight:500;}
+
+/* Classement ATP en 2 colonnes */
+.display-atp-container{width:100%;height:100%;display:flex;gap:30px;overflow:hidden;}
+.display-atp-col{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
+.display-atp-item{padding:16px 20px;background:rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:16px;border-radius:8px;margin-bottom:8px;}
+.display-atp-rank{font-size:clamp(28px,4vw,40px);font-weight:800;color:rgba(255,255,255,.5);width:50px;text-align:center;flex-shrink:0;}
+.display-atp-info{flex:1;}
+.display-atp-name{font-size:clamp(18px,2.5vw,28px);font-weight:700;color:#fff;margin-bottom:4px;}
+.display-atp-points{font-size:clamp(16px,2vw,24px);font-weight:800;color:#38C47A;}
+
+/* Classement Swiss en colonnes */
+.display-swiss-container{width:100%;height:100%;display:flex;gap:20px;overflow-x:auto;overflow-y:hidden;}
+.display-swiss-col{flex-shrink:0;display:flex;flex-direction:column;gap:12px;padding:0 10px;}
+.display-swiss-col-label{font-size:clamp(16px,2vw,20px);font-weight:800;color:var(--accent);text-align:center;padding:10px 0;border-bottom:2px solid rgba(91,156,246,.3);}
+.display-swiss-card{padding:12px 16px;background:rgba(91,156,246,.15);border-radius:8px;text-align:center;}
+.display-swiss-name{font-size:clamp(14px,1.8vw,20px);font-weight:700;color:#fff;}
+
+/* ═══════════════════════════════════════════════
+   SWISS SCREEN
+═══════════════════════════════════════════════ */
+#screen-swiss{overflow-y:auto;padding:20px 18px 40px;}
+.swiss-inner{max-width:1000px;margin:0 auto;}
+.swiss-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:20px;}
+.swiss-col{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px;overflow:hidden;}
+.swiss-col-title{font-size:14px;font-weight:800;margin-bottom:8px;text-align:center;color:var(--accent);}
+.swiss-players{display:flex;flex-direction:column;gap:6px;}
+.swiss-player{padding:8px 10px;background:var(--bg3);border-radius:var(--rs);font-size:12px;color:var(--text);cursor:pointer;transition:all var(--trans);}
+.swiss-player:hover{border:1px solid var(--accent);background:var(--bg2);}
+
+/* ═════════════════════════════════════════════════
+   BRACKET/TOURNAMENT SCREEN
+═════════════════════════════════════════════════ */
+#screen-trn{overflow-y:auto;padding:20px 18px 40px;}
+.trn-inner{max-width:900px;margin:0 auto;}
+
+/* Bracket display */
+.trn-bracket{display:grid;gap:20px;}
+.trn-round{margin:20px 0;}
+.trn-round-title{font-size:16px;font-weight:800;color:var(--accent);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px;}
+.trn-matches{display:grid;gap:10px;}
+.trn-match{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px;display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;}
+.trn-match.done{background:rgba(56,196,122,.08);border-color:rgba(56,196,122,.3);}
+.trn-player{font-weight:600;font-size:13px;color:var(--text);padding:6px 10px;background:var(--bg3);border-radius:var(--rs);transition:all var(--trans);}
+.trn-player.winner{background:var(--green);color:#fff;}
+.trn-player.loser{opacity:.4;}
+.trn-vs{text-align:center;color:var(--muted);font-weight:700;font-size:11px;}
+
+/* ═════════════════════════════════════════════════
+   ETENDUE PROJECTION (HIDDEN BY DEFAULT)
+═════════════════════════════════════════════════ */
+.proj-window{display:none;}
+.proj-window.active{display:flex;}
+
+/* ═════════════════════════════════════════════════
+   MODALS & OVERLAYS
+═════════════════════════════════════════════════ */
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:40;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity var(--trans);}
+.overlay.show{opacity:1;pointer-events:all;}
+.modal{background:var(--bg2);border-radius:14px;padding:20px;max-width:500px;width:90%;box-shadow:var(--shadow-lg);}
+.modal-title{font-size:18px;font-weight:800;margin-bottom:14px;color:var(--text);}
+.modal-content{margin-bottom:16px;color:var(--muted);font-size:13px;line-height:1.6;}
+.modal-buttons{display:flex;gap:8px;}
+.modal-buttons .btn{flex:1;}
+
+/* ═════════════════════════════════════════════════
+   RESPONSIVE
+═════════════════════════════════════════════════ */
+@media(max-width:600px){
+  .app-hdr{padding:0 12px;gap:8px;}
+  .hdr-logo{font-size:14px;}
+  .theme-btn{width:30px;height:30px;font-size:13px;}
+  .proj-btn{width:30px;height:30px;font-size:13px;}
+  .home-btn{padding:4px 10px;font-size:10px;}
+  .proj-menu{right:12px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     CONTROL MODE (iPad - normal interface)
+══════════════════════════════════════════════ -->
+<div id="control-app" class="app" style="display:flex;">
+  <!-- HEADER -->
+  <div class="app-hdr">
+    <div class="hdr-logo">EPS <span>TOURNOIS</span></div>
+    <div class="hdr-sep"></div>
+    <div class="hdr-mode" id="mode-badge">Accueil</div>
+    <div class="hdr-class-badge" id="class-badge" style="display:none;"></div>
+    <div class="hdr-right">
+      <!-- Bouton projection -->
+      <button class="proj-btn" id="proj-btn" title="Projection (écran secondaire)">🖥️</button>
+      <div class="proj-menu" id="proj-menu">
+        <div class="proj-menu-item" onclick="openDisplayWindow('extended')">📺 Étendue</div>
+        <div class="proj-menu-item" onclick="openDisplayWindow('duplicate')">🔄 Dupliquée</div>
+      </div>
+      <!-- Theme button -->
+      <button class="theme-btn" onclick="projToggleTheme()" title="Thème">
+        <span id="theme-icon">🌙</span>
+      </button>
+      <!-- Home button -->
+      <button class="home-btn" onclick="goHome()">← Accueil</button>
+    </div>
+  </div>
+
+  <!-- SCREENS CONTENT -->
+  <div style="flex:1;overflow-y:auto;">
+    <!-- HOME SCREEN -->
+    <div id="screen-home" class="screen active">
+      <div class="home-inner">
+        <h1 class="home-title">Gérer un tournoi</h1>
+        <p class="home-sub">Sélectionnez un mode de tournoi</p>
+        
+        <div id="home-class-section" style="display:none;">
+          <div class="home-class-section">
+            <div class="hcs-info">
+              <div class="hcs-label">Classe chargée</div>
+              <div class="hcs-name" id="home-class-name">—</div>
+              <div class="hcs-count" id="home-class-count">0 élève</div>
+            </div>
+            <button class="btn btn-gray btn-sm" onclick="changeClass()">Changer</button>
+          </div>
+        </div>
+
+        <div class="home-grid">
+          <div class="mode-card class" onclick="switchMode('class')">
+            <div class="mode-icon">👥</div>
+            <div class="mode-name">Gérer classes</div>
+            <div class="mode-desc">Créer et gérer les listes d'élèves</div>
+          </div>
+          <div class="mode-card atp" onclick="switchMode('atp')">
+            <div class="mode-icon">🏆</div>
+            <div class="mode-name">ATP</div>
+            <div class="mode-desc">Tournoi tous contre tous</div>
+          </div>
+          <div class="mode-card swiss" onclick="switchMode('swiss')">
+            <div class="mode-icon">⚔️</div>
+            <div class="mode-name">Suisse</div>
+            <div class="mode-desc">Appariement automatique</div>
+          </div>
+          <div class="mode-card elim" onclick="switchMode('trn')">
+            <div class="mode-icon">🎯</div>
+            <div class="mode-name">Élimination</div>
+            <div class="mode-desc">Bracket simple/double</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLASS MANAGEMENT SCREEN -->
+    <div id="screen-class" class="screen">
+      <div class="class-inner">
+        <h2 class="page-title">👥 Gérer les classes</h2>
+        <p class="page-sub">Créez ou chargez une classe pour commencer</p>
+
+        <div class="card">
+          <div class="card-title">➕ Créer une classe</div>
+          <div class="fr">
+            <label>Nom de la classe</label>
+            <input type="text" id="new-class-name" placeholder="Ex: 5ème A">
+          </div>
+          <div class="fr">
+            <label>Liste d'élèves (un par ligne)</label>
+            <textarea id="new-class-students" placeholder="Alice&#10;Bob&#10;Charlie"></textarea>
+          </div>
+          <button class="btn btn-primary btn-block" onclick="createClass()">Créer la classe</button>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📂 Classes existantes</div>
+          <div id="classes-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ATP SCREEN -->
+    <div id="screen-atp" class="screen">
+      <div class="atp-inner">
+        <h2 class="page-title">🏆 ATP</h2>
+        <p class="page-sub">Tournoi tous contre tous</p>
+
+        <div class="atp-form-card">
+          <div class="fr">
+            <label>Joueur 1</label>
+            <input type="text" id="atp-p1" placeholder="Prénom">
+          </div>
+          <div class="fr">
+            <label>Joueur 2</label>
+            <input type="text" id="atp-p2" placeholder="Prénom">
+          </div>
+          <div class="fr">
+            <label>Résultat</label>
+            <div class="atp-score">
+              <input type="number" id="atp-s1" class="atp-score-input" placeholder="0" min="0">
+              <input type="number" id="atp-s2" class="atp-score-input" placeholder="0" min="0">
+            </div>
+          </div>
+          <button class="btn btn-primary btn-block" onclick="addAtpMatch()">Enregistrer le match</button>
+        </div>
+
+        <div class="atp-rankings" id="atp-rankings"></div>
+      </div>
+    </div>
+
+    <!-- SWISS SCREEN -->
+    <div id="screen-swiss" class="screen">
+      <div class="swiss-inner">
+        <h2 class="page-title">⚔️ Suisse</h2>
+        <p class="page-sub">Appariement automatique par niveau</p>
+        <div class="swiss-container" id="swiss-container"></div>
+      </div>
+    </div>
+
+    <!-- BRACKET SCREEN -->
+    <div id="screen-trn" class="screen">
+      <div class="trn-inner">
+        <h2 class="page-title">🎯 Bracket</h2>
+        <p class="page-sub">Tournoi d'élimination</p>
+        <div id="bracket-container"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     DISPLAY MODE (Projecteur - affichage uniquement)
+══════════════════════════════════════════════ -->
+<div id="display-app" class="display-mode" style="display:none;">
+  <div class="display-header">
+    <div class="display-title" id="display-title">Tournoi</div>
+    <div class="display-subtitle" id="display-sport"></div>
+    <div class="display-info" id="display-info"></div>
+  </div>
+  <div class="display-content">
+    <div class="display-inner" id="display-inner">
+      <div class="display-empty">
+        <div class="display-empty-msg">En attente du lancement d'un tournoi…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   GLOBALS & CONSTANTS
+═══════════════════════════════════════════════ */
+const MODE_LS = 'eps-current-mode';
+const CLASS_LS = 'eps-current-class';
+const CLASSES_LS = 'eps-classes';
+const ATP_LS = 'eps-atp-data';
+const SWISS_LS = 'eps-swiss-data';
+const TRN_LS = 'eps-bracket-data';
+const THEME_LS = 'eps-theme';
+
+let currentMode = 'home';
+let currentClass = null;
+let displayWindowHandle = null;
+let hasSecondaryScreen = false;
+
+const $ = id => document.getElementById(id);
+const esc = str => (str||'').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+/* ═══════════════════════════════════════════════
+   THEME
+═══════════════════════════════════════════════ */
+function initTheme(){
+  const dark = localStorage.getItem(THEME_LS) === 'dark';
+  if(dark) document.documentElement.setAttribute('data-theme','dark');
+  updateThemeIcon();
+}
+
+function toggleTheme(){
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  if(dark){
+    document.documentElement.removeAttribute('data-theme');
+    localStorage.removeItem(THEME_LS);
+  }else{
+    document.documentElement.setAttribute('data-theme','dark');
+    localStorage.setItem(THEME_LS,'dark');
+  }
+  updateThemeIcon();
+}
+
+function updateThemeIcon(){
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  $('theme-icon').textContent = dark ? '☀️' : '🌙';
+}
+
+function projToggleTheme(){
+  toggleTheme();
+  refreshDisplay();
+}
+
+/* ═══════════════════════════════════════════════
+   DÉTECTION ÉCRANS SECONDAIRES & PROJECTION
+═══════════════════════════════════════════════ */
+function detectSecondaryScreen(){
+  // Détection basique : vérifier si window.screen.width correspond à un écran secondaire
+  // En pratique, on teste si on peut ouvrir une fenêtre et si le navigateur supporte ça
+  const hasPresentationAPI = navigator.presentation && navigator.presentation.receiver;
+  const multiScreen = window.screenLeft !== undefined || window.screenY !== undefined;
+  
+  // Simplification : on considère qu'il y a un écran secondaire si :
+  // 1. L'API Presentation est disponible
+  // 2. Ou on est sur iPad/mobile et on peut faire une projection
+  const hasScreen = hasPresentationAPI || 
+                    /iPad|iPhone|Android/.test(navigator.userAgent);
+  
+  hasSecondaryScreen = hasScreen;
+  updateProjectionButton();
+}
+
+function updateProjectionButton(){
+  const btn = $('proj-btn');
+  if(hasSecondaryScreen){
+    btn.classList.add('enabled');
+    btn.style.cursor = 'pointer';
+    btn.onclick = () => toggleProjMenu();
+  }else{
+    btn.classList.remove('enabled');
+    btn.style.cursor = 'not-allowed';
+  }
+}
+
+function toggleProjMenu(){
+  const menu = $('proj-menu');
+  menu.classList.toggle('show');
+}
+
+document.addEventListener('click', e => {
+  const menu = $('proj-menu');
+  const btn = $('proj-btn');
+  if(!btn.contains(e.target) && !menu.contains(e.target)){
+    menu.classList.remove('show');
+  }
+});
+
+/* ═══════════════════════════════════════════════
+   OUVERTURE FENÊTRES PROJECTION
+═══════════════════════════════════════════════ */
+function openDisplayWindow(type){
+  const menu = $('proj-menu');
+  menu.classList.remove('show');
+  
+  const url = window.location.href.split('?')[0] + '?mode=display';
+  const width = screen.width > 1920 ? 1920 : screen.width;
+  const height = screen.height > 1080 ? 1080 : screen.height;
+  
+  if(type === 'extended'){
+    // Étendue : ouvrir sur écran secondaire
+    const left = screen.width + 100;
+    const top = screen.top || 0;
+    displayWindowHandle = window.open(url, 'eps-display', 
+      `width=${width},height=${height},left=${left},top=${top},resizable=yes`);
+  }else if(type === 'duplicate'){
+    // Dupliquée : juste ouvrir une nouvelle fenêtre
+    displayWindowHandle = window.open(url, 'eps-display', 
+      `width=${width},height=${height},resizable=yes`);
+  }
+  
+  if(displayWindowHandle){
+    $('proj-btn').classList.add('has-display');
+    // Refresh la fenêtre d'affichage à chaque changement
+    setInterval(() => {
+      if(displayWindowHandle && !displayWindowHandle.closed){
+        displayWindowHandle.postMessage({type:'refresh'}, '*');
+      }else{
+        $('proj-btn').classList.remove('has-display');
+      }
+    }, 500);
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   MODE AFFICHAGE (PROJECTEUR)
+═══════════════════════════════════════════════ */
+function isDisplayMode(){
+  const params = new URLSearchParams(window.location.search);
+  return params.get('mode') === 'display';
+}
+
+function initDisplayMode(){
+  $('control-app').style.display = 'none';
+  $('display-app').style.display = 'flex';
+  startDisplaySync();
+}
+
+function startDisplaySync(){
+  // Sync toutes les secondes avec localStorage
+  refreshDisplay();
+  setInterval(refreshDisplay, 1000);
+}
+
+function refreshDisplay(){
+  const mode = localStorage.getItem(MODE_LS) || 'home';
+  const atp = tryParse(localStorage.getItem(ATP_LS));
+  const swiss = tryParse(localStorage.getItem(SWISS_LS));
+  const trn = tryParse(localStorage.getItem(TRN_LS));
+  
+  const inner = $('display-inner');
+  
+  if(mode === 'atp' && atp){
+    renderDisplayATP(atp, inner);
+  }else if(mode === 'swiss' && swiss){
+    renderDisplaySwiss(swiss, inner);
+  }else if(mode === 'trn' && trn){
+    renderDisplayBracket(trn, inner);
+  }else{
+    inner.innerHTML = '<div class="display-empty"><div class="display-empty-msg">Aucun tournoi lancé</div></div>';
+  }
+}
+
+function renderDisplayATP(data, container){
+  const players = data.players || [];
+  if(!players.length){
+    container.innerHTML = '<div class="display-empty"><div class="display-empty-msg">En attente des résultats…</div></div>';
+    return;
+  }
+  
+  const sorted = [...players].sort((a,b) => b.points - a.points || a.losses - b.losses);
+  
+  // Calculer le nombre de lignes et colonnes
+  const itemsPerCol = Math.ceil(sorted.length / 2);
+  const col1 = sorted.slice(0, itemsPerCol);
+  const col2 = sorted.slice(itemsPerCol);
+  
+  $('display-title').textContent = 'Classement ATP';
+  $('display-sport').textContent = data.sportName ? data.sportName.toUpperCase() : 'ATP';
+  $('display-info').textContent = `${sorted.length} joueur(s)`;
+  
+  let html = '<div class="display-atp-container">';
+  
+  // Colonne 1
+  html += '<div class="display-atp-col">';
+  col1.forEach((p, i) => {
+    html += `<div class="display-atp-item">
+      <div class="display-atp-rank">${i+1}</div>
+      <div class="display-atp-info">
+        <div class="display-atp-name">${esc(p.name)}</div>
+        <div class="display-atp-points">${p.points} pts</div>
+      </div>
+    </div>`;
+  });
+  html += '</div>';
+  
+  // Colonne 2
+  html += '<div class="display-atp-col">';
+  col2.forEach((p, i) => {
+    html += `<div class="display-atp-item">
+      <div class="display-atp-rank">${itemsPerCol + i + 1}</div>
+      <div class="display-atp-info">
+        <div class="display-atp-name">${esc(p.name)}</div>
+        <div class="display-atp-points">${p.points} pts</div>
+      </div>
+    </div>`;
+  });
+  html += '</div>';
+  
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function renderDisplaySwiss(data, container){
+  const cols = data.columns || [];
+  const colLabels = ['1ère', '2e', '3e', '4e', '5e', '6e', '7e', '8e', '9e'];
+  
+  $('display-title').textContent = 'Classement Suisse';
+  $('display-sport').textContent = data.sportName ? data.sportName.toUpperCase() : 'SUISSE';
+  
+  let html = '<div class="display-swiss-container">';
+  
+  cols.forEach((col, i) => {
+    if(!col || col.length === 0) return;
+    html += `<div class="display-swiss-col">
+      <div class="display-swiss-col-label">${colLabels[i]}</div>`;
+    col.forEach(name => {
+      html += `<div class="display-swiss-card"><div class="display-swiss-name">${esc(name)}</div></div>`;
+    });
+    html += '</div>';
+  });
+  
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function renderDisplayBracket(data, container){
+  $('display-title').textContent = 'Bracket';
+  $('display-sport').textContent = data.sportName ? data.sportName.toUpperCase() : 'BRACKET';
+  // TODO : implémenter rendu bracket en affichage
+  container.innerHTML = '<div class="display-empty"><div class="display-empty-msg">Bracket</div></div>';
+}
+
+function tryParse(str){
+  try { return JSON.parse(str || 'null'); } catch(e) { return null; }
+}
+
+/* ═══════════════════════════════════════════════
+   NAVIGATION & SCREENS
+═══════════════════════════════════════════════ */
+function switchMode(mode){
+  currentMode = mode;
+  localStorage.setItem(MODE_LS, mode);
+  showScreen(mode);
+  updateModeBadge();
+  refreshDisplay();
+}
+
+function showScreen(screenId){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(screenId === 'atp' ? 'screen-atp' : 
+    screenId === 'swiss' ? 'screen-swiss' : 
+    screenId === 'trn' ? 'screen-trn' :
+    screenId === 'class' ? 'screen-class' : 'screen-home').classList.add('active');
+}
+
+function goHome(){
+  switchMode('home');
+}
+
+function updateModeBadge(){
+  const badges = {home: '🏠 Accueil', class: '👥 Classes', atp: '🏆 ATP', swiss: '⚔️ Suisse', trn: '🎯 Bracket'};
+  $('mode-badge').textContent = badges[currentMode] || 'Accueil';
+}
+
+/* ═══════════════════════════════════════════════
+   GESTION DES CLASSES
+═══════════════════════════════════════════════ */
+function createClass(){
+  const name = $('new-class-name').value.trim();
+  const studentsText = $('new-class-students').value.trim();
+  
+  if(!name || !studentsText){
+    alert('Veuillez remplir tous les champs');
+    return;
+  }
+  
+  const students = studentsText.split('\n').map(s => s.trim()).filter(s => s);
+  const classes = tryParse(localStorage.getItem(CLASSES_LS)) || {};
+  
+  classes[name] = { name, students, created: new Date().toISOString() };
+  localStorage.setItem(CLASSES_LS, JSON.stringify(classes));
+  
+  $('new-class-name').value = '';
+  $('new-class-students').value = '';
+  
+  loadClasses();
+}
+
+function loadClasses(){
+  const classes = tryParse(localStorage.getItem(CLASSES_LS)) || {};
+  const list = $('classes-list');
+  
+  if(!Object.keys(classes).length){
+    list.innerHTML = '<p class="hcs-none">Aucune classe créée</p>';
+    return;
+  }
+  
+  list.innerHTML = Object.entries(classes).map(([key, cls]) => `
+    <div class="cls-item">
+      <div class="cls-item-info">
+        <div class="cls-item-name">${esc(cls.name)}</div>
+        <div class="cls-item-meta">${cls.students.length} élève(s)</div>
+      </div>
+      <button class="btn btn-sm btn-primary" onclick="selectClass('${key}')">Utiliser</button>
+      <div class="cls-item-del" onclick="deleteClass('${key}')">✕</div>
+    </div>
+  `).join('');
+}
+
+function selectClass(key){
+  const classes = tryParse(localStorage.getItem(CLASSES_LS)) || {};
+  currentClass = classes[key];
+  localStorage.setItem(CLASS_LS, JSON.stringify(currentClass));
+  updateClassBadge();
+  goHome();
+}
+
+function deleteClass(key){
+  if(!confirm('Supprimer cette classe ?')) return;
+  const classes = tryParse(localStorage.getItem(CLASSES_LS)) || {};
+  delete classes[key];
+  localStorage.setItem(CLASSES_LS, JSON.stringify(classes));
+  loadClasses();
+}
+
+function changeClass(){
+  switchMode('class');
+}
+
+function updateClassBadge(){
+  const badge = $('class-badge');
+  const section = $('home-class-section');
+  if(currentClass){
+    badge.textContent = currentClass.name;
+    badge.style.display = 'inline-block';
+    $('home-class-name').textContent = currentClass.name;
+    $('home-class-count').textContent = currentClass.students.length + ' élève' + (currentClass.students.length > 1 ? 's' : '');
+    section.style.display = 'flex';
+  }else{
+    badge.style.display = 'none';
+    section.style.display = 'none';
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   ATP MODE
+═══════════════════════════════════════════════ */
+function addAtpMatch(){
+  const p1 = $('atp-p1').value.trim();
+  const p2 = $('atp-p2').value.trim();
+  const s1 = parseInt($('atp-s1').value) || 0;
+  const s2 = parseInt($('atp-s2').value) || 0;
+  
+  if(!p1 || !p2){ alert('Veuillez remplir tous les champs'); return; }
+  
+  let data = tryParse(localStorage.getItem(ATP_LS)) || {players: [], sportName: currentClass?.name || 'ATP'};
+  
+  // Ajouter ou mettre à jour les joueurs
+  let player1 = data.players.find(p => p.name === p1);
+  let player2 = data.players.find(p => p.name === p2);
+  
+  if(!player1) data.players.push(player1 = {name: p1, points: 0, wins: 0, losses: 0, matches: []});
+  if(!player2) data.players.push(player2 = {name: p2, points: 0, wins: 0, losses: 0, matches: []});
+  
+  // Enregistrer le match
+  const winner = s1 > s2 ? player1 : s2 > s1 ? player2 : null;
+  const loser = s1 > s2 ? player2 : s2 > s1 ? player1 : null;
+  
+  if(winner){
+    winner.wins++;
+    winner.points += 2;
+    loser.losses++;
+  }
+  
+  player1.matches.push({opponent: p2, score: [s1, s2]});
+  player2.matches.push({opponent: p1, score: [s2, s1]});
+  
+  localStorage.setItem(ATP_LS, JSON.stringify(data));
+  
+  $('atp-p1').value = '';
+  $('atp-p2').value = '';
+  $('atp-s1').value = '';
+  $('atp-s2').value = '';
+  
+  renderAtpRankings();
+  refreshDisplay();
+}
+
+function renderAtpRankings(){
+  const data = tryParse(localStorage.getItem(ATP_LS)) || {players: []};
+  const sorted = [...data.players].sort((a,b) => b.points - a.points || a.losses - b.losses);
+  
+  let html = '<h3 style="font-weight:800;margin-bottom:12px;color:var(--text);">Classement</h3>';
+  html += sorted.map((p, i) => `
+    <div class="atp-rank-item ${p.wins > 0 ? 'winner' : ''}">
+      <div class="atp-rank-pos">${i+1}</div>
+      <div class="atp-rank-info">
+        <div class="atp-rank-name">${esc(p.name)}</div>
+        <div class="atp-rank-meta">${p.wins} V − ${p.losses} D</div>
+      </div>
+      <div class="atp-rank-points">${p.points}</div>
+    </div>
+  `).join('');
+  
+  $('atp-rankings').innerHTML = html;
+}
+
+/* ═══════════════════════════════════════════════
+   SWISS MODE
+═══════════════════════════════════════════════ */
+function renderSwissColumns(){
+  const data = tryParse(localStorage.getItem(SWISS_LS)) || {columns: []};
+  const container = $('swiss-container');
+  
+  const colNames = ['1ère', '2e', '3e', '4e', '5e', '6e', '7e', '8e', '9e'];
+  let html = '';
+  
+  data.columns.forEach((col, i) => {
+    html += `<div class="swiss-col">
+      <div class="swiss-col-title">${colNames[i]}</div>
+      <div class="swiss-players">
+        ${col.map(name => `<div class="swiss-player">${esc(name)}</div>`).join('')}
+      </div>
+    </div>`;
+  });
+  
+  container.innerHTML = html;
+}
+
+/* ═══════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════ */
+window.addEventListener('load', () => {
+  initTheme();
+  
+  // Vérifier si c'est le mode affichage
+  if(isDisplayMode()){
+    initDisplayMode();
+  }else{
+    // Mode contrôle normal
+    currentMode = localStorage.getItem(MODE_LS) || 'home';
+    const savedClass = localStorage.getItem(CLASS_LS);
+    if(savedClass) currentClass = tryParse(savedClass);
+    
+    updateModeBadge();
+    updateClassBadge();
+    loadClasses();
+    
+    showScreen(currentMode);
+    if(currentMode === 'atp') renderAtpRankings();
+    if(currentMode === 'swiss') renderSwissColumns();
+    
+    // Détecter écrans secondaires
+    detectSecondaryScreen();
+    window.addEventListener('resize', detectSecondaryScreen);
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', e => {
+      if(e.key === 'Escape'){
+        document.querySelectorAll('.overlay.show').forEach(o => o.classList.remove('show'));
+        $('proj-menu').classList.remove('show');
+      }
+    });
+  }
+});
+
+// Sync depuis une autre fenêtre
+window.addEventListener('message', e => {
+  if(e.data.type === 'refresh'){
+    refreshDisplay();
+  }
+});
+
+// Refresh display automatiquement quand le localStorage change
+window.addEventListener('storage', (e) => {
+  if(isDisplayMode()){
+    refreshDisplay();
+  }else{
+    if(e.key === MODE_LS) {
+      currentMode = e.newValue || 'home';
+      updateModeBadge();
+      showScreen(currentMode);
+    }
+    if(e.key === ATP_LS) renderAtpRankings();
+    if(e.key === SWISS_LS) renderSwissColumns();
+  }
+});
+</script>
+</body>
+</html>
