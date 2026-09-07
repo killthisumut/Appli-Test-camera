@@ -267,6 +267,18 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
 .swiss-player{padding:8px 10px;background:var(--bg3);border-radius:var(--rs);font-size:12px;color:var(--text);cursor:pointer;transition:all var(--trans);}
 .swiss-player:hover{border:1px solid var(--accent);background:var(--bg2);}
 
+/* Swiss available players */
+.swiss-available-player{padding:10px 12px;background:var(--bg3);border:1.5px solid var(--border);border-radius:var(--rs);font-size:13px;font-weight:600;color:var(--text);cursor:pointer;transition:all var(--trans);text-align:center;}
+.swiss-available-player:hover{border-color:var(--accent);background:var(--bg2);transform:translateY(-2px);}
+.swiss-available-player.selected{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+/* Swiss col editable */
+.swiss-col-editable{background:var(--bg3);border:1.5px dashed var(--border);border-radius:var(--rs);padding:14px;margin-bottom:12px;min-height:80px;}
+.swiss-col-players-edit{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+.swiss-col-player-tag{background:var(--accent);color:#fff;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;}
+.swiss-col-player-tag .remove{cursor:pointer;font-weight:800;opacity:.7;}
+.swiss-col-player-tag .remove:hover{opacity:1;}
+
 /* ═════════════════════════════════════════════════
    BRACKET/TOURNAMENT SCREEN
 ═════════════════════════════════════════════════ */
@@ -409,6 +421,11 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
         <div class="card">
           <div class="card-title">📂 Classes existantes</div>
           <div id="classes-list"></div>
+          <div class="btn-grp" style="margin-top:12px;">
+            <button class="btn btn-gray" onclick="exportClasses()">📥 Exporter</button>
+            <button class="btn btn-gray" onclick="document.getElementById('import-input').click()">📤 Importer</button>
+          </div>
+          <input id="import-input" type="file" accept=".json" style="display:none;" onchange="importClasses(event)">
         </div>
       </div>
     </div>
@@ -447,7 +464,19 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
       <div class="swiss-inner">
         <h2 class="page-title">⚔️ Suisse</h2>
         <p class="page-sub">Appariement automatique par niveau</p>
-        <div class="swiss-container" id="swiss-container"></div>
+
+        <div class="card">
+          <div class="card-title">👥 Sélectionner les joueurs</div>
+          <div id="swiss-players-available" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-bottom:14px;">
+            <!-- Rempli par JS -->
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📊 Colonnes Suisse</div>
+          <div class="swiss-container" id="swiss-container"></div>
+          <button class="btn btn-primary btn-block" onclick="saveSwissColumns()" style="margin-top:14px;">Sauvegarder</button>
+        </div>
       </div>
     </div>
 
@@ -801,6 +830,7 @@ function loadClasses(){
         <div class="cls-item-name">${esc(cls.name)}</div>
         <div class="cls-item-meta">${cls.students.length} élève(s)</div>
       </div>
+      <button class="btn btn-sm btn-gray" onclick="editClass('${key}')" title="Modifier">✎</button>
       <button class="btn btn-sm btn-primary" onclick="selectClass('${key}')">Utiliser</button>
       <div class="cls-item-del" onclick="deleteClass('${key}')">✕</div>
     </div>
@@ -911,20 +941,76 @@ function renderAtpRankings(){
 function renderSwissColumns(){
   const data = tryParse(localStorage.getItem(SWISS_LS)) || {columns: []};
   const container = $('swiss-container');
-  
   const colNames = ['1ère', '2e', '3e', '4e', '5e', '6e', '7e', '8e', '9e'];
+  
   let html = '';
   
-  data.columns.forEach((col, i) => {
-    html += `<div class="swiss-col">
+  for(let i = 0; i < 9; i++){
+    const col = data.columns[i] || [];
+    html += `<div class="swiss-col-editable">
       <div class="swiss-col-title">${colNames[i]}</div>
-      <div class="swiss-players">
-        ${col.map(name => `<div class="swiss-player">${esc(name)}</div>`).join('')}
+      <div class="swiss-col-players-edit" data-col="${i}">
+        ${col.map(name => `<div class="swiss-col-player-tag" data-name="${esc(name)}">${esc(name)}<span class="remove" onclick="removePlayerFromSwissCol(${i}, '${name}')">✕</span></div>`).join('')}
       </div>
     </div>`;
-  });
+  }
   
   container.innerHTML = html;
+  
+  // Afficher les joueurs disponibles
+  renderSwissAvailablePlayers();
+}
+
+function renderSwissAvailablePlayers(){
+  if(!currentClass || !currentClass.students) return;
+  
+  const data = tryParse(localStorage.getItem(SWISS_LS)) || {columns: []};
+  const allUsed = new Set();
+  
+  data.columns.forEach(col => col.forEach(name => allUsed.add(name)));
+  
+  const available = currentClass.students.filter(s => !allUsed.has(s));
+  const container = $('swiss-players-available');
+  
+  container.innerHTML = available.map(name => `
+    <button class="swiss-available-player" onclick="addPlayerToNextSwissCol('${esc(name)}')">
+      ${esc(name)}
+    </button>
+  `).join('');
+}
+
+function addPlayerToNextSwissCol(name){
+  const data = tryParse(localStorage.getItem(SWISS_LS)) || {columns: []};
+  
+  if(!Array.isArray(data.columns)) data.columns = [];
+  
+  // Trouver la première colonne qui n'a pas ce joueur
+  for(let i = 0; i < 9; i++){
+    if(!data.columns[i]) data.columns[i] = [];
+    if(!data.columns[i].includes(name)){
+      data.columns[i].push(name);
+      localStorage.setItem(SWISS_LS, JSON.stringify(data));
+      renderSwissColumns();
+      return;
+    }
+  }
+  
+  alert('Toutes les colonnes contiennent déjà ce joueur');
+}
+
+function removePlayerFromSwissCol(colIdx, name){
+  const data = tryParse(localStorage.getItem(SWISS_LS)) || {columns: []};
+  
+  if(data.columns[colIdx]){
+    data.columns[colIdx] = data.columns[colIdx].filter(n => n !== name);
+    localStorage.setItem(SWISS_LS, JSON.stringify(data));
+    renderSwissColumns();
+  }
+}
+
+function saveSwissColumns(){
+  alert('Colonnes Suisse sauvegardées !');
+  goHome();
 }
 
 /* ═══════════════════════════════════════════════
@@ -970,6 +1056,74 @@ window.addEventListener('message', e => {
     refreshDisplay();
   }
 });
+
+/* ═══════════════════════════════════════════════
+   ÉDITION & IMPORT/EXPORT DES CLASSES
+═══════════════════════════════════════════════ */
+function editClass(key){
+  const classes = tryParse(localStorage.getItem(CLASSES_LS)) || {};
+  const cls = classes[key];
+  
+  if(!cls) return;
+  
+  const newName = prompt('Nom de la classe:', cls.name);
+  if(newName === null) return;
+  
+  const studentsText = prompt('Élèves (un par ligne):', cls.students.join('\n'));
+  if(studentsText === null) return;
+  
+  const students = studentsText.split('\n').map(s => s.trim()).filter(s => s);
+  
+  classes[key].name = newName;
+  classes[key].students = students;
+  
+  localStorage.setItem(CLASSES_LS, JSON.stringify(classes));
+  loadClasses();
+  
+  if(currentClass && currentClass.name === cls.name){
+    currentClass = classes[key];
+    localStorage.setItem(CLASS_LS, JSON.stringify(currentClass));
+    updateClassBadge();
+  }
+}
+
+function exportClasses(){
+  const classes = tryParse(localStorage.getItem(CLASSES_LS)) || {};
+  const data = JSON.stringify(classes, null, 2);
+  const blob = new Blob([data], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'classes-eps-' + new Date().toISOString().split('T')[0] + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importClasses(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const imported = JSON.parse(e.target.result);
+      const classes = tryParse(localStorage.getItem(CLASSES_LS)) || {};
+      
+      // Fusionner les classes
+      const merged = {...classes, ...imported};
+      
+      localStorage.setItem(CLASSES_LS, JSON.stringify(merged));
+      loadClasses();
+      alert('Classes importées avec succès !');
+    } catch(err) {
+      alert('Erreur lors de l\'import : ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  
+  // Réinitialiser l'input
+  event.target.value = '';
+}
 
 // Refresh display automatiquement quand le localStorage change
 window.addEventListener('storage', (e) => {
