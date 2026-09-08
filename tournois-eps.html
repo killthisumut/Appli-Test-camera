@@ -167,6 +167,7 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
 .cls-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:var(--rs);margin-bottom:6px;cursor:pointer;transition:all var(--trans);}
 .cls-item:hover{border-color:var(--accent);background:var(--bg2);}
 .cls-item.active-class{border-color:var(--green);background:rgba(56,196,122,.06);}
+.cls-item.cls-item-selected{border-color:var(--accent);box-shadow:0 0 0 2px rgba(91,156,246,.25);}
 .cls-item-info{flex:1;}
 .cls-item-name{font-weight:700;font-size:14px;color:var(--text);}
 .cls-item-meta{font-size:11px;color:var(--muted);}
@@ -175,6 +176,9 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
 /* Student chips */
 .student-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;min-height:32px;}
 .stu-chip{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:4px 10px 4px 12px;display:flex;align-items:center;gap:5px;font-size:12px;font-weight:500;animation:popIn .16s ease;}
+.stu-chip-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;line-height:1;padding:2px 4px;border-radius:50%;transition:all .15s;}
+.stu-chip-del:hover{background:var(--red);color:#fff;}
+.cls-tab-panel{padding-top:12px;}
 @keyframes popIn{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
 .chip-x{background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px;line-height:1;padding:0;transition:color var(--trans);}
 .chip-x:hover{color:var(--red);}
@@ -925,24 +929,12 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
       <div class="g2" style="align-items:start;">
         <div>
           <div class="card">
-            <div class="card-title">➕ Nouvelle classe</div>
-            <div class="fr"><label>Nom de la classe</label><input type="text" id="cls-name-inp" placeholder="ex : 3eB, 5A…" autocomplete="off"></div>
-            <div class="fr">
-              <label>Élèves (un par ligne, virgule, espace, point-virgule ou slash)<br>Les tirets restent dans le prénom</label>
-              <textarea id="cls-students-inp" rows="5" placeholder="Julie Simon Jean-Pierre&#10;Marie, Thomas, Léa&#10;Anna-Rose / Tom"></textarea>
+            <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;">
+              <span>📂 Mes classes</span>
+              <button class="btn btn-primary btn-sm" onclick="openNewClassModal()">➕ Nouvelle</button>
             </div>
-            <div class="student-chips" id="cls-preview"></div>
-            <div class="btn-grp">
-              <button class="btn btn-primary" onclick="parseLivePreview()">👁 Aperçu</button>
-              <button class="btn btn-green" onclick="saveClass()">💾 Sauvegarder</button>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div class="card">
-            <div class="card-title">📂 Classes sauvegardées</div>
             <div id="cls-list">
-              <div class="empty"><div class="empty-ico">📂</div><div class="empty-ttl">Aucune classe</div><p style="font-size:12px;">Créez une classe à gauche</p></div>
+              <div class="empty"><div class="empty-ico">📂</div><div class="empty-ttl">Aucune classe</div><p style="font-size:12px;">Créez une classe avec le bouton ➕</p></div>
             </div>
           </div>
           <div class="card">
@@ -962,6 +954,28 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
             <div id="qr-render-classes" style="display:flex;justify-content:center;padding:10px 0;"></div>
             <video id="eco-scan-video" class="hidden" playsinline style="width:100%;border-radius:10px;"></video>
             <canvas id="eco-scan-canvas" class="hidden"></canvas>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div id="cls-detail-empty" class="empty"><div class="empty-ico">👈</div><div class="empty-ttl">Sélectionne une classe</div><p style="font-size:12px;">…ou crée-en une nouvelle</p></div>
+            <div id="cls-detail-body" style="display:none;">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+                <div class="card-title" id="cls-detail-name" style="margin:0;">—</div>
+                <div style="display:flex;gap:6px;">
+                  <button class="btn btn-gray btn-sm" onclick="openRenameClassModal()">✏️ Renommer</button>
+                  <button class="btn btn-green btn-sm" id="cls-detail-load-btn" onclick="loadSelectedClass()">📂 Charger</button>
+                </div>
+              </div>
+              <div class="tab-bar" id="cls-tabs" style="margin-top:12px;">
+                <button class="tab-btn active" data-tab="eleves" onclick="setClsTab('eleves')">👥 Élèves</button>
+                <button class="tab-btn" data-tab="infos" onclick="setClsTab('infos')">👤 Infos</button>
+                <button class="tab-btn" data-tab="histo" onclick="setClsTab('histo')">🕓 Historique</button>
+              </div>
+              <div id="cls-tab-eleves" class="cls-tab-panel"></div>
+              <div id="cls-tab-infos" class="cls-tab-panel" style="display:none;"></div>
+              <div id="cls-tab-histo" class="cls-tab-panel" style="display:none;"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -1489,25 +1503,31 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
   </div>
 </div>
 
-<!-- Infos élèves (genre) — à l'image de EPS Run -->
-<div class="overlay" id="ov-cls-infos">
-  <div class="modal wide tall">
-    <h2 id="cls-infos-title">👤 Infos élèves</h2>
-    <p class="modal-hint" style="margin:-4px 0 10px;color:var(--muted);font-size:12px;">Le genre est une simple info élève (aucun calcul dans Tournois) — il est partagé avec tes autres applis EPS via l'export/import.</p>
-    <div id="cls-infos-list" style="max-height:50vh;overflow-y:auto;-webkit-overflow-scrolling:touch;"></div>
-    <div class="modal-btns" style="margin-top:10px;">
-      <button class="btn btn-gray" onclick="closeOv('ov-cls-infos')">Fermer</button>
+<!-- Nouvelle classe / renommer -->
+<div class="overlay" id="ov-new-class">
+  <div class="modal">
+    <h2 id="new-class-title">➕ Nouvelle classe</h2>
+    <div class="fr"><label>Nom de la classe</label><input type="text" id="new-class-name-inp" placeholder="ex : 3eB, 5A…" autocomplete="off"></div>
+    <div class="modal-btns">
+      <button class="btn btn-green" id="confirm-new-class-btn" onclick="confirmNewOrRenameClass()">✓ Valider</button>
+      <button class="btn btn-gray" onclick="closeOv('ov-new-class')">Annuler</button>
     </div>
   </div>
 </div>
 
-<!-- Historique des séances/tournois — à l'image de EPS Run -->
-<div class="overlay" id="ov-cls-hist">
-  <div class="modal wide tall">
-    <h2 id="cls-hist-title">🕓 Historique</h2>
-    <div id="cls-hist-list" style="max-height:56vh;overflow-y:auto;-webkit-overflow-scrolling:touch;"></div>
-    <div class="modal-btns" style="margin-top:10px;">
-      <button class="btn btn-gray" onclick="closeOv('ov-cls-hist')">Fermer</button>
+<!-- Ajouter des élèves à une classe existante (fusion, jamais d'écrasement) -->
+<div class="overlay" id="ov-add-students">
+  <div class="modal">
+    <h2>➕ Ajouter des élèves</h2>
+    <div class="fr">
+      <label>Élèves (un par ligne, virgule, espace, point-virgule ou slash)<br>Les tirets restent dans le prénom</label>
+      <textarea id="add-students-inp" rows="5" placeholder="Julie Simon Jean-Pierre&#10;Marie, Thomas, Léa&#10;Anna-Rose / Tom"></textarea>
+    </div>
+    <div class="student-chips" id="add-students-preview"></div>
+    <div class="modal-btns">
+      <button class="btn btn-primary" onclick="previewAddStudents()">👁 Aperçu</button>
+      <button class="btn btn-green" onclick="confirmAddStudents()">✓ Ajouter</button>
+      <button class="btn btn-gray" onclick="closeOv('ov-add-students')">Annuler</button>
     </div>
   </div>
 </div>
@@ -1627,7 +1647,7 @@ function showScreen(id){
 function goHome(){showScreen('screen-home');updateHomeBanner();}
 
 function openScreen(mode){
-  if(mode==='class'){showScreen('screen-class');renderClassList();}
+  if(mode==='class'){showScreen('screen-class');renderClassList();renderClassDetail();}
   else if(mode==='swiss'){showScreen('screen-setup');setupInit('swiss');}
   else if(mode==='atp'){showScreen('screen-setup');setupInit('atp');}
 }
@@ -1656,26 +1676,6 @@ function setStudentGenre(className, name, genre){
   saveClassInfos(d);
 }
 
-function openClassInfos(className){
-  const classes=getClasses();
-  const cls=classes[className];
-  if(!cls) return;
-  $('cls-infos-title').textContent='👤 Infos élèves — '+className;
-  const el=$('cls-infos-list');
-  el.innerHTML=(cls.students||[]).map(name=>{
-    const g=getStudentGenre(className,name);
-    return `<div class="cls-item" style="cursor:default;">
-      <div class="cls-item-info"><div class="cls-item-name">${esc(name)}</div></div>
-      <select class="atp-param-inp" style="width:auto;" data-name="${esc(name)}" onchange="setStudentGenre('${esc(className)}',this.dataset.name,this.value)">
-        <option value="" ${!g?'selected':''}>—</option>
-        <option value="garcon" ${g==='garcon'?'selected':''}>♂ Garçon</option>
-        <option value="fille" ${g==='fille'?'selected':''}>♀ Fille</option>
-      </select>
-    </div>`;
-  }).join('') || '<div class="empty"><div class="empty-ico">👤</div><div class="empty-ttl">Aucun élève</div></div>';
-  openOv('ov-cls-infos');
-}
-
 /* ---------- Historique des séances / tournois (à l'image d'EPS Run) ---------- */
 function getTrnHistory(){ try{ return JSON.parse(localStorage.getItem(TRN_HIST_KEY)||'[]'); }catch{ return []; } }
 function saveTrnHistoryArr(arr){ localStorage.setItem(TRN_HIST_KEY, JSON.stringify(arr)); }
@@ -1695,15 +1695,9 @@ function archiveAtpSession(label){
   saveTrnHistoryArr(hist);
 }
 
-function openClassHistory(className){
-  $('cls-hist-title').textContent='🕓 Historique — '+className;
-  renderClassHistoryList(className);
-  openOv('ov-cls-hist');
-}
-
-function renderClassHistoryList(className){
+function renderClassHistoryListInto(targetId, className){
   const hist=getTrnHistory().filter(h=>h.className===className);
-  const el=$('cls-hist-list');
+  const el=$(targetId);
   if(!hist.length){
     el.innerHTML='<div class="empty"><div class="empty-ico">🕓</div><div class="empty-ttl">Aucun historique</div><p style="font-size:12px;">Il se remplit automatiquement à chaque fin de séance ATP</p></div>';
     return;
@@ -1747,7 +1741,6 @@ function resumeTrnHistory(id){
   archiveAtpSession('Remplacée avant reprise'); // on ne perd pas la séance en cours
   A2=JSON.parse(JSON.stringify(h.state));
   a2Save();
-  closeOv('ov-cls-hist');
   showScreen('screen-atp'); atpShowSub('main'); atpRenderMain();
   toast('Séance reprise ✓');
 }
@@ -1755,62 +1748,153 @@ function resumeTrnHistory(id){
 function deleteTrnHistory(id, className){
   if(!confirm("Supprimer cette entrée de l'historique ?")) return;
   saveTrnHistoryArr(getTrnHistory().filter(x=>x.id!==id));
-  renderClassHistoryList(className);
+  renderClassHistoryListInto('cls-tab-histo', className);
 }
 
-function getClasses(){try{return JSON.parse(localStorage.getItem(CLS_KEY)||'{}');}catch{return{};}}
-function saveClasses(obj){localStorage.setItem(CLS_KEY,JSON.stringify(obj));}
+// Classes = tableau d'objets {id, name, students:[...]}, comme dans EPS Run (l'id évite tout écrasement par nom).
+function getClasses(){
+  let raw;
+  try{ raw = JSON.parse(localStorage.getItem(CLS_KEY)||'[]'); }catch{ raw = []; }
+  if(Array.isArray(raw)) return raw;
+  // Migration depuis l'ancien format {nom:{students,date}}
+  const arr = Object.keys(raw||{}).map((name,i)=>({id:Date.now()+i, name, students:(raw[name].students||[])}));
+  saveClasses(arr);
+  return arr;
+}
+function saveClasses(arr){localStorage.setItem(CLS_KEY,JSON.stringify(arr));}
+function findClass(id){return getClasses().find(c=>String(c.id)===String(id));}
 function getActiveClass(){try{return JSON.parse(localStorage.getItem(ACTIVE_CLS_KEY)||'null');}catch{return null;}}
 function setActiveClass(cls){localStorage.setItem(ACTIVE_CLS_KEY,JSON.stringify(cls));}
 function clearActiveClass(){localStorage.removeItem(ACTIVE_CLS_KEY);updateHomeBanner();updateHeaderClass();showLoadBars();toast('Classe déchargée');}
 
-function parseLivePreview(){
-  const text=$('cls-students-inp').value;
-  const names=parseNames(text);
-  $('cls-preview').innerHTML=names.map(n=>`<div class="stu-chip">${esc(n)}</div>`).join('');
-}
+let _selectedClassId = null;
+let _clsTab = 'eleves';
 
-function saveClass(){
-  const name=gv('cls-name-inp').trim();
+function openNewClassModal(){
+  $('new-class-title').textContent='➕ Nouvelle classe';
+  sv('new-class-name-inp','');
+  $('confirm-new-class-btn').dataset.mode='create';
+  openOv('ov-new-class');
+  setTimeout(()=>$('new-class-name-inp').focus(),100);
+}
+function openRenameClassModal(){
+  const cls=findClass(_selectedClassId); if(!cls) return;
+  $('new-class-title').textContent='✏️ Renommer la classe';
+  sv('new-class-name-inp',cls.name);
+  $('confirm-new-class-btn').dataset.mode='rename';
+  openOv('ov-new-class');
+  setTimeout(()=>$('new-class-name-inp').focus(),100);
+}
+function confirmNewOrRenameClass(){
+  const name=gv('new-class-name-inp').trim();
   if(!name){toast('Entrez un nom de classe',true);return;}
-  const text=$('cls-students-inp').value;
-  const students=parseNames(text);
-  if(!students.length){toast('Ajoutez au moins un élève',true);return;}
+  const mode=$('confirm-new-class-btn').dataset.mode;
   const classes=getClasses();
-  classes[name]={students,date:new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'})};
-  saveClasses(classes);
-  // Auto-set as active
-  setActiveClass({name,students});
-  sv('cls-name-inp','');sv('cls-students-inp','');$('cls-preview').innerHTML='';
-  renderClassList();updateHomeBanner();updateHeaderClass();showLoadBars();
-  toast(`Classe « ${name} » sauvegardée et chargée ✓`);
+  if(mode==='rename' && _selectedClassId!==null){
+    const cls=classes.find(c=>String(c.id)===String(_selectedClassId));
+    if(cls){
+      const oldName=cls.name;
+      cls.name=name;
+      saveClasses(classes);
+      // Le genre et l'historique sont indexés par nom de classe : on les fait suivre au renommage
+      const infos=getClassInfos();
+      if(infos[oldName]){ infos[name]=infos[oldName]; delete infos[oldName]; saveClassInfos(infos); }
+      const hist=getTrnHistory();
+      let histChanged=false;
+      hist.forEach(h=>{ if(h.className===oldName){ h.className=name; histChanged=true; } });
+      if(histChanged) saveTrnHistoryArr(hist);
+      const ac=getActiveClass();
+      if(ac && String(ac.id)===String(cls.id)){ setActiveClass({id:cls.id,name:cls.name,students:cls.students}); updateHomeBanner(); updateHeaderClass(); }
+      toast(`Classe renommée « ${name} » ✓`);
+    }
+  } else {
+    const newCls={id:Date.now()+Math.random(),name,students:[]};
+    classes.push(newCls);
+    saveClasses(classes);
+    _selectedClassId=newCls.id;
+    toast(`Classe « ${name} » créée ✓`);
+  }
+  closeOv('ov-new-class');
+  renderClassList(); renderClassDetail();
 }
 
-function loadClass(name){
-  const classes=getClasses();
-  if(!classes[name])return;
-  setActiveClass({name,students:classes[name].students});
+function selectClass(id){
+  _selectedClassId=id;
+  _clsTab='eleves';
+  renderClassList();
+  renderClassDetail();
+}
+
+function deleteClassById(id){
+  const cls=findClass(id); if(!cls) return;
+  if(!confirm(`Supprimer la classe « ${cls.name} » ?`))return;
+  saveClasses(getClasses().filter(c=>String(c.id)!==String(id)));
+  const ac=getActiveClass();
+  if(ac&&String(ac.id)===String(id)){localStorage.removeItem(ACTIVE_CLS_KEY);updateHomeBanner();updateHeaderClass();}
+  if(String(_selectedClassId)===String(id)) _selectedClassId=null;
+  renderClassList(); renderClassDetail();
+  toast(`Classe « ${cls.name} » supprimée`);
+}
+
+function loadSelectedClass(){
+  const cls=findClass(_selectedClassId); if(!cls) return;
+  setActiveClass({id:cls.id,name:cls.name,students:cls.students});
   updateHomeBanner();updateHeaderClass();showLoadBars();
   renderClassList();
-  toast(`Classe « ${name} » chargée ✓`);
+  toast(`Classe « ${cls.name} » chargée ✓`);
 }
 
-function deleteClass(name){
-  if(!confirm(`Supprimer la classe « ${name} » ?`))return;
-  const classes=getClasses();
-  delete classes[name];
-  saveClasses(classes);
+// Si la classe éditée est celle actuellement chargée (active), on garde le "chargement" synchronisé
+function syncActiveClassIfLoaded(cls){
   const ac=getActiveClass();
-  if(ac&&ac.name===name){localStorage.removeItem(ACTIVE_CLS_KEY);updateHomeBanner();updateHeaderClass();}
-  renderClassList();
-  toast(`Classe « ${name} » supprimée`);
+  if(ac && String(ac.id)===String(cls.id)){
+    setActiveClass({id:cls.id,name:cls.name,students:cls.students});
+    updateHomeBanner();updateHeaderClass();showLoadBars();
+  }
 }
+
+function openAddStudentsModal(){
+  sv('add-students-inp','');
+  $('add-students-preview').innerHTML='';
+  openOv('ov-add-students');
+}
+function previewAddStudents(){
+  const names=parseNames($('add-students-inp').value);
+  $('add-students-preview').innerHTML=names.map(n=>`<div class="stu-chip">${esc(n)}</div>`).join('');
+}
+function confirmAddStudents(){
+  const cls=findClass(_selectedClassId); if(!cls) return;
+  const names=parseNames($('add-students-inp').value);
+  if(!names.length){toast('Ajoutez au moins un élève',true);return;}
+  const classes=getClasses();
+  const target=classes.find(c=>String(c.id)===String(cls.id));
+  let added=0;
+  names.forEach(n=>{
+    if(!target.students.some(s=>s.toLowerCase()===n.toLowerCase())){ target.students.push(n); added++; }
+  });
+  saveClasses(classes);
+  syncActiveClassIfLoaded(target);
+  closeOv('ov-add-students');
+  renderClassList(); renderClassDetail();
+  toast(added ? `${added} élève(s) ajouté(s) ✓` : 'Ces élèves étaient déjà dans la classe');
+}
+function removeStudentFromClass(name){
+  const cls=findClass(_selectedClassId); if(!cls) return;
+  if(!confirm(`Retirer ${name} de la classe ?`))return;
+  const classes=getClasses();
+  const target=classes.find(c=>String(c.id)===String(cls.id));
+  target.students=target.students.filter(s=>s!==name);
+  saveClasses(classes);
+  syncActiveClassIfLoaded(target);
+  renderClassList(); renderClassDetail();
+}
+
+function setClsTab(tab){ _clsTab=tab; renderClassDetail(); }
 
 function renderClassList(){
   const classes=getClasses();
   const el=$('cls-list');
   const ac=getActiveClass();
-  const keys=Object.keys(classes);
   // Active banner
   const banner=$('active-class-banner');
   if(ac){
@@ -1820,26 +1904,70 @@ function renderClassList(){
   } else {
     banner.style.display='none';
   }
-  if(!keys.length){
-    el.innerHTML='<div class="empty"><div class="empty-ico">📂</div><div class="empty-ttl">Aucune classe</div><p style="font-size:12px;">Créez une classe à gauche</p></div>';
+  if(!classes.length){
+    el.innerHTML='<div class="empty"><div class="empty-ico">📂</div><div class="empty-ttl">Aucune classe</div><p style="font-size:12px;">Créez une classe avec le bouton ➕</p></div>';
     return;
   }
-  el.innerHTML=keys.map(k=>{
-    const cls=classes[k];
-    const isActive=ac&&ac.name===k;
-    return `<div class="cls-item${isActive?' active-class':''}">
+  el.innerHTML=classes.map(cls=>{
+    const isActive=ac&&String(ac.id)===String(cls.id);
+    const isSelected=String(_selectedClassId)===String(cls.id);
+    return `<div class="cls-item${isSelected?' cls-item-selected':''}${isActive?' active-class':''}" onclick="selectClass('${cls.id}')">
       <div class="cls-item-info">
-        <div class="cls-item-name">${esc(k)}</div>
-        <div class="cls-item-meta">${cls.students.length} élève(s) · ${cls.date||''}</div>
+        <div class="cls-item-name">${esc(cls.name)}</div>
+        <div class="cls-item-meta">${cls.students.length} élève(s)${isActive?' · ✅ chargée':''}</div>
       </div>
-      <div class="cls-item-acts">
-        ${isActive?'<span style="color:var(--green);font-size:11px;font-weight:600;">✓ Active</span>':'<button class="btn btn-green btn-sm" onclick="loadClass(\''+esc(k)+'\')">Charger</button>'}
-        <button class="btn btn-gray btn-sm" title="Genre des élèves" onclick="openClassInfos('${esc(k)}')">👤</button>
-        <button class="btn btn-gray btn-sm" title="Historique des séances" onclick="openClassHistory('${esc(k)}')">🕓</button>
-        <button class="btn btn-red btn-sm" onclick="deleteClass('${esc(k)}')">🗑</button>
-      </div>
+      <button class="btn btn-red btn-sm" onclick="event.stopPropagation();deleteClassById('${cls.id}')">🗑</button>
     </div>`;
   }).join('');
+}
+
+function renderClassDetail(){
+  const cls=findClass(_selectedClassId);
+  const empty=$('cls-detail-empty'), body=$('cls-detail-body');
+  if(!cls){ empty.style.display=''; body.style.display='none'; return; }
+  empty.style.display='none'; body.style.display='';
+  $('cls-detail-name').textContent=cls.name;
+  const ac=getActiveClass();
+  $('cls-detail-load-btn').textContent=(ac&&String(ac.id)===String(cls.id)) ? '✅ Chargée' : '📂 Charger';
+  document.querySelectorAll('#cls-tabs .tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===_clsTab));
+  $('cls-tab-eleves').style.display=_clsTab==='eleves'?'':'none';
+  $('cls-tab-infos').style.display=_clsTab==='infos'?'':'none';
+  $('cls-tab-histo').style.display=_clsTab==='histo'?'':'none';
+  if(_clsTab==='eleves') renderClsTabEleves(cls);
+  else if(_clsTab==='infos') renderClsTabInfos(cls);
+  else renderClsTabHisto(cls);
+}
+
+function renderClsTabEleves(cls){
+  const el=$('cls-tab-eleves');
+  const addBtn='<div class="btn-grp" style="margin-bottom:10px;"><button class="btn btn-primary btn-sm" onclick="openAddStudentsModal()">➕ Ajouter des élèves</button></div>';
+  if(!cls.students.length){
+    el.innerHTML=addBtn+'<div class="empty"><div class="empty-ico">👥</div><div class="empty-ttl">Aucun élève</div></div>';
+    return;
+  }
+  el.innerHTML=addBtn+'<div class="student-chips">'+cls.students.map(name=>
+    `<div class="stu-chip">${esc(name)}<button class="stu-chip-del" onclick="removeStudentFromClass('${esc(name)}')">✕</button></div>`
+  ).join('')+'</div>';
+}
+
+function renderClsTabInfos(cls){
+  const el=$('cls-tab-infos');
+  if(!cls.students.length){ el.innerHTML='<div class="empty"><div class="empty-ico">👤</div><div class="empty-ttl">Aucun élève</div></div>'; return; }
+  el.innerHTML=cls.students.map(name=>{
+    const g=getStudentGenre(cls.name,name);
+    return `<div class="cls-item" style="cursor:default;">
+      <div class="cls-item-info"><div class="cls-item-name">${esc(name)}</div></div>
+      <select class="atp-param-inp" style="width:auto;" data-name="${esc(name)}" onchange="setStudentGenre('${esc(cls.name)}',this.dataset.name,this.value)">
+        <option value="" ${!g?'selected':''}>—</option>
+        <option value="garcon" ${g==='garcon'?'selected':''}>♂ Garçon</option>
+        <option value="fille" ${g==='fille'?'selected':''}>♀ Fille</option>
+      </select>
+    </div>`;
+  }).join('');
+}
+
+function renderClsTabHisto(cls){
+  renderClassHistoryListInto('cls-tab-histo', cls.name);
 }
 
 /* ---------- Export / import inter-applications (format commun) ---------- */
@@ -1856,9 +1984,9 @@ function buildClassesExportPayload(){
   return {
     type:'eps-classes-export', version:1, source:'tournoi',
     exportedAt:new Date().toISOString(),
-    classes: Object.keys(classes).map(name=>({
-      name,
-      students: (classes[name].students||[]).map(n=>({prenom:n, nom:'', genre:getStudentGenre(name,n)}))
+    classes: classes.map(cls=>({
+      name: cls.name,
+      students: (cls.students||[]).map(n=>({prenom:n, nom:'', genre:getStudentGenre(cls.name,n)}))
     }))
   };
 }
@@ -1890,21 +2018,20 @@ function applyClassesImportEco(data){
   incomingClasses.forEach(c=>{
     const name = c.name;
     if(!name) return;
-    // retrouver une classe locale existante avec le même nom (insensible à la casse)
-    const existingKey = Object.keys(classes).find(k=>k.toLowerCase()===name.toLowerCase());
-    const key = existingKey || name;
-    if(!classes[key]) classes[key] = {students:[], date:new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'})};
+    // retrouver une classe locale existante avec le même nom (insensible à la casse), sinon en créer une nouvelle
+    let target = classes.find(k=>k.name.toLowerCase()===name.toLowerCase());
+    if(!target){ target = {id:Date.now()+Math.random(), name, students:[]}; classes.push(target); }
     const incomingStudents = Array.isArray(c.students) ? c.students : [];
     incomingStudents.forEach(st=>{
       const display = studentDisplayName(st).trim();
       if(!display) return;
-      const exists = classes[key].students.some(n=>n.toLowerCase()===display.toLowerCase());
-      if(!exists){ classes[key].students.push(display); count++; }
-      if(st.genre) setStudentGenre(key, display, st.genre);
+      const exists = target.students.some(n=>n.toLowerCase()===display.toLowerCase());
+      if(!exists){ target.students.push(display); count++; }
+      if(st.genre) setStudentGenre(target.name, display, st.genre);
     });
   });
   saveClasses(classes);
-  renderClassList(); updateHomeBanner(); updateHeaderClass(); showLoadBars();
+  renderClassList(); renderClassDetail(); updateHomeBanner(); updateHeaderClass(); showLoadBars();
   return count;
 }
 function importClassesEco(evt){
