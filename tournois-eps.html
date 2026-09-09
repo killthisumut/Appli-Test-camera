@@ -176,6 +176,8 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
 /* Student chips */
 .student-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;min-height:32px;}
 .stu-chip{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:4px 10px 4px 12px;display:flex;align-items:center;gap:5px;font-size:12px;font-weight:500;animation:popIn .16s ease;}
+.stu-chip-name{cursor:pointer;}
+.stu-chip-name:hover{color:var(--accent);}
 .stu-chip-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;line-height:1;padding:2px 4px;border-radius:50%;transition:all .15s;}
 .stu-chip-del:hover{background:var(--red);color:#fff;}
 .cls-tab-panel{padding-top:12px;}
@@ -232,6 +234,18 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
 
 /* Swiss bottom bar */
 .swiss-bar{background:var(--bg2);border-top:1px solid var(--border);padding:8px 12px;display:flex;align-items:center;justify-content:space-between;gap:6px;flex-shrink:0;flex-wrap:wrap;box-shadow:0 -2px 8px rgba(0,0,0,.05);}
+/* Bandeau permanent de saisie des résultats — grands boutons/menus, pensés pour être tapés par des élèves */
+.swiss-result-bar{flex-shrink:0;background:var(--bg2);border-top:2px solid var(--accent);padding:10px 12px;display:flex;flex-direction:column;gap:8px;}
+.swiss-result-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.swiss-result-ico{font-size:20px;flex-shrink:0;}
+.swiss-result-sel{font-family:'Poppins',sans-serif;font-weight:700;border:2px solid var(--border);border-radius:10px;background:var(--bg3);color:var(--text);padding:10px 12px;font-size:14px;flex:1;min-width:120px;max-width:260px;}
+.swiss-result-sel-winner{font-size:16px;border-color:var(--accent);}
+.swiss-result-sel:disabled{opacity:.45;}
+.swiss-result-vs{font-size:12px;color:var(--muted);font-weight:600;flex-shrink:0;}
+.swiss-result-validate,.swiss-result-change{font-size:15px;font-weight:700;padding:14px 18px;border-radius:12px;flex:1;min-width:160px;}
+.swiss-result-validate:disabled,.swiss-result-change:disabled{opacity:.4;}
+@keyframes swissResultPulse{0%{box-shadow:0 0 0 0 rgba(91,156,246,.55);}70%{box-shadow:0 0 0 10px rgba(91,156,246,0);}100%{box-shadow:0 0 0 0 rgba(91,156,246,0);}}
+.swiss-result-pulse{animation:swissResultPulse .7s ease;}
 .swiss-bar .btn-grp{gap:5px;}
 
 /* Portrait: no warning needed, board scrolls horizontally */
@@ -1047,9 +1061,29 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
         <span style="color:var(--green);font-size:12px;font-weight:600;">📚 Charger la classe <span id="swiss-load-name"></span> →</span>
       </div>
       <div class="board" id="swiss-board"></div>
+
+      <!-- Bandeau permanent de saisie des résultats -->
+      <div class="swiss-result-bar" id="swiss-result-bar">
+        <div class="swiss-result-row">
+          <span class="swiss-result-ico">🏆</span>
+          <select id="swiss-res-winner" class="swiss-result-sel swiss-result-sel-winner" onchange="swissResultWinnerChanged()">
+            <option value="">— Choisir le vainqueur —</option>
+          </select>
+          <span class="swiss-result-vs">gagne contre</span>
+          <select id="swiss-res-loser" class="swiss-result-sel" onchange="swissResultLoserChanged()" disabled>
+            <option value="">— Choisir le perdant —</option>
+          </select>
+        </div>
+        <div class="swiss-result-row">
+          <button class="btn btn-green swiss-result-validate" id="swiss-result-validate-btn" onclick="swissResultValidate()" disabled>✅ Valider ce résultat</button>
+          <button class="btn btn-gray swiss-result-change" id="swiss-result-change-btn" onclick="swissResultReset()" disabled>↩️ Changer de vainqueur</button>
+        </div>
+      </div>
+
       <div class="swiss-bar">
         <div class="btn-grp">
-          <button class="btn btn-primary btn-sm" onclick="swissOpenMatch()">⚡ Résultat</button>
+          <button class="btn btn-gray btn-sm" onclick="swissRenameClass()">🏷️ <span id="swiss-class-lbl">Classe ?</span></button>
+          <button class="btn btn-gray btn-sm" onclick="openSwissHistoryModal()">🕓 Historique des matchs</button>
         </div>
         <div class="btn-grp">
           <button class="btn btn-primary btn-sm" onclick="swissOpenAddStudent()">＋ Ajouter</button>
@@ -1519,29 +1553,16 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
 </div>
 
 <!-- Résultat d'un match en Ronde Suisse : vainqueur -> perdant (limité à la même colonne) -->
-<div class="overlay" id="ov-swiss-match">
-  <div class="modal wide">
-    <h2>⚡ Résultat d'un match</h2>
-    <div class="atp-step" id="swiss-match-step-w">
-      <div class="atp-step-lbl"><span class="atp-step-num">1</span> Qui a <strong>gagné</strong> ?</div>
-      <div class="atp-player-grid" id="swiss-match-grid-w"></div>
+<div class="overlay" id="ov-swiss-history">
+  <div class="modal wide tall">
+    <h2>🕓 Historique des matchs — <span id="swiss-hist-class-lbl"></span></h2>
+    <div class="tab-bar">
+      <button class="tab-btn active" data-mode="matchs" onclick="setSwissHistMode('matchs')">📋 Matchs</button>
+      <button class="tab-btn" data-mode="eleves" onclick="setSwissHistMode('eleves')">👤 Par élève</button>
     </div>
-    <div class="atp-step" id="swiss-match-step-l" style="display:none;">
-      <div class="atp-step-lbl"><span class="atp-step-num">2</span> Qui a <strong>perdu</strong> ?</div>
-      <div class="atp-step-hint" id="swiss-match-l-hint">Seuls les élèves de la même colonne peuvent s'affronter.</div>
-      <div class="atp-player-grid" id="swiss-match-grid-l"></div>
-      <button class="atp-skip-btn" onclick="swissBackToWinnerStep()">← Changer de vainqueur</button>
-    </div>
-    <div class="atp-recap-box" id="swiss-match-recap" style="display:none;">
-      <div class="atp-recap-title">Confirmer ce résultat ?</div>
-      <div id="swiss-match-recap-content"></div>
-      <div style="display:flex;gap:8px;margin-top:12px;">
-        <button class="atp-btn-cancel" onclick="swissCancelMatch()">✕ Annuler</button>
-        <button class="atp-btn-confirm" onclick="swissConfirmMatchResult()">✅ Confirmer</button>
-      </div>
-    </div>
+    <div id="swiss-hist-body" style="max-height:56vh;overflow-y:auto;-webkit-overflow-scrolling:touch;margin-top:10px;"></div>
     <div class="modal-btns" style="margin-top:10px;">
-      <button class="btn btn-gray" onclick="swissCancelMatch()">Fermer</button>
+      <button class="btn btn-gray" onclick="closeOv('ov-swiss-history')">Fermer</button>
     </div>
   </div>
 </div>
@@ -2030,6 +2051,33 @@ function removeStudentFromClass(name){
   syncActiveClassIfLoaded(target);
   renderClassList(); renderClassDetail();
 }
+function renameStudentInClass(oldName){
+  const cls=findClass(_selectedClassId); if(!cls) return;
+  const newName=prompt('Nouveau prénom :', oldName);
+  if(newName===null) return;
+  const trimmed=newName.trim();
+  if(!trimmed){toast('Le prénom ne peut pas être vide',true);return;}
+  if(trimmed===oldName) return;
+  const classes=getClasses();
+  const target=classes.find(c=>String(c.id)===String(cls.id));
+  if(target.students.some(s=>s.toLowerCase()===trimmed.toLowerCase())){
+    toast('Un élève porte déjà ce prénom dans la classe',true); return;
+  }
+  const idx=target.students.indexOf(oldName);
+  if(idx===-1) return;
+  target.students[idx]=trimmed;
+  saveClasses(classes);
+  // Le genre est indexé par prénom dans cette classe : on le fait suivre au renommage
+  const infos=getClassInfos();
+  if(infos[target.name] && infos[target.name][oldName]){
+    infos[target.name][trimmed]=infos[target.name][oldName];
+    delete infos[target.name][oldName];
+    saveClassInfos(infos);
+  }
+  syncActiveClassIfLoaded(target);
+  renderClassList(); renderClassDetail();
+  toast(`Renommé « ${oldName} » → « ${trimmed} » ✓`);
+}
 
 function setClsTab(tab){ _clsTab=tab; renderClassDetail(); }
 
@@ -2088,7 +2136,7 @@ function renderClsTabEleves(cls){
     return;
   }
   el.innerHTML=addBtn+'<div class="student-chips">'+cls.students.map(name=>
-    `<div class="stu-chip">${esc(name)}<button class="stu-chip-del" onclick="removeStudentFromClass('${esc(name)}')">✕</button></div>`
+    `<div class="stu-chip"><span class="stu-chip-name" onclick="renameStudentInClass('${esc(name)}')" title="Modifier le prénom">${esc(name)} ✏️</span><button class="stu-chip-del" onclick="removeStudentFromClass('${esc(name)}')">✕</button></div>`
   ).join('')+'</div>';
 }
 
@@ -2367,7 +2415,10 @@ function setupLaunch(){
   if(setupPlayers.length<2){toast('Ajoutez au moins 2 élèves');return;}
   const sport=gv('setup-sport').trim();
   if(setupMode==='swiss'){
+    archiveSwissSession('Remplacée par une nouvelle ronde'); // si une ronde précédente traînait sans être archivée, on ne la perd pas
     swissColumns=Array(9).fill(null).map(()=>[]);
+    swissMatches=[];
+    swissClassName=(getActiveClass()&&getActiveClass().name)||'';
     swissHistory=[];swissFuture=[];swissUnsaved=false;
     setupPlayers.forEach(n=>swissColumns[0].push(n));
     showScreen('screen-swiss');
@@ -2438,55 +2489,63 @@ function swissDarken(hex,amt){
   try{let c=hex.replace('#','');if(c.length===3)c=c.split('').map(x=>x+x).join('');if(c.length!==6)return hex;const[r,g,b]=[0,2,4].map(i=>Math.max(0,Math.min(255,parseInt(c.slice(i,i+2),16)+amt)));return'#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');}catch{return hex;}
 }
 
-/* ── Saisie d'un résultat (vainqueur -> perdant, limité à la même colonne) ── */
-let swissMatchWinner=null, swissMatchLoser=null;
-
+/* ── Saisie d'un résultat via le bandeau permanent (vainqueur -> perdant, limité à la même colonne) ── */
 function swissAllStudents(){
   const arr=[];
   swissColumns.forEach((col,ci)=>col.forEach(name=>arr.push({name,ci})));
   return arr;
 }
-function swissOpenMatch(preselectName, preselectCi){
-  swissMatchWinner = (preselectName!==undefined) ? {name:preselectName, ci:preselectCi} : null;
-  swissMatchLoser = null;
-  openOv('ov-swiss-match');
-  if(swissMatchWinner) swissRenderMatchStepLoser();
-  else swissRenderMatchStepWinner();
+// Repeuple les menus déroulants du bandeau en conservant la sélection en cours si elle est toujours valide
+// (appelé à chaque swissRender(), donc ne doit jamais effacer une saisie en cours sans raison).
+function swissPopulateResultBar(){
+  const winnerSel=$('swiss-res-winner'); if(!winnerSel) return;
+  const loserSel=$('swiss-res-loser');
+  const prevWinner=winnerSel.value, prevLoser=loserSel.value;
+  const all=swissAllStudents();
+  winnerSel.innerHTML='<option value="">— Choisir le vainqueur —</option>'+all.map(s=>`<option value="${esc(s.name)}">${esc(s.name)} (${COL_NAMES[s.ci]})</option>`).join('');
+  winnerSel.value = all.some(s=>s.name===prevWinner) ? prevWinner : '';
+  swissUpdateLoserOptions(prevLoser);
 }
-function swissRenderMatchStepWinner(){
-  $('swiss-match-step-w').style.display='';
-  $('swiss-match-step-l').style.display='none';
-  $('swiss-match-recap').style.display='none';
-  const all = swissAllStudents();
-  $('swiss-match-grid-w').innerHTML = all.length
-    ? all.map(s=>`<button class="atp-p-btn" style="border-color:${swissColors[s.ci]};" onclick="swissPickWinner('${esc(s.name)}',${s.ci})">${esc(s.name)} <span style="opacity:.55;font-size:10px;">(${COL_NAMES[s.ci]})</span></button>`).join('')
-    : '<p style="font-size:12px;color:var(--muted);">Aucun élève sur le tableau</p>';
+function swissUpdateLoserOptions(preselectLoser){
+  const winner=$('swiss-res-winner').value;
+  const loserSel=$('swiss-res-loser');
+  const changeBtn=$('swiss-result-change-btn');
+  const validateBtn=$('swiss-result-validate-btn');
+  if(!winner){
+    loserSel.innerHTML='<option value="">— Choisir le perdant —</option>';
+    loserSel.disabled=true; validateBtn.disabled=true; changeBtn.disabled=true;
+    return;
+  }
+  changeBtn.disabled=false;
+  const ci=swissColumns.findIndex(c=>c.includes(winner));
+  const opponents = ci>=0 ? swissColumns[ci].filter(n=>n!==winner) : [];
+  loserSel.innerHTML='<option value="">— Choisir le perdant —</option>'+opponents.map(n=>`<option value="${esc(n)}" ${n===preselectLoser?'selected':''}>${esc(n)}</option>`).join('');
+  loserSel.disabled = opponents.length===0;
+  if(!opponents.includes(preselectLoser)) loserSel.value='';
+  validateBtn.disabled = !loserSel.value;
 }
-function swissPickWinner(name, ci){ swissMatchWinner={name,ci}; swissRenderMatchStepLoser(); }
-function swissRenderMatchStepLoser(){
-  $('swiss-match-step-w').style.display='none';
-  $('swiss-match-step-l').style.display='';
-  $('swiss-match-recap').style.display='none';
-  const ci = swissMatchWinner.ci;
-  const opponents = swissColumns[ci].filter(n=>n!==swissMatchWinner.name);
-  $('swiss-match-l-hint').textContent = `Adversaires possibles dans « ${COL_NAMES[ci]} » (même colonne que ${swissMatchWinner.name}).`;
-  $('swiss-match-grid-l').innerHTML = opponents.length
-    ? opponents.map(n=>`<button class="atp-p-btn" onclick="swissPickLoser('${esc(n)}')">${esc(n)}</button>`).join('')
-    : '<p style="font-size:12px;color:var(--muted);">Personne d\'autre dans cette colonne pour l\'instant.</p>';
+// Changement manuel du vainqueur (l'utilisateur touche le menu) : on ne garde pas l'ancien perdant,
+// puisque les adversaires possibles changent.
+function swissResultWinnerChanged(){ swissUpdateLoserOptions(null); }
+function swissResultLoserChanged(){ $('swiss-result-validate-btn').disabled = !$('swiss-res-loser').value; }
+function swissResultValidate(){
+  const winner=$('swiss-res-winner').value, loser=$('swiss-res-loser').value;
+  if(!winner||!loser) return;
+  swissApplyMatchResult(winner, loser);
+  swissResultReset();
 }
-function swissBackToWinnerStep(){ swissMatchWinner=null; swissRenderMatchStepWinner(); }
-function swissPickLoser(loser){
-  swissMatchLoser=loser;
-  $('swiss-match-step-l').style.display='none';
-  $('swiss-match-recap').style.display='';
-  $('swiss-match-recap-content').innerHTML = `<div style="font-size:14px;">🏆 <strong>${esc(swissMatchWinner.name)}</strong> a gagné contre <strong>${esc(loser)}</strong></div>`;
+function swissResultReset(){
+  $('swiss-res-winner').value='';
+  swissResultWinnerChanged();
 }
-function swissConfirmMatchResult(){
-  if(!swissMatchWinner || !swissMatchLoser) return;
-  swissApplyMatchResult(swissMatchWinner.name, swissMatchLoser);
-  swissCancelMatch();
+// Raccourci : cliquer sur la carte d'un élève sur le tableau le présélectionne comme vainqueur dans le bandeau.
+function swissPickWinnerFromBoard(name){
+  const sel=$('swiss-res-winner');
+  sel.value=name;
+  swissResultWinnerChanged();
+  const bar=$('swiss-result-bar');
+  bar.classList.remove('swiss-result-pulse'); void bar.offsetWidth; bar.classList.add('swiss-result-pulse');
 }
-function swissCancelMatch(){ swissMatchWinner=null; swissMatchLoser=null; closeOv('ov-swiss-match'); }
 function swissApplyMatchResult(winner, loser){
   const ci = swissColumns.findIndex(col=>col.includes(winner));
   if(ci===-1) return;
@@ -2498,6 +2557,47 @@ function swissApplyMatchResult(winner, loser){
   else swissColumns[ci].push(winner); // déjà tout en haut, reste dans sa colonne
   swissRender();
   toast(`✅ ${winner} bat ${loser}`);
+}
+
+/* ── Historique des matchs de la ronde en cours (vue live, pas l'archive) ── */
+let swissHistMode='matchs';
+function openSwissHistoryModal(){
+  swissHistMode='matchs';
+  document.querySelectorAll('#ov-swiss-history .tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.mode==='matchs'));
+  $('swiss-hist-class-lbl').textContent = swissClassName || (getActiveClass()&&getActiveClass().name) || 'Sans nom';
+  renderSwissHistBody();
+  openOv('ov-swiss-history');
+}
+function setSwissHistMode(mode){
+  swissHistMode=mode;
+  document.querySelectorAll('#ov-swiss-history .tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
+  renderSwissHistBody();
+}
+function renderSwissHistBody(){
+  const el=$('swiss-hist-body');
+  if(swissHistMode==='matchs'){
+    if(!swissMatches.length){ el.innerHTML='<div class="empty"><div class="empty-ico">🕓</div><div class="empty-ttl">Aucun match joué</div></div>'; return; }
+    el.innerHTML='<div class="student-list">'+[...swissMatches].reverse().map(m=>{
+      const t=new Date(m.date).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+      return `<div class="cls-item" style="cursor:default;"><div class="cls-item-info"><div class="cls-item-name">🏆 ${esc(m.winner)} <span style="color:var(--muted);font-weight:400;">bat</span> ${esc(m.loser)}</div><div class="cls-item-meta">${t}</div></div></div>`;
+    }).join('')+'</div>';
+  } else {
+    const stats=swissComputeStats({columns:swissColumns, matches:swissMatches});
+    if(!stats.length){ el.innerHTML='<div class="empty"><div class="empty-ico">👤</div><div class="empty-ttl">Aucun élève</div></div>'; return; }
+    el.innerHTML=stats.map((s,i)=>`<div class="cls-item" style="cursor:pointer;flex-direction:column;align-items:stretch;" onclick="toggleSwissHistStudent(${i})">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div class="cls-item-info"><div class="cls-item-name">${esc(s.name)}</div><div class="cls-item-meta">${s.finalCol>=0?COL_NAMES[s.finalCol]:'—'}</div></div>
+        <div style="font-size:12px;font-weight:700;">V:${s.wins} · D:${s.losses}</div>
+      </div>
+      <div class="hist-detail" id="swiss-hist-stu-${i}" style="display:none;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);">${esc(swissOpponentsLabel(s.opponents))}</div>
+    </div>`).join('');
+  }
+}
+function toggleSwissHistStudent(i){
+  const box=$('swiss-hist-stu-'+i); if(!box) return;
+  const willOpen=box.style.display==='none';
+  document.querySelectorAll('[id^="swiss-hist-stu-"]').forEach(b=>b.style.display='none');
+  box.style.display=willOpen?'block':'none';
 }
 
 function swissRender(){
@@ -2524,7 +2624,7 @@ function swissRender(){
     if(!col.length){const emp=document.createElement('div');emp.className='col-empty';emp.textContent='Vide';colBody.appendChild(emp);}
     col.forEach((name,idx)=>{
       const card=document.createElement('div');card.className='stu-card';card.textContent=name;card.draggable=true;
-      card.onclick=()=>{swissOpenMatch(name,ci);};
+      card.onclick=()=>{swissPickWinnerFromBoard(name);};
       card.addEventListener('dragstart',e=>{swissDragSrcCol=ci;swissDragSrcIdx=idx;setTimeout(()=>card.classList.add('dragging'),0);e.dataTransfer.effectAllowed='move';});
       card.addEventListener('dragend',()=>{card.classList.remove('dragging');document.querySelectorAll('.stu-card').forEach(c=>c.classList.remove('drop-above'));});
       card.addEventListener('dragover',e=>{e.preventDefault();e.stopPropagation();colBody.classList.remove('drag-over');document.querySelectorAll('.stu-card').forEach(c=>c.classList.remove('drop-above'));card.classList.add('drop-above');});
@@ -2535,6 +2635,8 @@ function swissRender(){
     colEl.appendChild(hdr);colEl.appendChild(colBody);board.appendChild(colEl);
   });
   swissUpdateUR();
+  swissPopulateResultBar();
+  const lbl=$('swiss-class-lbl'); if(lbl) lbl.textContent = swissClassName || (getActiveClass()&&getActiveClass().name) || 'Classe ?';
   // Persist
   localStorage.setItem(SWISS_LS,JSON.stringify({columns:swissColumns,columnColors:swissColors,matches:swissMatches,className:swissClassName}));
 }
@@ -2584,10 +2686,28 @@ function swissOpenLoad(){
   const keys=Object.keys(saves);
   if(!keys.length){list.innerHTML='<p style="color:var(--muted);text-align:center;font-size:13px;padding:16px 0;">Aucune sauvegarde trouvée</p>';}
   else{keys.forEach(k=>{const item=document.createElement('div');item.className='save-item';
-    item.innerHTML=`<div><div class="save-class">${esc(k)}</div><div class="save-date">${saves[k].date}</div></div>`;
-    item.onclick=()=>{swissSaveState();swissColumns=saves[k].columns.map(c=>[...c]);swissColors=[...saves[k].columnColors];swissUnsaved=false;swissRender();closeOv('ov-swiss-load');toast(`« ${k} » chargée ✓`);};
+    item.innerHTML=`<div><div class="save-class">${esc(k)}</div><div class="save-date">${saves[k].date}</div></div>
+      <button class="btn btn-gray btn-sm" title="Ajouter à l'historique de la gestion de classe" onclick="event.stopPropagation();archiveSwissSaveByName('${esc(k)}')">📥 Historique</button>`;
+    item.onclick=(e)=>{if(e.target.tagName==='BUTTON')return;swissSaveState();swissColumns=saves[k].columns.map(c=>[...c]);swissColors=[...saves[k].columnColors];swissUnsaved=false;swissRender();closeOv('ov-swiss-load');toast(`« ${k} » chargée ✓`);};
     list.appendChild(item);});}
   openOv('ov-swiss-load');
+}
+function archiveSwissSaveByName(key){
+  const saves=getSwissSaves();
+  const save=saves[key];
+  if(!save) return;
+  const hist=getTrnHistory();
+  hist.unshift({
+    id: String(Date.now())+'_'+Math.random().toString(36).slice(2,7),
+    type:'swiss',
+    className: key,
+    date: new Date().toISOString(),
+    label: 'Sauvegarde importée ('+save.date+')',
+    state: {columns:save.columns.map(c=>[...c]), columnColors:save.columnColors?[...save.columnColors]:swissColors, matches:[]}
+  });
+  saveTrnHistoryArr(hist);
+  if(_selectedClassId!==null && _clsTab==='histo') renderClassDetail();
+  toast(`« ${key} » ajoutée à l'historique ✓ (classement final seulement — cette sauvegarde date d'avant le suivi match par match)`);
 }
 function swissOpenReset(){
   if(!swissColumns.some(c=>c.length)){toast('La ronde est déjà vide.');return;}
@@ -2599,17 +2719,29 @@ function swissOpenReset(){
 function archiveSwissSession(label){
   const hasStudents = swissColumns.some(c=>c.length);
   if(!hasStudents && !swissMatches.length) return;
+  // Si aucune classe n'a été explicitement chargée dans la ronde (bandeau jamais cliqué),
+  // on retombe sur la classe active de l'appli pour ne pas perdre le rattachement.
+  const ac=getActiveClass();
+  const finalClassName = swissClassName || (ac && ac.name) || 'Sans nom';
   const hist=getTrnHistory();
   hist.unshift({
     id: String(Date.now())+'_'+Math.random().toString(36).slice(2,7),
     type:'swiss',
-    className: swissClassName || 'Sans nom',
+    className: finalClassName,
     date: new Date().toISOString(),
     label: label || 'Ronde suisse',
     state: {columns:swissColumns.map(c=>[...c]), columnColors:[...swissColors], matches:swissMatches.map(m=>({...m}))}
   });
   if(hist.length>200) hist.length=200;
   saveTrnHistoryArr(hist);
+}
+function swissRenameClass(){
+  const current = swissClassName || (getActiveClass()&&getActiveClass().name) || '';
+  const name = prompt('Nom de la classe pour cette ronde suisse :', current);
+  if(name===null) return;
+  swissClassName = name.trim();
+  swissRender();
+  toast(swissClassName ? `Classe « ${swissClassName} » associée à cette ronde ✓` : 'Nom de classe retiré');
 }
 function swissDoReset(){
   swissSaveState();
