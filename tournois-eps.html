@@ -952,8 +952,9 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
               <button class="btn btn-gray" onclick="startEcoQRScan()">📷 Scanner un QR code</button>
             </div>
             <div id="qr-render-classes" style="display:flex;justify-content:center;padding:10px 0;"></div>
-            <video id="eco-scan-video" class="hidden" playsinline style="width:100%;border-radius:10px;"></video>
+            <video id="eco-scan-video" class="hidden" playsinline muted autoplay style="width:100%;border-radius:10px;"></video>
             <canvas id="eco-scan-canvas" class="hidden"></canvas>
+            <p id="eco-scan-hint" class="hidden" style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px;">Cadre le QR bien net, à 15-20 cm, avec un bon éclairage</p>
           </div>
           <div class="card">
             <div class="card-title">🔄 Synchro de l'historique</div>
@@ -1047,6 +1048,9 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
       </div>
       <div class="board" id="swiss-board"></div>
       <div class="swiss-bar">
+        <div class="btn-grp">
+          <button class="btn btn-primary btn-sm" onclick="swissOpenMatch()">⚡ Résultat</button>
+        </div>
         <div class="btn-grp">
           <button class="btn btn-primary btn-sm" onclick="swissOpenAddStudent()">＋ Ajouter</button>
           <button class="btn btn-primary btn-sm" onclick="swissOpenAddList()">＋ Liste</button>
@@ -1514,6 +1518,34 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
   </div>
 </div>
 
+<!-- Résultat d'un match en Ronde Suisse : vainqueur -> perdant (limité à la même colonne) -->
+<div class="overlay" id="ov-swiss-match">
+  <div class="modal wide">
+    <h2>⚡ Résultat d'un match</h2>
+    <div class="atp-step" id="swiss-match-step-w">
+      <div class="atp-step-lbl"><span class="atp-step-num">1</span> Qui a <strong>gagné</strong> ?</div>
+      <div class="atp-player-grid" id="swiss-match-grid-w"></div>
+    </div>
+    <div class="atp-step" id="swiss-match-step-l" style="display:none;">
+      <div class="atp-step-lbl"><span class="atp-step-num">2</span> Qui a <strong>perdu</strong> ?</div>
+      <div class="atp-step-hint" id="swiss-match-l-hint">Seuls les élèves de la même colonne peuvent s'affronter.</div>
+      <div class="atp-player-grid" id="swiss-match-grid-l"></div>
+      <button class="atp-skip-btn" onclick="swissBackToWinnerStep()">← Changer de vainqueur</button>
+    </div>
+    <div class="atp-recap-box" id="swiss-match-recap" style="display:none;">
+      <div class="atp-recap-title">Confirmer ce résultat ?</div>
+      <div id="swiss-match-recap-content"></div>
+      <div style="display:flex;gap:8px;margin-top:12px;">
+        <button class="atp-btn-cancel" onclick="swissCancelMatch()">✕ Annuler</button>
+        <button class="atp-btn-confirm" onclick="swissConfirmMatchResult()">✅ Confirmer</button>
+      </div>
+    </div>
+    <div class="modal-btns" style="margin-top:10px;">
+      <button class="btn btn-gray" onclick="swissCancelMatch()">Fermer</button>
+    </div>
+  </div>
+</div>
+
 <!-- Nouvelle classe / renommer -->
 <div class="overlay" id="ov-new-class">
   <div class="modal">
@@ -1760,24 +1792,56 @@ function importHistorySync(evt){
   evt.target.value='';
 }
 
+function swissComputeStats(state){
+  const stats={};
+  const ensure=n=>stats[n]||(stats[n]={wins:0,losses:0,opponents:{}});
+  (state.matches||[]).forEach(m=>{
+    const w=ensure(m.winner), l=ensure(m.loser);
+    w.wins++; l.losses++;
+    w.opponents[m.loser]=(w.opponents[m.loser]||0)+1;
+    l.opponents[m.winner]=(l.opponents[m.winner]||0)+1;
+  });
+  const colIndex={};
+  (state.columns||[]).forEach((col,ci)=>col.forEach(n=>{ensure(n);colIndex[n]=ci;}));
+  return Object.keys(stats).map(name=>({
+    name, wins:stats[name].wins, losses:stats[name].losses,
+    opponents:stats[name].opponents, finalCol: colIndex[name]!==undefined?colIndex[name]:-1
+  })).sort((a,b)=> b.finalCol-a.finalCol || b.wins-a.wins || a.name.localeCompare(b.name));
+}
+function swissOpponentsLabel(opponents){
+  const parts=Object.entries(opponents).map(([opp,c])=>c>1?`${opp} (x${c})`:opp);
+  return parts.length ? 'vs '+parts.join(', ') : 'aucun match';
+}
+
 function renderClassHistoryListInto(targetId, className){
   const hist=getTrnHistory().filter(h=>h.className===className);
   const el=$(targetId);
   if(!hist.length){
-    el.innerHTML='<div class="empty"><div class="empty-ico">🕓</div><div class="empty-ttl">Aucun historique</div><p style="font-size:12px;">Il se remplit automatiquement à chaque fin de séance ATP</p></div>';
+    el.innerHTML='<div class="empty"><div class="empty-ico">🕓</div><div class="empty-ttl">Aucun historique</div><p style="font-size:12px;">Il se remplit automatiquement à chaque fin de séance (ATP ou Ronde Suisse)</p></div>';
     return;
   }
   el.innerHTML=hist.map(h=>{
     const d=new Date(h.date);
     const dStr=d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-    const students=(h.state.students||[]);
-    const nStu=students.length, nM=(h.state.matches||[]).length;
-    const ranked=[...students].sort((a,b)=>b.totalPts-a.totalPts);
-    const detail=ranked.map((s,i)=>`<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:12px;"><span>${i+1}. ${esc(s.name)}</span><strong>${s.totalPts} pts</strong></div>`).join('');
+    let icon='🎾', nStu=0, nM=0, detail='';
+    if(h.type==='swiss'){
+      icon='🔀';
+      const stats=swissComputeStats(h.state);
+      nStu=stats.length; nM=(h.state.matches||[]).length;
+      detail=stats.map(s=>`<div style="padding:4px 0;font-size:12px;border-bottom:1px dashed var(--border);">
+        <div style="display:flex;justify-content:space-between;"><strong>${esc(s.name)}</strong><span>${s.finalCol>=0?COL_NAMES[s.finalCol]:'—'} · V:${s.wins} D:${s.losses}</span></div>
+        <div style="color:var(--muted);font-size:11px;">${esc(swissOpponentsLabel(s.opponents))}</div>
+      </div>`).join('');
+    } else {
+      const students=(h.state.students||[]);
+      nStu=students.length; nM=(h.state.matches||[]).length;
+      const ranked=[...students].sort((a,b)=>b.totalPts-a.totalPts);
+      detail=ranked.map((s,i)=>`<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:12px;"><span>${i+1}. ${esc(s.name)}</span><strong>${s.totalPts} pts</strong></div>`).join('');
+    }
     return `<div class="save-item" style="flex-direction:column;align-items:stretch;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <div>
-          <div class="save-name">🎾 ${esc(h.label)} — ${dStr}</div>
+          <div class="save-name">${icon} ${esc(h.label)} — ${dStr}</div>
           <div class="save-date">${nStu} élève(s) · ${nM} match(s)</div>
         </div>
         <div style="display:flex;gap:6px;flex-shrink:0;">
@@ -1802,6 +1866,19 @@ function toggleTrnHistDetail(id){
 function resumeTrnHistory(id){
   const h=getTrnHistory().find(x=>x.id===id);
   if(!h) return;
+  if(h.type==='swiss'){
+    if(!confirm('Reprendre cette séance ? La ronde suisse actuellement en cours sera remplacée.')) return;
+    archiveSwissSession('Remplacée avant reprise'); // on ne perd pas la ronde en cours
+    swissColumns=h.state.columns.map(c=>[...c]);
+    swissColors=h.state.columnColors?[...h.state.columnColors]:swissColors;
+    swissMatches=(h.state.matches||[]).map(m=>({...m}));
+    swissClassName=h.className||'';
+    swissHistory=[];swissFuture=[];
+    swissRender();
+    showScreen('screen-swiss');
+    toast('Ronde reprise ✓');
+    return;
+  }
   if(!confirm('Reprendre cette séance ? Le tournoi ATP actuellement en cours sera remplacé.')) return;
   archiveAtpSession('Remplacée avant reprise'); // on ne perd pas la séance en cours
   A2=JSON.parse(JSON.stringify(h.state));
@@ -2133,8 +2210,12 @@ let ecoScanStream = null;
 function startEcoQRScan(){
   const video = document.getElementById('eco-scan-video');
   const canvas = document.getElementById('eco-scan-canvas');
+  const hint = document.getElementById('eco-scan-hint');
   video.classList.remove('hidden');
-  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}).then(stream=>{
+  if(hint) hint.classList.remove('hidden');
+  // Résolution demandée plus haute que le défaut : un flux plus net aide beaucoup jsQR
+  // (contrairement à une appli de lecture de QR native, qui a accès à des optimisations caméra qu'on n'a pas ici).
+  navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}, width:{ideal:1920}, height:{ideal:1080}}}).then(stream=>{
     ecoScanStream = stream;
     video.srcObject = stream;
     video.play();
@@ -2154,7 +2235,7 @@ function startEcoQRScan(){
             if(r.studentsAdded>0) toast(`✓ ${r.classesRead} classe(s) lue(s), ${r.studentsAdded} élève(s) importé(s) via QR`);
             else toast(`${r.classesRead} classe(s) lue(s) via QR — tous les élèves étaient déjà présents`);
             return;
-          }catch(e){/* pas un QR valide, on continue */}
+          }catch(e){/* pas un QR valide (ou pas encore net), on continue de scanner */}
         }
       }
       requestAnimationFrame(tick);
@@ -2162,12 +2243,15 @@ function startEcoQRScan(){
   }).catch(err=>{
     toast("Impossible d'accéder à la caméra : "+err.message, true);
     video.classList.add('hidden');
+    if(hint) hint.classList.add('hidden');
   });
 }
 function stopEcoQRScan(){
   if(ecoScanStream){ ecoScanStream.getTracks().forEach(t=>t.stop()); ecoScanStream=null; }
   const video = document.getElementById('eco-scan-video');
+  const hint = document.getElementById('eco-scan-hint');
   if(video){ video.classList.add('hidden'); }
+  if(hint) hint.classList.add('hidden');
 }
 
 function updateHomeBanner(){
@@ -2324,6 +2408,8 @@ const SWATCHES=['#FFD6D6','#FFB3B3','#FFCBA8','#FFE8A0','#FFFAA0','#CFFFC0','#B0
 
 let swissColumns=Array(9).fill(null).map(()=>[]);
 let swissColors=['#FFD6D6','#FFE4C2','#FFF5BC','#D4F5CE','#C4E6FF','#D4CCFF','#EEC4FF','#FFD0E6','#C2F5EC'];
+let swissMatches=[]; // {winner, loser, date} — historique détaillé des résultats, pour l'export/historique
+let swissClassName='';
 let swissHistory=[],swissFuture=[];
 let swissDragSrcCol=null,swissDragSrcIdx=null;
 let swissUnsaved=false;
@@ -2331,19 +2417,87 @@ let swissUnsaved=false;
 function swissInit(){
   // Possibly auto-load from localStorage
   const saved=localStorage.getItem(SWISS_LS);
-  if(saved){try{const d=JSON.parse(saved);swissColumns=d.columns.map(c=>[...c]);swissColors=[...d.columnColors];}catch{}}
+  if(saved){try{
+    const d=JSON.parse(saved);
+    swissColumns=d.columns.map(c=>[...c]);
+    swissColors=[...d.columnColors];
+    swissMatches=Array.isArray(d.matches)?d.matches.map(m=>({...m})):[];
+    swissClassName=d.className||'';
+  }catch{}}
   showLoadBars();
   swissRender();
 }
 
-function swissSnap(){return{columns:swissColumns.map(c=>[...c]),columnColors:[...swissColors]};}
+function swissSnap(){return{columns:swissColumns.map(c=>[...c]),columnColors:[...swissColors],matches:swissMatches.map(m=>({...m})),className:swissClassName};}
 function swissSaveState(){swissHistory.push(swissSnap());swissFuture=[];swissUnsaved=true;swissUpdateUR();}
-function swissUndo(){if(!swissHistory.length)return;swissFuture.push(swissSnap());const p=swissHistory.pop();swissColumns=p.columns.map(c=>[...c]);swissColors=[...p.columnColors];swissUnsaved=true;swissRender();swissUpdateUR();}
-function swissRedo(){if(!swissFuture.length)return;swissHistory.push(swissSnap());const n=swissFuture.pop();swissColumns=n.columns.map(c=>[...c]);swissColors=[...n.columnColors];swissUnsaved=true;swissRender();swissUpdateUR();}
+function swissUndo(){if(!swissHistory.length)return;swissFuture.push(swissSnap());const p=swissHistory.pop();swissColumns=p.columns.map(c=>[...c]);swissColors=[...p.columnColors];swissMatches=p.matches?p.matches.map(m=>({...m})):[];swissClassName=p.className||'';swissUnsaved=true;swissRender();swissUpdateUR();}
+function swissRedo(){if(!swissFuture.length)return;swissHistory.push(swissSnap());const n=swissFuture.pop();swissColumns=n.columns.map(c=>[...c]);swissColors=[...n.columnColors];swissMatches=n.matches?n.matches.map(m=>({...m})):[];swissClassName=n.className||'';swissUnsaved=true;swissRender();swissUpdateUR();}
 function swissUpdateUR(){$('swiss-undo-btn').disabled=!swissHistory.length;$('swiss-redo-btn').disabled=!swissFuture.length;}
 
 function swissDarken(hex,amt){
   try{let c=hex.replace('#','');if(c.length===3)c=c.split('').map(x=>x+x).join('');if(c.length!==6)return hex;const[r,g,b]=[0,2,4].map(i=>Math.max(0,Math.min(255,parseInt(c.slice(i,i+2),16)+amt)));return'#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');}catch{return hex;}
+}
+
+/* ── Saisie d'un résultat (vainqueur -> perdant, limité à la même colonne) ── */
+let swissMatchWinner=null, swissMatchLoser=null;
+
+function swissAllStudents(){
+  const arr=[];
+  swissColumns.forEach((col,ci)=>col.forEach(name=>arr.push({name,ci})));
+  return arr;
+}
+function swissOpenMatch(preselectName, preselectCi){
+  swissMatchWinner = (preselectName!==undefined) ? {name:preselectName, ci:preselectCi} : null;
+  swissMatchLoser = null;
+  openOv('ov-swiss-match');
+  if(swissMatchWinner) swissRenderMatchStepLoser();
+  else swissRenderMatchStepWinner();
+}
+function swissRenderMatchStepWinner(){
+  $('swiss-match-step-w').style.display='';
+  $('swiss-match-step-l').style.display='none';
+  $('swiss-match-recap').style.display='none';
+  const all = swissAllStudents();
+  $('swiss-match-grid-w').innerHTML = all.length
+    ? all.map(s=>`<button class="atp-p-btn" style="border-color:${swissColors[s.ci]};" onclick="swissPickWinner('${esc(s.name)}',${s.ci})">${esc(s.name)} <span style="opacity:.55;font-size:10px;">(${COL_NAMES[s.ci]})</span></button>`).join('')
+    : '<p style="font-size:12px;color:var(--muted);">Aucun élève sur le tableau</p>';
+}
+function swissPickWinner(name, ci){ swissMatchWinner={name,ci}; swissRenderMatchStepLoser(); }
+function swissRenderMatchStepLoser(){
+  $('swiss-match-step-w').style.display='none';
+  $('swiss-match-step-l').style.display='';
+  $('swiss-match-recap').style.display='none';
+  const ci = swissMatchWinner.ci;
+  const opponents = swissColumns[ci].filter(n=>n!==swissMatchWinner.name);
+  $('swiss-match-l-hint').textContent = `Adversaires possibles dans « ${COL_NAMES[ci]} » (même colonne que ${swissMatchWinner.name}).`;
+  $('swiss-match-grid-l').innerHTML = opponents.length
+    ? opponents.map(n=>`<button class="atp-p-btn" onclick="swissPickLoser('${esc(n)}')">${esc(n)}</button>`).join('')
+    : '<p style="font-size:12px;color:var(--muted);">Personne d\'autre dans cette colonne pour l\'instant.</p>';
+}
+function swissBackToWinnerStep(){ swissMatchWinner=null; swissRenderMatchStepWinner(); }
+function swissPickLoser(loser){
+  swissMatchLoser=loser;
+  $('swiss-match-step-l').style.display='none';
+  $('swiss-match-recap').style.display='';
+  $('swiss-match-recap-content').innerHTML = `<div style="font-size:14px;">🏆 <strong>${esc(swissMatchWinner.name)}</strong> a gagné contre <strong>${esc(loser)}</strong></div>`;
+}
+function swissConfirmMatchResult(){
+  if(!swissMatchWinner || !swissMatchLoser) return;
+  swissApplyMatchResult(swissMatchWinner.name, swissMatchLoser);
+  swissCancelMatch();
+}
+function swissCancelMatch(){ swissMatchWinner=null; swissMatchLoser=null; closeOv('ov-swiss-match'); }
+function swissApplyMatchResult(winner, loser){
+  const ci = swissColumns.findIndex(col=>col.includes(winner));
+  if(ci===-1) return;
+  swissSaveState();
+  swissMatches.push({winner, loser, date:new Date().toISOString()});
+  const idx = swissColumns[ci].indexOf(winner);
+  swissColumns[ci].splice(idx,1);
+  if(ci<8) swissColumns[ci+1].push(winner);
+  else swissColumns[ci].push(winner); // déjà tout en haut, reste dans sa colonne
+  swissRender();
+  toast(`✅ ${winner} bat ${loser}`);
 }
 
 function swissRender(){
@@ -2370,7 +2524,7 @@ function swissRender(){
     if(!col.length){const emp=document.createElement('div');emp.className='col-empty';emp.textContent='Vide';colBody.appendChild(emp);}
     col.forEach((name,idx)=>{
       const card=document.createElement('div');card.className='stu-card';card.textContent=name;card.draggable=true;
-      card.onclick=()=>{if(ci<8){swissSaveState();swissColumns[ci].splice(idx,1);swissColumns[ci+1].push(name);swissRender();}};
+      card.onclick=()=>{swissOpenMatch(name,ci);};
       card.addEventListener('dragstart',e=>{swissDragSrcCol=ci;swissDragSrcIdx=idx;setTimeout(()=>card.classList.add('dragging'),0);e.dataTransfer.effectAllowed='move';});
       card.addEventListener('dragend',()=>{card.classList.remove('dragging');document.querySelectorAll('.stu-card').forEach(c=>c.classList.remove('drop-above'));});
       card.addEventListener('dragover',e=>{e.preventDefault();e.stopPropagation();colBody.classList.remove('drag-over');document.querySelectorAll('.stu-card').forEach(c=>c.classList.remove('drop-above'));card.classList.add('drop-above');});
@@ -2382,7 +2536,7 @@ function swissRender(){
   });
   swissUpdateUR();
   // Persist
-  localStorage.setItem(SWISS_LS,JSON.stringify({columns:swissColumns,columnColors:swissColors}));
+  localStorage.setItem(SWISS_LS,JSON.stringify({columns:swissColumns,columnColors:swissColors,matches:swissMatches,className:swissClassName}));
 }
 
 function swissDropTo(tc,ti){
@@ -2408,6 +2562,7 @@ function loadClassIntoSwiss(){
   const ac=getActiveClass();if(!ac)return;
   swissSaveState();
   ac.students.forEach(n=>swissColumns[0].push(n));
+  swissClassName=ac.name;
   swissRender();
   toast(`${ac.students.length} élèves chargés dans la ronde ✓`);
 }
@@ -2441,7 +2596,31 @@ function swissOpenReset(){
   else{msg.textContent='Tous les élèves seront retirés du tableau.';msg.style.color='var(--muted)';}
   openOv('ov-swiss-reset');
 }
-function swissDoReset(){swissSaveState();swissColumns=Array(9).fill(null).map(()=>[]);swissUnsaved=true;closeOv('ov-swiss-reset');swissRender();toast('Ronde vierge ✓');}
+function archiveSwissSession(label){
+  const hasStudents = swissColumns.some(c=>c.length);
+  if(!hasStudents && !swissMatches.length) return;
+  const hist=getTrnHistory();
+  hist.unshift({
+    id: String(Date.now())+'_'+Math.random().toString(36).slice(2,7),
+    type:'swiss',
+    className: swissClassName || 'Sans nom',
+    date: new Date().toISOString(),
+    label: label || 'Ronde suisse',
+    state: {columns:swissColumns.map(c=>[...c]), columnColors:[...swissColors], matches:swissMatches.map(m=>({...m}))}
+  });
+  if(hist.length>200) hist.length=200;
+  saveTrnHistoryArr(hist);
+}
+function swissDoReset(){
+  swissSaveState();
+  archiveSwissSession('Ronde terminée');
+  swissColumns=Array(9).fill(null).map(()=>[]);
+  swissMatches=[];
+  swissUnsaved=true;
+  closeOv('ov-swiss-reset');
+  swissRender();
+  toast('Ronde vierge ✓ (archivée dans l\'historique)');
+}
 
 /* ═══════════════════════════════════════════
    ATP v2 — EPS Tournoi par points
