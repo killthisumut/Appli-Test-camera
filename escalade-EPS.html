@@ -713,7 +713,17 @@ function gestionClassesScreen(){
     <div id="qr-render-classes"></div>
     <video id="scan-video" class="hidden" playsinline></video>
     <canvas id="scan-canvas" class="hidden"></canvas>
-  </div>`;
+  </div>
+  <div class="card">
+    <p style="margin-top:0;font-size:13px;color:var(--ink-soft);">Exporte l'historique de tes séances pour le synchroniser avec tes autres appareils.</p>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-outline btn-block" onclick="exportSessionHistory()">📥 Exporter séances</button>
+      <label class="btn btn-outline btn-block" style="text-align:center;">
+        📤 Importer séances
+        <input type="file" accept="application/json" style="display:none;" onchange="importSessionHistory(event)">
+      </label>
+    </div>
+  </div>
 }
 function addClass(){
   const input = document.getElementById('new-class-name');
@@ -1149,6 +1159,70 @@ function importBrevetsTransfer(evt){
     }catch(err){ alertModal('Fichier invalide : '+err.message, 'Erreur'); }
   };
   reader.readAsText(file);
+}
+
+/* ---------- Export / import historique des séances (harmonisation écosystème EPS) ---------- */
+function buildSessionHistoryExportPayload(){
+  return {
+    type:'escalade-sessions-export',
+    version:1,
+    source:'escalade',
+    exportedAt:new Date().toISOString(),
+    sessions: DB.sessions || []
+  };
+}
+
+function exportSessionHistory(){
+  downloadJSON(buildSessionHistoryExportPayload(), 'historique-escalade-'+new Date().toISOString().split('T')[0]+'.json');
+}
+
+function sessionHistoryContentKey(s){
+  return JSON.stringify({classId:s.classId, date:s.date, entriesCount:s.entries?.length||0});
+}
+
+function applySessionHistoryImport(data){
+  const incoming = Array.isArray(data.sessions) ? data.sessions : [];
+  if(!Array.isArray(incoming)) throw new Error('format invalide');
+  
+  if(!Array.isArray(DB.sessions)) DB.sessions = [];
+  
+  const localKeys = new Set(DB.sessions.map(sessionHistoryContentKey));
+  let added = 0, skipped = 0;
+  
+  incoming.forEach(s=>{
+    const key = sessionHistoryContentKey(s);
+    if(localKeys.has(key)){
+      skipped++;
+    }else{
+      if(!s.id) s.id = 'sess_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
+      DB.sessions.unshift(s);
+      added++;
+    }
+  });
+  
+  if(DB.sessions.length > 500) DB.sessions.length = 500;
+  saveDB();
+  showToast(`${added} séance(s) ajoutée(s), ${skipped} doublon(s) ignoré(s)`);
+}
+
+function importSessionHistory(evt){
+  const file = evt.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    try{
+      const raw = e.target.result;
+      const clean = raw.replace(/^\ufeff/,'');
+      const data = JSON.parse(clean);
+      if(data.type === 'escalade-sessions-export' || data.type === 'eps-session-history-export'){
+        applySessionHistoryImport(data);
+      }else{
+        alertModal('Type de fichier invalide (attendre escalade-sessions-export)', 'Erreur');
+      }
+    }catch(err){ alertModal('Erreur import: '+err.message, 'Erreur'); }
+  };
+  reader.readAsText(file);
+  evt.target.value = '';
 }
 function handleBrevetsQRData(data){
   mergeBrevetData(data.brevetData || {});
