@@ -955,6 +955,17 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
             <video id="eco-scan-video" class="hidden" playsinline style="width:100%;border-radius:10px;"></video>
             <canvas id="eco-scan-canvas" class="hidden"></canvas>
           </div>
+          <div class="card">
+            <div class="card-title">🔄 Synchro de l'historique</div>
+            <p style="margin-top:0;font-size:12px;color:var(--muted);">Fait passer toutes tes séances/tournois archivés d'un appareil à un autre. Rien n'est jamais écrasé : une séance déjà présente à l'identique est ignorée, une séance modifiée est ajoutée à côté de l'ancienne.</p>
+            <div class="btn-grp">
+              <button class="btn btn-primary" onclick="exportHistorySync()">⬇ Exporter l'historique</button>
+              <label class="btn btn-green" style="text-align:center;">
+                ⬆ Importer l'historique
+                <input type="file" accept="application/json" style="display:none;" onchange="importHistorySync(event)">
+              </label>
+            </div>
+          </div>
         </div>
         <div>
           <div class="card">
@@ -1695,6 +1706,60 @@ function archiveAtpSession(label){
   saveTrnHistoryArr(hist);
 }
 
+/* ---------- Synchro de l'historique entre appareils (export/import complet, sans doublon) ---------- */
+// Signature de contenu d'une séance, indépendante de son id (qui, lui, est régénéré à chaque import
+// pour ne jamais entrer en collision entre deux appareils).
+function historyContentKey(h){
+  return JSON.stringify({className:h.className, type:h.type, label:h.label, date:h.date, state:h.state});
+}
+function buildHistoryExportPayload(){
+  return { type:'eps-history-export', version:1, source:'tournoi', exportedAt:new Date().toISOString(), history:getTrnHistory() };
+}
+function exportHistorySync(){
+  downloadJSON(buildHistoryExportPayload(), 'historique-tournoi.json');
+}
+function applyHistoryImportSync(data){
+  const incoming = Array.isArray(data.history) ? data.history : (Array.isArray(data)? data : []);
+  if(!Array.isArray(incoming)) throw new Error('format invalide (pas de liste de séances)');
+  const local = getTrnHistory();
+  const localKeys = new Set(local.map(historyContentKey));
+  let added=0, skipped=0;
+  incoming.forEach(h=>{
+    if(!h || !h.className || !h.state) return;
+    const key = historyContentKey(h);
+    if(localKeys.has(key)){ skipped++; return; } // doublon strict (données identiques) -> on garde l'ancienne, on n'importe pas
+    // même nom de classe + même intitulé de séance, mais contenu différent -> on distingue les deux versions
+    const sameLabelDifferentContent = local.some(l=>l.className===h.className && l.label===h.label);
+    const label = (sameLabelDifferentContent && !/\(modifiée\)$/.test(h.label||'')) ? (h.label+' (modifiée)') : h.label;
+    const entry = {
+      id: String(Date.now())+'_'+Math.random().toString(36).slice(2,7),
+      type: h.type||'atp', className: h.className, date: h.date||new Date().toISOString(),
+      label, state: h.state
+    };
+    local.push(entry);
+    localKeys.add(historyContentKey(entry));
+    added++;
+  });
+  local.sort((a,b)=> new Date(b.date) - new Date(a.date));
+  saveTrnHistoryArr(local);
+  if(_selectedClassId!==null && _clsTab==='histo') renderClassDetail();
+  return {added, skipped, read:incoming.length};
+}
+function importHistorySync(evt){
+  const file = evt.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    try{
+      const r = applyHistoryImportSync(JSON.parse(stripBOM(e.target.result)));
+      if(r.added>0) toast(`✓ ${r.read} séance(s) lue(s), ${r.added} nouvelle(s) importée(s)`+(r.skipped?` (${r.skipped} déjà à jour)`:''));
+      else toast(`${r.read} séance(s) lue(s) — déjà toutes à jour sur cet appareil`);
+    }catch(err){ toast('Fichier invalide : '+err.message, true); }
+  };
+  reader.readAsText(file);
+  evt.target.value='';
+}
+
 function renderClassHistoryListInto(targetId, className){
   const hist=getTrnHistory().filter(h=>h.className===className);
   const el=$(targetId);
@@ -1986,7 +2051,14 @@ function buildClassesExportPayload(){
     exportedAt:new Date().toISOString(),
     classes: classes.map(cls=>({
       name: cls.name,
-      students: (cls.students||[]).map(n=>({prenom:n, nom:'', genre:getStudentGenre(cls.name,n)}))
+      // On omet les champs vides (nom, genre) : payload plus compact, sans rien changer au schéma
+      // attendu par EPS Run (une clé absente équivaut à une chaîne vide côté lecture).
+      students: (cls.students||[]).map(n=>{
+        const genre = getStudentGenre(cls.name,n);
+        const o = {prenom:n};
+        if(genre) o.genre = genre;
+        return o;
+      })
     }))
   };
 }
@@ -1999,11 +2071,15 @@ function exportClassesEcoQR(){
   const holder = document.getElementById('qr-render-classes');
   if(!holder) return;
   holder.innerHTML = '';
-  if(json.length > 2200){
-    holder.innerHTML = '<p style="font-size:12px;color:var(--muted);text-align:center;padding:10px;">Trop de données pour un QR code — utilise le fichier exporté.</p>';
+  if(json.length > 1300){
+    holder.innerHTML = '<p style="font-size:12px;color:var(--muted);text-align:center;padding:10px;">Trop de données pour un QR code fiable à scanner ('+json.length+' caractères) — utilise le fichier exporté à la place.</p>';
     return;
   }
-  try{ new QRCode(holder, {text: json, width:220, height:220}); }
+  try{
+    // correctLevel L (au lieu du défaut H) : QR beaucoup moins dense pour la même quantité de
+    // données, donc bien plus facile à scanner avec un téléphone à une distance normale.
+    new QRCode(holder, {text: json, width:260, height:260, correctLevel: QRCode.CorrectLevel.L});
+  }
   catch(e){ holder.innerHTML = '<p style="font-size:12px;color:var(--muted);padding:10px;">QR indisponible hors-ligne — utilise le fichier exporté.</p>'; }
 }
 function studentDisplayName(st){
@@ -2012,39 +2088,46 @@ function studentDisplayName(st){
 }
 function applyClassesImportEco(data){
   const incomingClasses = data.classes || (Array.isArray(data)? data : []);
-  if(!Array.isArray(incomingClasses)) throw new Error('format invalide');
+  if(!Array.isArray(incomingClasses)) throw new Error('format invalide (pas de liste de classes)');
   const classes = getClasses();
-  let count = 0;
+  let studentsAdded = 0, classesCreated = 0;
   incomingClasses.forEach(c=>{
-    const name = c.name;
+    const name = (c && (c.name || c.className || '')).toString().trim();
     if(!name) return;
-    // retrouver une classe locale existante avec le même nom (insensible à la casse), sinon en créer une nouvelle
     let target = classes.find(k=>k.name.toLowerCase()===name.toLowerCase());
-    if(!target){ target = {id:Date.now()+Math.random(), name, students:[]}; classes.push(target); }
+    if(!target){ target = {id:Date.now()+Math.random(), name, students:[]}; classes.push(target); classesCreated++; }
+    // students accepté sous deux formes : tableau d'objets {prenom,nom,genre} (format standard),
+    // ou tableau de simples chaînes (au cas où un fichier aurait été édité à la main)
     const incomingStudents = Array.isArray(c.students) ? c.students : [];
-    incomingStudents.forEach(st=>{
+    incomingStudents.forEach(raw=>{
+      const st = (typeof raw === 'string') ? {prenom:raw} : (raw||{});
       const display = studentDisplayName(st).trim();
       if(!display) return;
       const exists = target.students.some(n=>n.toLowerCase()===display.toLowerCase());
-      if(!exists){ target.students.push(display); count++; }
+      if(!exists){ target.students.push(display); studentsAdded++; }
       if(st.genre) setStudentGenre(target.name, display, st.genre);
     });
   });
   saveClasses(classes);
   renderClassList(); renderClassDetail(); updateHomeBanner(); updateHeaderClass(); showLoadBars();
-  return count;
+  return {studentsAdded, classesCreated, classesRead: incomingClasses.length};
 }
+// Nettoie un éventuel BOM (souvent ajouté par certains éditeurs/OS lors de la ré-écriture d'un fichier .json)
+// qui ferait échouer JSON.parse silencieusement sans que le fichier ne soit "vraiment" invalide.
+function stripBOM(text){ return text.charCodeAt(0) === 0xFEFF ? text.slice(1) : text; }
 function importClassesEco(evt){
   const file = evt.target.files[0];
   if(!file) return;
   const reader = new FileReader();
   reader.onload = e=>{
     try{
-      const count = applyClassesImportEco(JSON.parse(e.target.result));
-      toast(count>0 ? `${count} élève(s) importé(s) ✓` : 'Classes importées (aucun nouvel élève)');
+      const r = applyClassesImportEco(JSON.parse(stripBOM(e.target.result)));
+      if(r.studentsAdded>0) toast(`✓ ${r.classesRead} classe(s) lue(s), ${r.studentsAdded} élève(s) importé(s)`+(r.classesCreated?` (${r.classesCreated} nouvelle(s) classe(s))`:''));
+      else toast(`${r.classesRead} classe(s) lue(s) — tous les élèves étaient déjà présents`);
     }catch(err){ toast('Fichier invalide : '+err.message, true); }
   };
   reader.readAsText(file);
+  evt.target.value=''; // permet de réimporter le même fichier une seconde fois si besoin
 }
 let ecoScanStream = null;
 function startEcoQRScan(){
@@ -2062,13 +2145,14 @@ function startEcoQRScan(){
         const ctx = canvas.getContext('2d');
         ctx.drawImage(video, 0,0, canvas.width, canvas.height);
         const img = ctx.getImageData(0,0,canvas.width,canvas.height);
-        const code = jsQR(img.data, img.width, img.height);
+        const code = jsQR(img.data, img.width, img.height, {inversionAttempts:'attemptBoth'});
         if(code){
           try{
             const data = JSON.parse(code.data);
             stopEcoQRScan();
-            const count = applyClassesImportEco(data);
-            toast(count>0 ? `${count} élève(s) importé(s) via QR ✓` : 'Classes importées via QR code');
+            const r = applyClassesImportEco(data);
+            if(r.studentsAdded>0) toast(`✓ ${r.classesRead} classe(s) lue(s), ${r.studentsAdded} élève(s) importé(s) via QR`);
+            else toast(`${r.classesRead} classe(s) lue(s) via QR — tous les élèves étaient déjà présents`);
             return;
           }catch(e){/* pas un QR valide, on continue */}
         }
