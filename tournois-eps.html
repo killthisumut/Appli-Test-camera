@@ -875,6 +875,7 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
     <div class="hdr-mode" id="hdr-mode" style="display:none"></div>
     <div class="hdr-class-badge" id="hdr-class-badge" style="display:none"></div>
     <div class="hdr-right">
+      <button class="theme-btn" onclick="openGitHubSetupModal()" id="gh-setup-btn" title="Configurer GitHub Sync">☁️</button>
       <button class="theme-btn" onclick="toggleTheme()" id="theme-btn" title="Mode clair/sombre">🌙</button>
       <button class="home-btn" id="home-btn-top" onclick="goHome()" style="display:none">⌂ Accueil</button>
     </div>
@@ -1631,6 +1632,166 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
      JAVASCRIPT
 ═══════════════════════════════════════════ -->
 <script>
+/* ═══════════════════════════════════════════════
+   GITHUB SYNC - VARIABLES & CONSTANTES
+═══════════════════════════════════════════════ */
+const GITHUB_SYNC_KEY = 'eps_github_config_v1';
+let gitHubConfig = {username: null, token: null};
+let gitHubSyncTimer = null;
+
+function loadGitHubConfig(){
+  const saved = localStorage.getItem(GITHUB_SYNC_KEY);
+  if(saved){
+    try{
+      gitHubConfig = JSON.parse(saved);
+    }catch(e){ console.error('GitHub config load failed:', e); }
+  }
+}
+
+function saveGitHubConfig(){
+  localStorage.setItem(GITHUB_SYNC_KEY, JSON.stringify(gitHubConfig));
+}
+
+function isGitHubConfigured(){
+  return gitHubConfig.username && gitHubConfig.token;
+}
+
+function openGitHubSetupModal(){
+  const modal = document.getElementById('gh-setup-modal');
+  if(!modal) return;
+  document.getElementById('gh-username-input').value = gitHubConfig.username || '';
+  document.getElementById('gh-token-input').value = gitHubConfig.token || '';
+  modal.style.display = 'flex';
+}
+
+function closeGitHubSetupModal(){
+  const modal = document.getElementById('gh-setup-modal');
+  if(modal) modal.style.display = 'none';
+}
+
+function saveGitHubSetup(){
+  const username = document.getElementById('gh-username-input').value.trim();
+  const token = document.getElementById('gh-token-input').value.trim();
+  
+  if(!username || !token){
+    alert('⚠️ Veuillez remplir username et token');
+    return;
+  }
+  
+  gitHubConfig = {username, token};
+  saveGitHubConfig();
+  closeGitHubSetupModal();
+  showToast('✅ Configuration GitHub sauvegardée');
+  gitHubSyncAll();
+}
+
+/* GitHub API Functions */
+async function gitHubFetch(path){
+  if(!isGitHubConfigured()) return null;
+  const url = `https://api.github.com/repos/${gitHubConfig.username}/Appli-Test-camera/contents/${path}`;
+  try{
+    const res = await fetch(url, {
+      headers: {'Authorization': `token ${gitHubConfig.token}`, 'Accept': 'application/vnd.github.v3.raw'}
+    });
+    if(res.status === 404) return null;
+    if(!res.ok) throw new Error(`GitHub fetch failed: ${res.status}`);
+    return await res.text();
+  }catch(e){
+    console.error('GitHub fetch error:', e);
+    return null;
+  }
+}
+
+async function gitHubCommit(path, content, message){
+  if(!isGitHubConfigured()) return false;
+  const url = `https://api.github.com/repos/${gitHubConfig.username}/Appli-Test-camera/contents/${path}`;
+  try{
+    const getRes = await fetch(url, {
+      headers: {'Authorization': `token ${gitHubConfig.token}`, 'Accept': 'application/vnd.github.v3+json'}
+    });
+    let sha = null;
+    if(getRes.ok){
+      const data = await getRes.json();
+      sha = data.sha;
+    }
+    const body = {
+      message: message || `Update ${path}`,
+      content: btoa(unescape(encodeURIComponent(content))),
+      branch: 'main'
+    };
+    if(sha) body.sha = sha;
+    const commitRes = await fetch(url, {
+      method: 'PUT',
+      headers: {'Authorization': `token ${gitHubConfig.token}`, 'Content-Type': 'application/json'},
+      body: JSON.stringify(body)
+    });
+    if(!commitRes.ok) throw new Error(`GitHub commit failed: ${commitRes.status}`);
+    return true;
+  }catch(e){
+    console.error('GitHub commit error:', e);
+    return false;
+  }
+}
+
+async function gitHubSyncClasses(){
+  const classes = tryParse(localStorage.getItem('eps_classes_v1')) || {};
+  const infos = tryParse(localStorage.getItem('trn_class_infos_v1')) || {};
+  const payload = {classes, infos, synced: new Date().toISOString()};
+  await gitHubCommit('sync-data/tournoi-eps/classes.json', JSON.stringify(payload, null, 2), 'Sync classes');
+}
+
+async function gitHubSyncHistory(){
+  const history = tryParse(localStorage.getItem('trn_history_v1')) || [];
+  const payload = {history, synced: new Date().toISOString()};
+  await gitHubCommit('sync-data/tournoi-eps/history.json', JSON.stringify(payload, null, 2), 'Sync history');
+}
+
+async function gitHubFetchClasses(){
+  const raw = await gitHubFetch('sync-data/tournoi-eps/classes.json');
+  if(!raw) return;
+  try{
+    const data = JSON.parse(raw);
+    const localClasses = tryParse(localStorage.getItem('eps_classes_v1')) || {};
+    const remoteClasses = data.classes || {};
+    const merged = {...localClasses, ...remoteClasses};
+    localStorage.setItem('eps_classes_v1', JSON.stringify(merged));
+    localStorage.setItem('trn_class_infos_v1', JSON.stringify(data.infos || {}));
+  }catch(e){ console.error('GitHub fetch classes error:', e); }
+}
+
+async function gitHubFetchHistory(){
+  const raw = await gitHubFetch('sync-data/tournoi-eps/history.json');
+  if(!raw) return;
+  try{
+    const data = JSON.parse(raw);
+    const remoteHistory = data.history || [];
+    const localHistory = tryParse(localStorage.getItem('trn_history_v1')) || [];
+    const merged = {};
+    [...localHistory, ...remoteHistory].forEach(h => {merged[h.id] = h;});
+    const deduped = Object.values(merged).slice(0, 500);
+    localStorage.setItem('trn_history_v1', JSON.stringify(deduped));
+  }catch(e){ console.error('GitHub fetch history error:', e); }
+}
+
+async function gitHubSyncAll(){
+  if(!isGitHubConfigured()) return;
+  await gitHubSyncClasses();
+  await gitHubSyncHistory();
+}
+
+function queueGitHubSync(){
+  if(!isGitHubConfigured()) return;
+  if(gitHubSyncTimer) clearTimeout(gitHubSyncTimer);
+  gitHubSyncTimer = setTimeout(gitHubSyncAll, 30000);
+}
+
+async function gitHubFetchAllOnLoad(){
+  if(!isGitHubConfigured()) return;
+  await gitHubFetchClasses();
+  await gitHubFetchHistory();
+}
+
+
 'use strict';
 
 /* ═══════════════════════════════════════════
@@ -1738,6 +1899,7 @@ function setStudentGenre(className, name, genre){
   if(!d[className][name]) d[className][name]={genre:''};
   d[className][name].genre=genre;
   saveClassInfos(d);
+  queueGitHubSync();
 }
 
 /* ---------- Historique des séances / tournois (à l'image d'EPS Run) ---------- */
@@ -1757,6 +1919,7 @@ function archiveAtpSession(label){
   });
   if(hist.length>200) hist.length=200;
   saveTrnHistoryArr(hist);
+  queueGitHubSync();
 }
 
 /* ---------- Synchro de l'historique entre appareils (export/import complet, sans doublon) ---------- */
@@ -1780,8 +1943,7 @@ function applyHistoryImportSync(data){
   incoming.forEach(h=>{
     if(!h || !h.className || !h.state) return;
     const key = historyContentKey(h);
-    if(localKeys.has(key)){ skipped++; return; } // doublon strict (données identiques) -> on garde l'ancienne, on n'importe pas
-    // même nom de classe + même intitulé de séance, mais contenu différent -> on distingue les deux versions
+    if(localKeys.has(key)){ skipped++; return; }
     const sameLabelDifferentContent = local.some(l=>l.className===h.className && l.label===h.label);
     const label = (sameLabelDifferentContent && !/\(modifiée\)$/.test(h.label||'')) ? (h.label+' (modifiée)') : h.label;
     const entry = {
@@ -1795,6 +1957,7 @@ function applyHistoryImportSync(data){
   });
   local.sort((a,b)=> new Date(b.date) - new Date(a.date));
   saveTrnHistoryArr(local);
+  if(added>0) queueGitHubSync();
   if(_selectedClassId!==null && _clsTab==='histo') renderClassDetail();
   return {added, skipped, read:incoming.length};
 }
@@ -1959,7 +2122,6 @@ function confirmNewOrRenameClass(){
       const oldName=cls.name;
       cls.name=name;
       saveClasses(classes);
-      // Le genre et l'historique sont indexés par nom de classe : on les fait suivre au renommage
       const infos=getClassInfos();
       if(infos[oldName]){ infos[name]=infos[oldName]; delete infos[oldName]; saveClassInfos(infos); }
       const hist=getTrnHistory();
@@ -1979,6 +2141,7 @@ function confirmNewOrRenameClass(){
   }
   closeOv('ov-new-class');
   renderClassList(); renderClassDetail();
+  queueGitHubSync();
 }
 
 function selectClass(id){
@@ -1997,6 +2160,7 @@ function deleteClassById(id){
   if(String(_selectedClassId)===String(id)) _selectedClassId=null;
   renderClassList(); renderClassDetail();
   toast(`Classe « ${cls.name} » supprimée`);
+  queueGitHubSync();
 }
 
 function loadSelectedClass(){
@@ -2040,6 +2204,7 @@ function confirmAddStudents(){
   closeOv('ov-add-students');
   renderClassList(); renderClassDetail();
   toast(added ? `${added} élève(s) ajouté(s) ✓` : 'Ces élèves étaient déjà dans la classe');
+  queueGitHubSync();
 }
 function removeStudentFromClass(name){
   const cls=findClass(_selectedClassId); if(!cls) return;
@@ -2050,6 +2215,7 @@ function removeStudentFromClass(name){
   saveClasses(classes);
   syncActiveClassIfLoaded(target);
   renderClassList(); renderClassDetail();
+  queueGitHubSync();
 }
 function renameStudentInClass(oldName){
   const cls=findClass(_selectedClassId); if(!cls) return;
@@ -2067,7 +2233,6 @@ function renameStudentInClass(oldName){
   if(idx===-1) return;
   target.students[idx]=trimmed;
   saveClasses(classes);
-  // Le genre est indexé par prénom dans cette classe : on le fait suivre au renommage
   const infos=getClassInfos();
   if(infos[target.name] && infos[target.name][oldName]){
     infos[target.name][trimmed]=infos[target.name][oldName];
@@ -2077,6 +2242,7 @@ function renameStudentInClass(oldName){
   syncActiveClassIfLoaded(target);
   renderClassList(); renderClassDetail();
   toast(`Renommé « ${oldName} » → « ${trimmed} » ✓`);
+  queueGitHubSync();
 }
 
 function setClsTab(tab){ _clsTab=tab; renderClassDetail(); }
@@ -2221,8 +2387,6 @@ function applyClassesImportEco(data){
     if(!name) return;
     let target = classes.find(k=>k.name.toLowerCase()===name.toLowerCase());
     if(!target){ target = {id:Date.now()+Math.random(), name, students:[]}; classes.push(target); classesCreated++; }
-    // students accepté sous deux formes : tableau d'objets {prenom,nom,genre} (format standard),
-    // ou tableau de simples chaînes (au cas où un fichier aurait été édité à la main)
     const incomingStudents = Array.isArray(c.students) ? c.students : [];
     incomingStudents.forEach(raw=>{
       const st = (typeof raw === 'string') ? {prenom:raw} : (raw||{});
@@ -2234,6 +2398,7 @@ function applyClassesImportEco(data){
     });
   });
   saveClasses(classes);
+  if(studentsAdded>0 || classesCreated>0) queueGitHubSync();
   renderClassList(); renderClassDetail(); updateHomeBanner(); updateHeaderClass(); showLoadBars();
   return {studentsAdded, classesCreated, classesRead: incomingClasses.length};
 }
@@ -2719,8 +2884,6 @@ function swissOpenReset(){
 function archiveSwissSession(label){
   const hasStudents = swissColumns.some(c=>c.length);
   if(!hasStudents && !swissMatches.length) return;
-  // Si aucune classe n'a été explicitement chargée dans la ronde (bandeau jamais cliqué),
-  // on retombe sur la classe active de l'appli pour ne pas perdre le rattachement.
   const ac=getActiveClass();
   const finalClassName = swissClassName || (ac && ac.name) || 'Sans nom';
   const hist=getTrnHistory();
@@ -2734,6 +2897,7 @@ function archiveSwissSession(label){
   });
   if(hist.length>200) hist.length=200;
   saveTrnHistoryArr(hist);
+  queueGitHubSync();
 }
 function swissRenameClass(){
   const current = swissClassName || (getActiveClass()&&getActiveClass().name) || '';
@@ -3824,6 +3988,10 @@ function hexRgba(hex, a) {
    INIT
 ═══════════════════════════════════════════ */
 window.addEventListener('load',()=>{
+  // ── GitHub Sync Initialization ──
+  loadGitHubConfig();
+  gitHubFetchAllOnLoad();
+  
   // ── Fenêtre d'affichage seule (?mode=affichage&t=...), ouverte sur l'écran étendu ──
   if (_isDisplayWindow) {
     const t = new URLSearchParams(location.search).get('t') || 'atp';
@@ -3855,5 +4023,29 @@ window.addEventListener('load',()=>{
   document.querySelectorAll('.overlay').forEach(ov=>ov.addEventListener('click',e=>{if(e.target===ov)ov.classList.remove('show');}));
 });
 </script>
+<!-- GitHub Setup Modal -->
+<div id="gh-setup-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center;flex-direction:column;">
+  <div style="background:var(--bg2);border-radius:14px;padding:24px;max-width:500px;width:90%;box-shadow:var(--shadow-lg);">
+    <h2 style="margin:0 0 12px 0;color:var(--text);font-size:18px;font-weight:800;">🔧 Configuration GitHub Sync</h2>
+    <p style="margin:0 0 18px 0;color:var(--muted);font-size:13px;">Entre tes identifiants GitHub pour synchroniser tes données.</p>
+    
+    <div style="margin-bottom:14px;">
+      <label style="display:block;font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600;margin-bottom:6px;">GitHub Username</label>
+      <input id="gh-username-input" type="text" placeholder="ex: killthisumut" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:Poppins,sans-serif;font-size:13px;background:var(--bg3);color:var(--text);outline:none;box-sizing:border-box;">
+    </div>
+    
+    <div style="margin-bottom:18px;">
+      <label style="display:block;font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600;margin-bottom:6px;">GitHub Personal Access Token</label>
+      <textarea id="gh-token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxx" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:monospace;font-size:12px;background:var(--bg3);color:var(--text);outline:none;box-sizing:border-box;min-height:80px;resize:vertical;"></textarea>
+      <p style="margin:6px 0 0 0;font-size:11px;color:var(--muted);">Comment obtenir un token ? → <a href="https://github.com/settings/tokens" target="_blank" style="color:var(--accent);text-decoration:none;">GitHub Settings</a></p>
+    </div>
+    
+    <div style="display:flex;gap:8px;">
+      <button onclick="saveGitHubSetup()" style="flex:1;padding:10px 16px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:12px;transition:all .2s;">✅ Sauvegarder</button>
+      <button onclick="closeGitHubSetupModal()" style="flex:1;padding:10px 16px;background:var(--bg3);color:var(--text);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-weight:600;font-size:12px;transition:all .2s;">❌ Annuler</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
