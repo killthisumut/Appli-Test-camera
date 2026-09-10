@@ -1639,6 +1639,8 @@ const GITHUB_SYNC_KEY = 'eps_github_config_v1';
 let gitHubConfig = {username: null, token: null};
 let gitHubSyncTimer = null;
 
+function tryParse(str){try{return JSON.parse(str||'null');}catch{return null;}}
+
 function loadGitHubConfig(){
   const saved = localStorage.getItem(GITHUB_SYNC_KEY);
   if(saved){
@@ -1681,8 +1683,8 @@ function saveGitHubSetup(){
   gitHubConfig = {username, token};
   saveGitHubConfig();
   closeGitHubSetupModal();
-  showToast('✅ Configuration GitHub sauvegardée');
-  gitHubSyncAll();
+  if(typeof toast === 'function') toast('✅ Configuration GitHub sauvegardée');
+  if(typeof gitHubSyncAll === 'function') gitHubSyncAll();
 }
 
 /* GitHub API Functions */
