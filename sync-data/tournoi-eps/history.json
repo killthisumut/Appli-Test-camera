@@ -1,6 +1,314 @@
 {
   "history": [
     {
+      "id": "1789133770321_9df6y",
+      "type": "swiss",
+      "className": "5e2 séance 1b",
+      "date": "2026-09-11T13:36:10.321Z",
+      "label": "Sauvegarde importée (11/09/2026 08:39)",
+      "state": {
+        "columns": [
+          [
+            "Steve-Akins",
+            "Younes",
+            "Lynna",
+            "Yassir",
+            "Nibras",
+            "Farah"
+          ],
+          [
+            "Camilia",
+            "Lina",
+            "Eden",
+            "Jennah",
+            "Ortencia"
+          ],
+          [
+            "Fatumata",
+            "Saadia",
+            "Rayane",
+            "Limi"
+          ],
+          [
+            "Hiba",
+            "Dyvane",
+            "Trecy"
+          ],
+          [
+            "Layana",
+            "Rimes",
+            "Rayane-Foudi",
+            "Wassim",
+            "Louay"
+          ],
+          [
+            "Loyiel",
+            "Jùlio"
+          ],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": []
+      }
+    },
+    {
+      "id": "1789133768786_g17mw",
+      "type": "swiss",
+      "className": "5e2 Séance 1",
+      "date": "2026-09-11T13:36:08.786Z",
+      "label": "Sauvegarde importée (09/09/2026 11:38)",
+      "state": {
+        "columns": [
+          [
+            "Steve-Akins",
+            "Younes",
+            "Lynna",
+            "Yassir",
+            "Nibras",
+            "Farah"
+          ],
+          [
+            "Camilia",
+            "Lina",
+            "Eden",
+            "Jennah",
+            "Ortencia"
+          ],
+          [
+            "Fatumata",
+            "Saadia",
+            "Rayane",
+            "Limi"
+          ],
+          [
+            "Hiba",
+            "Dyvane",
+            "Trecy"
+          ],
+          [
+            "Layana",
+            "Rimes",
+            "Rayane-Foudi",
+            "Wassim",
+            "Louay"
+          ],
+          [
+            "Loyiel",
+            "Jùlio"
+          ],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": []
+      }
+    },
+    {
+      "id": "1789133766763_tgyiy",
+      "type": "swiss",
+      "className": "test 2",
+      "date": "2026-09-11T13:36:06.763Z",
+      "label": "Sauvegarde importée (09/09/2026 07:48)",
+      "state": {
+        "columns": [
+          [
+            "Rodaina",
+            "ilef",
+            "Hamza",
+            "Abdourahmane",
+            "Riles",
+            "Meryem",
+            "Anais",
+            "idriss",
+            "Fenda",
+            "Cyiane",
+            "Nour",
+            "Mohamed-Amine",
+            "Zakaria",
+            "Mouni",
+            "Zhihan",
+            "Koussay",
+            "insaf",
+            "Emma"
+          ],
+          [
+            "Youhaidini",
+            "Souleymane",
+            "Djibril",
+            "Keyron"
+          ],
+          [
+            "Mohamed"
+          ],
+          [
+            "Lassana"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": []
+      }
+    },
+    {
+      "id": "1789133764682_31r7e",
+      "type": "swiss",
+      "className": "test1",
+      "date": "2026-09-11T13:36:04.682Z",
+      "label": "Sauvegarde importée (09/09/2026 07:41)",
+      "state": {
+        "columns": [
+          [
+            "Rodaina",
+            "ilef",
+            "Mohamed",
+            "Hamza",
+            "Abdourahmane",
+            "Lassana",
+            "Riles",
+            "Meryem",
+            "Djibril",
+            "Youhaidini",
+            "Anais",
+            "idriss",
+            "Fenda",
+            "Keyron",
+            "Cyiane",
+            "Nour",
+            "Mohamed-Amine",
+            "Zakaria",
+            "Mouni",
+            "Zhihan",
+            "Koussay",
+            "insaf",
+            "Emma"
+          ],
+          [
+            "Souleymane"
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": []
+      }
+    },
+    {
+      "id": "1789133760918_r8qsn",
+      "type": "swiss",
+      "className": "3e2",
+      "date": "2026-09-11T13:36:00.918Z",
+      "label": "Sauvegarde importée (08/09/2026 15:28)",
+      "state": {
+        "columns": [
+          [],
+          [],
+          [
+            "Mohamed",
+            "Lassana",
+            "Anais"
+          ],
+          [
+            "ilef",
+            "Hamza",
+            "Nour",
+            "HamzaB"
+          ],
+          [
+            "Youhaidini",
+            "Fenda",
+            "Mouni",
+            "Zhihan",
+            "insaf"
+          ],
+          [
+            "Abdourahmane",
+            "Rodaina",
+            "Emma"
+          ],
+          [
+            "Koussay",
+            "Keyron"
+          ],
+          [
+            "idriss",
+            "Zakaria",
+            "Djibril",
+            "Mohamed-Amine"
+          ],
+          [
+            "Souleymane",
+            "Riles",
+            "Meryem",
+            "Cyiane"
+          ]
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": []
+      }
+    },
+    {
       "id": "1789109469687_6wxj1",
       "type": "swiss",
       "className": "5e2",
@@ -309,5 +617,5 @@
       }
     }
   ],
-  "synced": "2026-09-11T13:35:21.578Z"
+  "synced": "2026-09-11T13:36:20.415Z"
 }
