@@ -1,6 +1,75 @@
 {
   "classes": [
     {
+      "id": 1789108718190,
+      "name": "3e2",
+      "students": [
+        "Rodaina",
+        "ilef",
+        "Mohamed",
+        "Hamza",
+        "Abdourahmane",
+        "Lassana",
+        "Riles",
+        "Meryem",
+        "Djibril",
+        "Youhaidini",
+        "Anais",
+        "idriss",
+        "Souleymane",
+        "Fenda",
+        "Keyron",
+        "Cyiane",
+        "Nour",
+        "Mohamed-Amine",
+        "Zakaria",
+        "Mouni",
+        "Zhihan",
+        "Koussay",
+        "insaf",
+        "Emma"
+      ]
+    },
+    {
+      "id": 1789108718191,
+      "name": "5e2",
+      "students": [
+        "Louay",
+        "Steve-Akins",
+        "Younes",
+        "Trecy",
+        "Lynna",
+        "Camilia",
+        "Yassir",
+        "Rayane",
+        "Jùlio",
+        "Wassim",
+        "Rimes",
+        "Nibras",
+        "Fatumata",
+        "Hiba",
+        "Lina",
+        "Farah",
+        "Ortencia",
+        "Limi",
+        "Layana",
+        "Saadia",
+        "Dyvane",
+        "Eden",
+        "Loyiel",
+        "Jennah",
+        "Rayane-Foudi"
+      ]
+    },
+    {
+      "id": 1789108718192,
+      "name": "5e3",
+      "students": [
+        "Zayd",
+        "Raouad"
+      ]
+    },
+    {
       "id": 1789109249143,
       "name": "0",
       "students": [
@@ -70,73 +139,9 @@
       ]
     },
     {
-      "id": 1789108718190,
-      "name": "3e2",
-      "students": [
-        "Rodaina",
-        "ilef",
-        "Mohamed",
-        "Hamza",
-        "Abdourahmane",
-        "Lassana",
-        "Riles",
-        "Meryem",
-        "Djibril",
-        "Youhaidini",
-        "Anais",
-        "idriss",
-        "Souleymane",
-        "Fenda",
-        "Keyron",
-        "Cyiane",
-        "Nour",
-        "Mohamed-Amine",
-        "Zakaria",
-        "Mouni",
-        "Zhihan",
-        "Koussay",
-        "insaf",
-        "Emma"
-      ]
-    },
-    {
-      "id": 1789108718191,
-      "name": "5e2",
-      "students": [
-        "Louay",
-        "Steve-Akins",
-        "Younes",
-        "Trecy",
-        "Lynna",
-        "Camilia",
-        "Yassir",
-        "Rayane",
-        "Jùlio",
-        "Wassim",
-        "Rimes",
-        "Nibras",
-        "Fatumata",
-        "Hiba",
-        "Lina",
-        "Farah",
-        "Ortencia",
-        "Limi",
-        "Layana",
-        "Saadia",
-        "Dyvane",
-        "Eden",
-        "Loyiel",
-        "Jennah",
-        "Rayane-Foudi"
-      ]
-    },
-    {
-      "id": 1789108718192,
-      "name": "5e3",
-      "students": [
-        "Zayd",
-        "Raouad"
-      ]
+      "id": 1789133991848.2056,
+      "name": "Classe test synchro",
+      "students": []
     }
   ],
   "infos": {
@@ -152,5 +157,5 @@
       }
     }
   },
-  "synced": "2026-09-11T13:37:48.965Z"
+  "synced": "2026-09-11T13:40:21.974Z"
 }
