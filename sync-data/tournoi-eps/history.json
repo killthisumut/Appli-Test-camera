@@ -1,6 +1,64 @@
 {
   "history": [
     {
+      "id": "1789133838776_r026k",
+      "type": "swiss",
+      "className": "1",
+      "date": "2026-09-11T13:37:18.776Z",
+      "label": "Remplacée par une nouvelle ronde",
+      "state": {
+        "columns": [
+          [
+            "Louay",
+            "Steve-Akins",
+            "Younes",
+            "Trecy",
+            "Lynna",
+            "Camilia",
+            "Yassir",
+            "Rayane",
+            "Jùlio",
+            "Wassim",
+            "Rimes",
+            "Nibras",
+            "Fatumata",
+            "Hiba",
+            "Lina",
+            "Farah",
+            "Ortencia",
+            "Limi",
+            "Layana",
+            "Saadia",
+            "Dyvane",
+            "Eden",
+            "Loyiel",
+            "Jennah",
+            "Rayane-Foudi"
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": []
+      }
+    },
+    {
       "id": "1789133770321_9df6y",
       "type": "swiss",
       "className": "5e2 séance 1b",
@@ -617,5 +675,5 @@
       }
     }
   ],
-  "synced": "2026-09-11T13:36:20.415Z"
+  "synced": "2026-09-11T13:37:50.691Z"
 }
