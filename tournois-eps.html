@@ -1737,7 +1737,7 @@ async function gitHubCommit(path, content, message){
 }
 
 async function gitHubSyncClasses(){
-  const classes = tryParse(localStorage.getItem('eps_classes_v1')) || {};
+  const classes = tryParse(localStorage.getItem('eps_classes_v1')) || [];
   const infos = tryParse(localStorage.getItem('trn_class_infos_v1')) || {};
   const payload = {classes, infos, synced: new Date().toISOString()};
   await gitHubCommit('sync-data/tournoi-eps/classes.json', JSON.stringify(payload, null, 2), 'Sync classes');
@@ -1754,9 +1754,29 @@ async function gitHubFetchClasses(){
   if(!raw) return;
   try{
     const data = JSON.parse(raw);
-    const localClasses = tryParse(localStorage.getItem('eps_classes_v1')) || {};
-    const remoteClasses = data.classes || {};
-    const merged = {...localClasses, ...remoteClasses};
+    const localClasses = tryParse(localStorage.getItem('eps_classes_v1')) || [];
+    const remoteClasses = Array.isArray(data.classes) ? data.classes : [];
+    
+    // Merge intelligent par ID (préserve les noms)
+    const merged = [];
+    const seenIds = new Set();
+    
+    // Garder toutes les classes locales
+    localClasses.forEach(cls => {
+      if(cls && cls.id){
+        merged.push({...cls});
+        seenIds.add(cls.id);
+      }
+    });
+    
+    // Ajouter les nouvelles classes du remote
+    remoteClasses.forEach(cls => {
+      if(cls && cls.id && !seenIds.has(cls.id)){
+        merged.push({...cls});
+        seenIds.add(cls.id);
+      }
+    });
+    
     localStorage.setItem('eps_classes_v1', JSON.stringify(merged));
     localStorage.setItem('trn_class_infos_v1', JSON.stringify(data.infos || {}));
   }catch(e){ console.error('GitHub fetch classes error:', e); }
@@ -1767,10 +1787,10 @@ async function gitHubFetchHistory(){
   if(!raw) return;
   try{
     const data = JSON.parse(raw);
-    const remoteHistory = data.history || [];
+    const remoteHistory = Array.isArray(data.history) ? data.history : [];
     const localHistory = tryParse(localStorage.getItem('trn_history_v1')) || [];
     const merged = {};
-    [...localHistory, ...remoteHistory].forEach(h => {merged[h.id] = h;});
+    [...localHistory, ...remoteHistory].forEach(h => {if(h && h.id) merged[h.id] = h;});
     const deduped = Object.values(merged).slice(0, 500);
     localStorage.setItem('trn_history_v1', JSON.stringify(deduped));
   }catch(e){ console.error('GitHub fetch history error:', e); }
