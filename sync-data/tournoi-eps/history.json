@@ -1,43 +1,31 @@
 {
   "history": [
     {
-      "id": "1789135001885_b746g",
+      "id": "1789135196259_7cy57",
       "type": "swiss",
-      "className": "5e2",
-      "date": "2026-09-11T13:56:41.885Z",
+      "className": "Classe test synchro",
+      "date": "2026-09-11T13:59:56.259Z",
       "label": "Remplacée par une nouvelle ronde",
       "state": {
         "columns": [
           [
-            "Louay",
-            "Steve-Akins",
-            "Younes",
-            "Trecy",
-            "Lynna",
-            "Camilia",
-            "Yassir",
-            "Rayane",
-            "Jùlio",
-            "Wassim",
-            "Rimes",
-            "Nibras",
-            "Fatumata",
-            "Hiba",
-            "Lina",
-            "Farah",
-            "Ortencia",
-            "Limi",
-            "Layana",
-            "Saadia",
-            "Dyvane",
-            "Eden",
-            "Loyiel",
-            "Jennah",
-            "Rayane-Foudi"
+            "Elève-4",
+            "Elève-5",
+            "Elève-6",
+            "Elève-7",
+            "Elève-9",
+            "Elève-10"
           ],
-          [],
-          [],
-          [],
+          [
+            "Elève-1",
+            "Elève-2"
+          ],
+          [
+            "Elève-3"
+          ],
+          [
+            "Elève-11"
+          ],
           [],
           [],
           [],
@@ -55,49 +43,154 @@
           "#FFD0E6",
           "#C2F5EC"
         ],
+        "matches": [
+          {
+            "winner": "Elève-1",
+            "loser": "Elève-2",
+            "date": "2026-09-11T13:41:01.211Z"
+          },
+          {
+            "winner": "Elève-2",
+            "loser": "Elève-3",
+            "date": "2026-09-11T13:41:08.788Z"
+          },
+          {
+            "winner": "Elève-3",
+            "loser": "Elève-5",
+            "date": "2026-09-11T13:41:13.632Z"
+          },
+          {
+            "winner": "Elève-11",
+            "loser": "Elève-6",
+            "date": "2026-09-11T13:41:17.882Z"
+          },
+          {
+            "winner": "Elève-3",
+            "loser": "Elève-2",
+            "date": "2026-09-11T13:41:25.568Z"
+          },
+          {
+            "winner": "Elève-11",
+            "loser": "Elève-1",
+            "date": "2026-09-11T13:41:30.780Z"
+          },
+          {
+            "winner": "Elève-11",
+            "loser": "Elève-3",
+            "date": "2026-09-11T13:41:35.135Z"
+          }
+        ]
+      }
+    },
+    {
+      "id": "1789134050770_xnhz3",
+      "type": "swiss",
+      "className": "5e2",
+      "date": "2026-09-11T13:40:50.770Z",
+      "label": "Remplacée par une nouvelle ronde",
+      "state": {
+        "columns": [
+          [],
+          [],
+          [
+            "Mohamed",
+            "Lassana",
+            "Anais"
+          ],
+          [
+            "ilef",
+            "Hamza",
+            "Nour",
+            "HamzaB"
+          ],
+          [
+            "Youhaidini",
+            "Fenda",
+            "Mouni",
+            "Zhihan",
+            "insaf"
+          ],
+          [
+            "Abdourahmane",
+            "Rodaina",
+            "Emma"
+          ],
+          [
+            "Koussay",
+            "Keyron"
+          ],
+          [
+            "idriss",
+            "Zakaria",
+            "Djibril",
+            "Mohamed-Amine"
+          ],
+          [
+            "Souleymane",
+            "Riles",
+            "Meryem",
+            "Cyiane"
+          ]
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
         "matches": []
       }
     },
     {
-      "id": "1789133838776_r026k",
+      "id": "1789133919207_03bjs",
       "type": "swiss",
-      "className": "1",
-      "date": "2026-09-11T13:37:18.776Z",
-      "label": "Remplacée par une nouvelle ronde",
+      "className": "5e2 Séance 1",
+      "date": "2026-09-11T13:38:39.207Z",
+      "label": "Sauvegarde importée (09/09/2026 11:38)",
       "state": {
         "columns": [
           [
-            "Louay",
             "Steve-Akins",
             "Younes",
-            "Trecy",
             "Lynna",
-            "Camilia",
             "Yassir",
-            "Rayane",
-            "Jùlio",
-            "Wassim",
-            "Rimes",
             "Nibras",
-            "Fatumata",
-            "Hiba",
-            "Lina",
-            "Farah",
-            "Ortencia",
-            "Limi",
-            "Layana",
-            "Saadia",
-            "Dyvane",
-            "Eden",
-            "Loyiel",
-            "Jennah",
-            "Rayane-Foudi"
+            "Farah"
           ],
-          [],
-          [],
-          [],
-          [],
-          [],
+          [
+            "Camilia",
+            "Lina",
+            "Eden",
+            "Jennah",
+            "Ortencia"
+          ],
+          [
+            "Fatumata",
+            "Saadia",
+            "Rayane",
+            "Limi"
+          ],
+          [
+            "Hiba",
+            "Dyvane",
+            "Trecy"
+          ],
+          [
+            "Layana",
+            "Rimes",
+            "Rayane-Foudi",
+            "Wassim",
+            "Louay"
+          ],
+          [
+            "Loyiel",
+            "Jùlio"
+          ],
           [],
           [],
           []
@@ -733,114 +826,45 @@
       }
     },
     {
-      "id": "1789134050770_xnhz3",
+      "id": "1789133838776_r026k",
       "type": "swiss",
-      "className": "5e2",
-      "date": "2026-09-11T13:40:50.770Z",
+      "className": "1",
+      "date": "2026-09-11T13:37:18.776Z",
       "label": "Remplacée par une nouvelle ronde",
       "state": {
         "columns": [
-          [],
-          [],
           [
-            "Mohamed",
-            "Lassana",
-            "Anais"
-          ],
-          [
-            "ilef",
-            "Hamza",
-            "Nour",
-            "HamzaB"
-          ],
-          [
-            "Youhaidini",
-            "Fenda",
-            "Mouni",
-            "Zhihan",
-            "insaf"
-          ],
-          [
-            "Abdourahmane",
-            "Rodaina",
-            "Emma"
-          ],
-          [
-            "Koussay",
-            "Keyron"
-          ],
-          [
-            "idriss",
-            "Zakaria",
-            "Djibril",
-            "Mohamed-Amine"
-          ],
-          [
-            "Souleymane",
-            "Riles",
-            "Meryem",
-            "Cyiane"
-          ]
-        ],
-        "columnColors": [
-          "#FFD6D6",
-          "#FFE4C2",
-          "#FFF5BC",
-          "#D4F5CE",
-          "#C4E6FF",
-          "#D4CCFF",
-          "#EEC4FF",
-          "#FFD0E6",
-          "#C2F5EC"
-        ],
-        "matches": []
-      }
-    },
-    {
-      "id": "1789133919207_03bjs",
-      "type": "swiss",
-      "className": "5e2 Séance 1",
-      "date": "2026-09-11T13:38:39.207Z",
-      "label": "Sauvegarde importée (09/09/2026 11:38)",
-      "state": {
-        "columns": [
-          [
+            "Louay",
             "Steve-Akins",
             "Younes",
+            "Trecy",
             "Lynna",
-            "Yassir",
-            "Nibras",
-            "Farah"
-          ],
-          [
             "Camilia",
-            "Lina",
-            "Eden",
-            "Jennah",
-            "Ortencia"
-          ],
-          [
-            "Fatumata",
-            "Saadia",
+            "Yassir",
             "Rayane",
-            "Limi"
-          ],
-          [
-            "Hiba",
-            "Dyvane",
-            "Trecy"
-          ],
-          [
-            "Layana",
-            "Rimes",
-            "Rayane-Foudi",
+            "Jùlio",
             "Wassim",
-            "Louay"
-          ],
-          [
+            "Rimes",
+            "Nibras",
+            "Fatumata",
+            "Hiba",
+            "Lina",
+            "Farah",
+            "Ortencia",
+            "Limi",
+            "Layana",
+            "Saadia",
+            "Dyvane",
+            "Eden",
             "Loyiel",
-            "Jùlio"
+            "Jennah",
+            "Rayane-Foudi"
           ],
+          [],
+          [],
+          [],
+          [],
+          [],
           [],
           [],
           []
@@ -860,5 +884,5 @@
       }
     }
   ],
-  "synced": "2026-09-11T13:57:13.661Z"
+  "synced": "2026-09-11T14:00:29.970Z"
 }
