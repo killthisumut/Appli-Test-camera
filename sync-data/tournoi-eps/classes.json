@@ -141,7 +141,18 @@
     {
       "id": 1789133991848.2056,
       "name": "Classe test synchro",
-      "students": []
+      "students": [
+        "Elève-1",
+        "Elève-2",
+        "Elève-3",
+        "Elève-4",
+        "Elève-5",
+        "Elève-6",
+        "Elève-7",
+        "Elève-9",
+        "Elève-10",
+        "Elève-11"
+      ]
     }
   ],
   "infos": {
@@ -157,5 +168,5 @@
       }
     }
   },
-  "synced": "2026-09-11T13:40:21.974Z"
+  "synced": "2026-09-11T13:41:20.782Z"
 }
