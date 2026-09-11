@@ -2,7 +2,7 @@
   "classes": [
     {
       "id": 1789108718190,
-      "name": "0",
+      "name": "3e2",
       "students": [
         "Rodaina",
         "ilef",
@@ -32,7 +32,7 @@
     },
     {
       "id": 1789108718191,
-      "name": "1",
+      "name": "5e2",
       "students": [
         "Louay",
         "Steve-Akins",
@@ -63,7 +63,7 @@
     },
     {
       "id": 1789108718192,
-      "name": "2",
+      "name": "5e3",
       "students": [
         "Zayd",
         "Raouad"
@@ -83,5 +83,5 @@
       }
     }
   },
-  "synced": "2026-09-11T13:35:20.462Z"
+  "synced": "2026-09-11T13:36:18.319Z"
 }
