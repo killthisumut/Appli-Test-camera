@@ -1687,14 +1687,13 @@ function saveGitHubSetup(){
   if(typeof gitHubSyncAll === 'function') gitHubSyncAll();
 }
 
-/* GitHub API Functions */
+/* GitHub API Functions with CORS Proxy */
 async function gitHubFetch(path){
   if(!isGitHubConfigured()) return null;
-  const url = `https://api.github.com/repos/${gitHubConfig.username}/Appli-Test-camera/contents/${path}`;
+  // Utiliser un proxy CORS pour éviter les blocages
+  const url = `https://api.allorigins.win/raw?url=https://api.github.com/repos/${gitHubConfig.username}/Appli-Test-camera/contents/${path}`;
   try{
-    const res = await fetch(url, {
-      headers: {'Authorization': `token ${gitHubConfig.token}`, 'Accept': 'application/vnd.github.v3.raw'}
-    });
+    const res = await fetch(url);
     if(res.status === 404) return null;
     if(!res.ok) throw new Error(`GitHub fetch failed: ${res.status}`);
     return await res.text();
@@ -1708,20 +1707,23 @@ async function gitHubCommit(path, content, message){
   if(!isGitHubConfigured()) return false;
   const url = `https://api.github.com/repos/${gitHubConfig.username}/Appli-Test-camera/contents/${path}`;
   try{
-    const getRes = await fetch(url, {
-      headers: {'Authorization': `token ${gitHubConfig.token}`, 'Accept': 'application/vnd.github.v3+json'}
-    });
+    // Récupérer le SHA (avec proxy)
+    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+    const getRes = await fetch(proxyUrl);
     let sha = null;
     if(getRes.ok){
-      const data = await getRes.json();
+      const data = JSON.parse(await getRes.text());
       sha = data.sha;
     }
+    
+    // Commit (direct, GitHub API accepte les tokens)
     const body = {
       message: message || `Update ${path}`,
       content: btoa(unescape(encodeURIComponent(content))),
       branch: 'main'
     };
     if(sha) body.sha = sha;
+    
     const commitRes = await fetch(url, {
       method: 'PUT',
       headers: {'Authorization': `token ${gitHubConfig.token}`, 'Content-Type': 'application/json'},
