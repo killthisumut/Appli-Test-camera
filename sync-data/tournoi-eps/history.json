@@ -1,6 +1,70 @@
 {
   "history": [
     {
+      "id": "1789134050770_xnhz3",
+      "type": "swiss",
+      "className": "5e2",
+      "date": "2026-09-11T13:40:50.770Z",
+      "label": "Remplacée par une nouvelle ronde",
+      "state": {
+        "columns": [
+          [],
+          [],
+          [
+            "Mohamed",
+            "Lassana",
+            "Anais"
+          ],
+          [
+            "ilef",
+            "Hamza",
+            "Nour",
+            "HamzaB"
+          ],
+          [
+            "Youhaidini",
+            "Fenda",
+            "Mouni",
+            "Zhihan",
+            "insaf"
+          ],
+          [
+            "Abdourahmane",
+            "Rodaina",
+            "Emma"
+          ],
+          [
+            "Koussay",
+            "Keyron"
+          ],
+          [
+            "idriss",
+            "Zakaria",
+            "Djibril",
+            "Mohamed-Amine"
+          ],
+          [
+            "Souleymane",
+            "Riles",
+            "Meryem",
+            "Cyiane"
+          ]
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": []
+      }
+    },
+    {
       "id": "1789133919207_03bjs",
       "type": "swiss",
       "className": "5e2 Séance 1",
@@ -738,5 +802,5 @@
       }
     }
   ],
-  "synced": "2026-09-11T13:40:23.810Z"
+  "synced": "2026-09-11T13:41:22.369Z"
 }
