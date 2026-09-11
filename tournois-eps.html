@@ -1687,52 +1687,51 @@ function saveGitHubSetup(){
   if(typeof gitHubSyncAll === 'function') gitHubSyncAll();
 }
 
-/* GitHub API Functions with CORS Proxy */
+/* GitHub API Functions with Vercel Proxy */
 async function gitHubFetch(path){
   if(!isGitHubConfigured()) return null;
-  // Utiliser un proxy CORS pour éviter les blocages
-  const url = `https://api.allorigins.win/raw?url=https://api.github.com/repos/${gitHubConfig.username}/Appli-Test-camera/contents/${path}`;
+  const vercelUrl = 'https://appli-test-camera.vercel.app/api/sync';
   try{
-    const res = await fetch(url);
+    const res = await fetch(vercelUrl, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        action: 'read',
+        path: path,
+        username: gitHubConfig.username,
+        token: gitHubConfig.token
+      })
+    });
     if(res.status === 404) return null;
-    if(!res.ok) throw new Error(`GitHub fetch failed: ${res.status}`);
-    return await res.text();
+    if(!res.ok) throw new Error(`Fetch failed: ${res.status}`);
+    const data = await res.json();
+    return data.data;
   }catch(e){
-    console.error('GitHub fetch error:', e);
+    console.error('Fetch error:', e);
     return null;
   }
 }
 
 async function gitHubCommit(path, content, message){
   if(!isGitHubConfigured()) return false;
-  const url = `https://api.github.com/repos/${gitHubConfig.username}/Appli-Test-camera/contents/${path}`;
+  const vercelUrl = 'https://appli-test-camera.vercel.app/api/sync';
   try{
-    // Récupérer le SHA (avec proxy)
-    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-    const getRes = await fetch(proxyUrl);
-    let sha = null;
-    if(getRes.ok){
-      const data = JSON.parse(await getRes.text());
-      sha = data.sha;
-    }
-    
-    // Commit (direct, GitHub API accepte les tokens)
-    const body = {
-      message: message || `Update ${path}`,
-      content: btoa(unescape(encodeURIComponent(content))),
-      branch: 'main'
-    };
-    if(sha) body.sha = sha;
-    
-    const commitRes = await fetch(url, {
-      method: 'PUT',
-      headers: {'Authorization': `token ${gitHubConfig.token}`, 'Content-Type': 'application/json'},
-      body: JSON.stringify(body)
+    const res = await fetch(vercelUrl, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        action: 'write',
+        path: path,
+        content: content,
+        message: message || `Update ${path}`,
+        username: gitHubConfig.username,
+        token: gitHubConfig.token
+      })
     });
-    if(!commitRes.ok) throw new Error(`GitHub commit failed: ${commitRes.status}`);
+    if(!res.ok) throw new Error(`Commit failed: ${res.status}`);
     return true;
   }catch(e){
-    console.error('GitHub commit error:', e);
+    console.error('Commit error:', e);
     return false;
   }
 }
