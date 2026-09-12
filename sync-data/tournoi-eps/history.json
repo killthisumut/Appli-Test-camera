@@ -1,6 +1,56 @@
 {
   "history": [
     {
+      "id": "1789247353355_gl9yh",
+      "type": "swiss",
+      "className": "Classe test synchro",
+      "date": "2026-09-12T21:09:13.355Z",
+      "label": "Remplacée avant reprise",
+      "state": {
+        "columns": [
+          [
+            "Elève-1",
+            "Elève-2",
+            "Elève-3",
+            "Elève-5",
+            "Elève-6",
+            "Elève-7",
+            "Elève-9",
+            "Elève-10",
+            "Elève-11"
+          ],
+          [
+            "Elève-4"
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": [
+          {
+            "winner": "Elève-4",
+            "loser": "Elève-2",
+            "date": "2026-09-12T21:07:51.232Z"
+          }
+        ]
+      }
+    },
+    {
       "id": "1789247193595_0v50g",
       "type": "swiss",
       "className": "Classe test synchro",
@@ -1129,5 +1179,5 @@
       }
     }
   ],
-  "synced": "2026-09-12T21:07:04.954Z"
+  "synced": "2026-09-12T21:09:46.232Z"
 }
