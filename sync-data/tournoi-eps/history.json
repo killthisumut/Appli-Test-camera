@@ -1,6 +1,88 @@
 {
   "history": [
     {
+      "id": "1789249103459_5l6vy",
+      "type": "swiss",
+      "className": "Classe test synchro",
+      "date": "2026-09-12T21:38:23.459Z",
+      "label": "Remplacée par une nouvelle ronde",
+      "state": {
+        "columns": [
+          [
+            "Elève-4",
+            "Elève-5",
+            "Elève-6",
+            "Elève-7",
+            "Elève-9",
+            "Elève-10"
+          ],
+          [
+            "Elève-1",
+            "Elève-2"
+          ],
+          [
+            "Elève-3"
+          ],
+          [
+            "Elève-11"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": [
+          {
+            "winner": "Elève-1",
+            "loser": "Elève-2",
+            "date": "2026-09-11T13:41:01.211Z"
+          },
+          {
+            "winner": "Elève-2",
+            "loser": "Elève-3",
+            "date": "2026-09-11T13:41:08.788Z"
+          },
+          {
+            "winner": "Elève-3",
+            "loser": "Elève-5",
+            "date": "2026-09-11T13:41:13.632Z"
+          },
+          {
+            "winner": "Elève-11",
+            "loser": "Elève-6",
+            "date": "2026-09-11T13:41:17.882Z"
+          },
+          {
+            "winner": "Elève-3",
+            "loser": "Elève-2",
+            "date": "2026-09-11T13:41:25.568Z"
+          },
+          {
+            "winner": "Elève-11",
+            "loser": "Elève-1",
+            "date": "2026-09-11T13:41:30.780Z"
+          },
+          {
+            "winner": "Elève-11",
+            "loser": "Elève-3",
+            "date": "2026-09-11T13:41:35.135Z"
+          }
+        ]
+      }
+    },
+    {
       "id": "1789247353355_gl9yh",
       "type": "swiss",
       "className": "Classe test synchro",
@@ -1179,5 +1261,5 @@
       }
     }
   ],
-  "synced": "2026-09-12T21:38:06.565Z"
+  "synced": "2026-09-12T21:38:55.005Z"
 }
