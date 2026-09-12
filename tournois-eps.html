@@ -2675,6 +2675,8 @@ const SWATCHES=['#FFD6D6','#FFB3B3','#FFCBA8','#FFE8A0','#FFFAA0','#CFFFC0','#B0
 let swissColumns=Array(9).fill(null).map(()=>[]);
 let swissColors=['#FFD6D6','#FFE4C2','#FFF5BC','#D4F5CE','#C4E6FF','#D4CCFF','#EEC4FF','#FFD0E6','#C2F5EC'];
 let swissMatches=[]; // {winner, loser, date} — historique détaillé des résultats, pour l'export/historique
+let swissCurrentSaveKey=null; // Nom de la séance en cours
+let swissLoadedSession=null; // Séance en cours de chargement
 let swissClassName='';
 let swissHistory=[],swissFuture=[];
 let swissDragSrcCol=null,swissDragSrcIdx=null;
@@ -2869,13 +2871,20 @@ function renderSwissHistBody(){
   } else {
     const stats=swissComputeStats({columns:swissColumns, matches:swissMatches});
     if(!stats.length){ el.innerHTML='<div class="empty"><div class="empty-ico">👤</div><div class="empty-ttl">Aucun élève</div></div>'; return; }
-    el.innerHTML=stats.map((s,i)=>`<div class="cls-item" style="cursor:pointer;flex-direction:column;align-items:stretch;" onclick="toggleSwissHistStudent(${i})">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <div class="cls-item-info"><div class="cls-item-name">${esc(s.name)}</div><div class="cls-item-meta">${s.finalCol>=0?COL_NAMES[s.finalCol]:'—'}</div></div>
-        <div style="font-size:12px;font-weight:700;">V:${s.wins} · D:${s.losses}</div>
+    el.innerHTML=stats.map((s,i)=>{
+      const matchsJoues=s.wins+s.losses;
+      return `<div class="cls-item" style="cursor:pointer;flex-direction:column;align-items:stretch;" onclick="toggleSwissHistStudent(${i})">
+      <div style="display:flex;justify-content:space-between;align-items:start;">
+        <div class="cls-item-info" style="flex:1;">
+          <div class="cls-item-name">${esc(s.name)}</div>
+          <div class="cls-item-meta" style="margin-top:3px;font-size:12px;">${matchsJoues} match${matchsJoues>1?'s':''}</div>
+          <div class="cls-item-meta" style="margin-top:3px;">${s.finalCol>=0?COL_NAMES[s.finalCol]:'—'}</div>
+        </div>
+        <div style="font-size:12px;font-weight:700;text-align:right;">V:${s.wins}<br/>D:${s.losses}</div>
       </div>
       <div class="hist-detail" id="swiss-hist-stu-${i}" style="display:none;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);">${esc(swissOpponentsLabel(s.opponents))}</div>
-    </div>`).join('');
+    </div>`;
+    }).join('');
   }
 }
 function toggleSwissHistStudent(i){
@@ -2966,17 +2975,95 @@ function swissDoSave(){
   localStorage.setItem(SWISS_SAVES_KEY,JSON.stringify(saves));
   swissUnsaved=false;closeOv('ov-swiss-save');toast(`Ronde « ${cls} » sauvegardée ✓`);
 }
+
+function swissDoSaveFinal(){
+  const name=($('swiss-save-inp').value||'').trim();
+  if(!name){ toast('⚠️ Entrez un nom'); return; }
+  closeOv('ov-swiss-save');
+  
+  // Sauvegarder localement
+  const saves=getSwissSaves();
+  saves[name]={
+    date: new Date().toLocaleDateString('fr-FR'),
+    columns: swissColumns.map(c=>[...c]),
+    columnColors: [...swissColors]
+  };
+  localStorage.setItem(SWISS_SAVES_KEY, JSON.stringify(saves));
+  
+  // Archiver dans l'historique global (synchro)
+  const ac=getActiveClass();
+  const finalClassName = swissClassName || (ac && ac.name) || 'Sans nom';
+  const hist=getTrnHistory();
+  
+  let histEntry=null;
+  // Si c'est une prolongation, UPDATE la ligne au lieu de créer une nouvelle
+  if(swissCurrentSaveKey){
+    // Chercher la ligne à UPDATE
+    histEntry=hist.find(h=>h.label===name && h.type==='swiss');
+    if(histEntry){
+      // UPDATE : mettre à jour le state, garder la structure
+      histEntry.state={
+        columns:swissColumns.map(c=>[...c]), 
+        columnColors:[...swissColors], 
+        matches:swissMatches.map(m=>({...m}))
+      };
+      histEntry.date=new Date().toISOString(); // Mettre à jour la date
+    }else{
+      // Créer nouvelle si pas trouvée (edge case)
+      histEntry={
+        id: String(Date.now())+'_'+Math.random().toString(36).slice(2,7),
+        type:'swiss',
+        className: finalClassName,
+        date: new Date().toISOString(),
+        label: name,
+        state: {columns:swissColumns.map(c=>[...c]), columnColors:[...swissColors], matches:swissMatches.map(m=>({...m}))}
+      };
+      hist.unshift(histEntry);
+    }
+  }else{
+    // Nouvelle sauvegarde
+    histEntry={
+      id: String(Date.now())+'_'+Math.random().toString(36).slice(2,7),
+      type:'swiss',
+      className: finalClassName,
+      date: new Date().toISOString(),
+      label: name,
+      state: {columns:swissColumns.map(c=>[...c]), columnColors:[...swissColors], matches:swissMatches.map(m=>({...m}))}
+    };
+    hist.unshift(histEntry);
+  }
+  
+  if(hist.length>200) hist.length=200;
+  saveTrnHistoryArr(hist);
+  swissCurrentSaveKey=name;
+  queueGitHubSync();
+  toast(`✅ Séance "${name}" sauvegardée`);
+}
+
 function swissOpenLoad(){
-  const saves=getSwissSaves();const list=$('swiss-load-list');list.innerHTML='';
-  const keys=Object.keys(saves);
-  if(!keys.length){list.innerHTML='<p style="color:var(--muted);text-align:center;font-size:13px;padding:16px 0;">Aucune sauvegarde trouvée</p>';}
-  else{keys.forEach(k=>{const item=document.createElement('div');item.className='save-item';
-    item.innerHTML=`<div><div class="save-class">${esc(k)}</div><div class="save-date">${saves[k].date}</div></div>
-      <button class="btn btn-gray btn-sm" title="Ajouter à l'historique de la gestion de classe" onclick="event.stopPropagation();archiveSwissSaveByName('${esc(k)}')">📥 Historique</button>`;
-    item.onclick=(e)=>{if(e.target.tagName==='BUTTON')return;swissSaveState();swissColumns=saves[k].columns.map(c=>[...c]);swissColors=[...saves[k].columnColors];swissUnsaved=false;swissRender();closeOv('ov-swiss-load');toast(`« ${k} » chargée ✓`);};
-    list.appendChild(item);});}
+  const hist=getTrnHistory().filter(h=>h.type==='swiss');
+  const list=$('swiss-load-list');list.innerHTML='';
+  
+  if(!hist.length){
+    list.innerHTML='<p style="color:var(--muted);text-align:center;font-size:13px;padding:16px 0;">Aucune séance sauvegardée</p>';
+  }else{
+    hist.forEach(h=>{
+      const item=document.createElement('div');item.className='save-item';
+      const d=new Date(h.date);
+      const dStr=d.toLocaleDateString('fr-FR')+' '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+      item.innerHTML=`<div><div class="save-class">${esc(h.label)}</div><div class="save-date">${dStr}</div></div>`;
+      item.onclick=(e)=>{
+        // Afficher le modal Prolonger/Continuer
+        swissLoadedSession = h;
+        openOv('ov-swiss-prolonger-continuer');
+        closeOv('ov-swiss-load');
+      };
+      list.appendChild(item);
+    });
+  }
   openOv('ov-swiss-load');
 }
+
 function archiveSwissSaveByName(key){
   const saves=getSwissSaves();
   const save=saves[key];
@@ -3432,8 +3519,12 @@ function atpFinSeance(){
 function swissFinSeance(){
   const hasStudents = swissColumns.some(c=>c.length);
   if(!hasStudents && !swissMatches.length){ toast('❌ Pas de séance en cours'); return; }
-  _endSessionMode='swiss';
-  openEndSessionModal('swiss');
+  let prefilled = swissCurrentSaveKey || '';
+  const el=$('swiss-save-inp');
+  el.value=prefilled;
+  openOv('ov-swiss-save');
+  setTimeout(()=>el.focus(),60);
+  el.onkeydown=e=>{if(e.key==='Enter')swissDoSaveFinal();};
 }
 
 let _endSessionMode='atp';
@@ -4285,6 +4376,37 @@ window.addEventListener('load',()=>{
     <button class="btn btn-gray" onclick="closeOv('ov-end-session')">Annuler</button>
   </div>
 </div>
+
+
+function swissProlongerSeance(){
+  if(!swissLoadedSession) return;
+  closeOv('ov-swiss-prolonger-continuer');
+  // Charger la séance exactement comme elle était
+  swissColumns=swissLoadedSession.state.columns.map(c=>[...c]);
+  swissColors=swissLoadedSession.state.columnColors?[...swissLoadedSession.state.columnColors]:swissColors;
+  swissMatches=(swissLoadedSession.state.matches||[]).map(m=>({...m}));
+  swissCurrentSaveKey=swissLoadedSession.label;
+  swissClassName=swissLoadedSession.className||'';
+  swissHistory=[];swissFuture=[];
+  swissRender();
+  showScreen('screen-swiss');
+  toast(`✅ Séance "${swissLoadedSession.label}" prolongée`);
+}
+
+function swissContinuerSeance(){
+  if(!swissLoadedSession) return;
+  closeOv('ov-swiss-prolonger-continuer');
+  // Charger UNIQUEMENT la structure (classement), zéro les stats
+  swissColumns=swissLoadedSession.state.columns.map(c=>[...c]);
+  swissColors=swissLoadedSession.state.columnColors?[...swissLoadedSession.state.columnColors]:swissColors;
+  swissMatches=[]; // ZÉRO les matchs
+  swissCurrentSaveKey=swissLoadedSession.label+' (2)'; // Nouveau titre
+  swissClassName=swissLoadedSession.className||'';
+  swissHistory=[];swissFuture=[];
+  swissRender();
+  showScreen('screen-swiss');
+  toast(`✅ Nouvelle séance commencée (classement conservé)`);
+}
 
 </body>
 </html>
