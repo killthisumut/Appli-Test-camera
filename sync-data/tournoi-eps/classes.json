@@ -1,198 +1,34 @@
 {
   "classes": [
     {
-      "id": 1789109249143,
-      "name": "0",
-      "students": [
-        "Rodaina",
-        "ilef",
-        "Mohamed",
-        "Hamza",
-        "Abdourahmane",
-        "Lassana",
-        "Riles",
-        "Meryem",
-        "Djibril",
-        "Youhaidini",
-        "Anais",
-        "idriss",
-        "Souleymane",
-        "Fenda",
-        "Keyron",
-        "Cyiane",
-        "Nour",
-        "Mohamed-Amine",
-        "Zakaria",
-        "Mouni",
-        "Zhihan",
-        "Koussay",
-        "insaf",
-        "Emma"
-      ]
-    },
-    {
-      "id": 1789109249144,
-      "name": "1",
-      "students": [
-        "Louay",
-        "Steve-Akins",
-        "Younes",
-        "Trecy",
-        "Lynna",
-        "Camilia",
-        "Yassir",
-        "Rayane",
-        "Jùlio",
-        "Wassim",
-        "Rimes",
-        "Nibras",
-        "Fatumata",
-        "Hiba",
-        "Lina",
-        "Farah",
-        "Ortencia",
-        "Limi",
-        "Layana",
-        "Saadia",
-        "Dyvane",
-        "Eden",
-        "Loyiel",
-        "Jennah",
-        "Rayane-Foudi"
-      ]
-    },
-    {
-      "id": 1789109249145,
-      "name": "2",
-      "students": [
-        "Zayd",
-        "Raouad"
-      ]
-    },
-    {
-      "id": 1789108718190,
+      "id": 1788870161897.1968,
       "name": "3e2",
       "students": [
-        "Rodaina",
-        "ilef",
-        "Mohamed",
-        "Hamza",
-        "Abdourahmane",
-        "Lassana",
-        "Riles",
-        "Meryem",
-        "Djibril",
-        "Youhaidini",
-        "Anais",
-        "idriss",
-        "Souleymane",
-        "Fenda",
-        "Keyron",
-        "Cyiane",
-        "Nour",
-        "Mohamed-Amine",
-        "Zakaria",
-        "Mouni",
         "Zhihan",
+        "Keyron",
+        "Abdou",
+        "Insaf",
         "Koussay",
-        "insaf",
-        "Emma"
-      ]
-    },
-    {
-      "id": 1789108718191,
-      "name": "5e2",
-      "students": [
-        "Louay",
-        "Steve-Akins",
-        "Younes",
-        "Trecy",
-        "Lynna",
-        "Camilia",
-        "Yassir",
-        "Rayane",
-        "Jùlio",
-        "Wassim",
-        "Rimes",
-        "Nibras",
-        "Fatumata",
-        "Hiba",
-        "Lina",
-        "Farah",
-        "Ortencia",
-        "Limi",
-        "Layana",
-        "Saadia",
-        "Dyvane",
-        "Eden",
-        "Loyiel",
-        "Jennah",
-        "Rayane-Foudi"
-      ]
-    },
-    {
-      "id": 1789108718192,
-      "name": "5e3",
-      "students": [
-        "Zayd",
-        "Raouad"
-      ]
-    },
-    {
-      "id": 1789133991848.2056,
-      "name": "Classe test synchro",
-      "students": [
-        "Elève-1",
-        "Elève-2",
-        "Elève-3",
-        "Elève-4",
-        "Elève-5",
-        "Elève-6",
-        "Elève-7",
-        "Elève-9",
-        "Elève-10",
-        "Elève-11"
+        "Cyïane",
+        "Hamza",
+        "Mouni",
+        "Fenda",
+        "Mohamed",
+        "Ilef",
+        "Youhaidini",
+        "Anaïs",
+        "Emma",
+        "Mohamed-Amine",
+        "Djibril",
+        "Zakaria",
+        "Rodaina",
+        "Souleymane",
+        "Idriss",
+        "Riles",
+        "Meryem"
       ]
     }
   ],
-  "infos": {
-    "3e2": {
-      "test": {
-        "genre": "garcon"
-      },
-      "fef": {
-        "genre": "garcon"
-      },
-      "fecs": {
-        "genre": "garcon"
-      }
-    },
-    "Classe test synchro": {
-      "Elève-1": {
-        "genre": "",
-        "nomFamille": "Bata"
-      },
-      "Elève-2": {
-        "genre": "",
-        "nomFamille": "advayh"
-      },
-      "Elève-4": {
-        "genre": "",
-        "nomFamille": "ytubj"
-      },
-      "Elève-5": {
-        "genre": "",
-        "nomFamille": "ytfuyvbuon"
-      },
-      "Elève-6": {
-        "genre": "",
-        "nomFamille": "ftugyvbhn"
-      },
-      "Elève-9": {
-        "genre": "",
-        "nomFamille": "tgbhj"
-      }
-    }
-  },
-  "synced": "2026-09-12T21:09:45.253Z"
+  "infos": {},
+  "synced": "2026-09-12T21:24:55.353Z"
 }
