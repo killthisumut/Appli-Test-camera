@@ -1096,6 +1096,7 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
         </div>
         <div class="btn-grp">
           <button class="btn btn-green btn-sm" onclick="swissOpenSave()">💾 Sauvegarder</button>
+          <button class="btn btn-green btn-sm" onclick="swissFinSeance()">🏁 Fin de séance</button>
           <button class="btn btn-green btn-sm" onclick="swissOpenLoad()">📂 Charger</button>
         </div>
         <div class="btn-grp">
@@ -1278,6 +1279,10 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
               <option>🎾 Tennis</option><option>🏐 Volley</option><option>⚽ Foot</option><option>🎯 Autre</option>
             </select>
           </div>
+        </div>
+        <div class="atp-section">
+          <div class="atp-section-title">🏁 Fin de séance</div>
+          <button class="btn btn-green" onclick="atpFinSeance()" style="width:100%;">🏁 Enregistrer et terminer cette séance</button>
         </div>
         <div class="atp-section">
           <div class="atp-section-title" style="color:var(--red)">⚠️ Zone de danger</div>
@@ -1919,8 +1924,18 @@ function getStudentGenre(className, name){ const d=getClassInfos(); return (d[cl
 function setStudentGenre(className, name, genre){
   const d=getClassInfos();
   if(!d[className]) d[className]={};
-  if(!d[className][name]) d[className][name]={genre:''};
+  if(!d[className][name]) d[className][name]={genre:'', nomFamille:''};
   d[className][name].genre=genre;
+  saveClassInfos(d);
+  queueGitHubSync();
+}
+
+function getStudentNomFamille(className, name){ const d=getClassInfos(); return (d[className] && d[className][name] && d[className][name].nomFamille) || ''; }
+function setStudentNomFamille(className, name, nomFamille){
+  const d=getClassInfos();
+  if(!d[className]) d[className]={};
+  if(!d[className][name]) d[className][name]={genre:'', nomFamille:''};
+  d[className][name].nomFamille=nomFamille;
   saveClassInfos(d);
   queueGitHubSync();
 }
@@ -2334,13 +2349,17 @@ function renderClsTabInfos(cls){
   if(!cls.students.length){ el.innerHTML='<div class="empty"><div class="empty-ico">👤</div><div class="empty-ttl">Aucun élève</div></div>'; return; }
   el.innerHTML=cls.students.map(name=>{
     const g=getStudentGenre(cls.name,name);
+    const nf=getStudentNomFamille(cls.name,name);
     return `<div class="cls-item" style="cursor:default;">
       <div class="cls-item-info"><div class="cls-item-name">${esc(name)}</div></div>
-      <select class="atp-param-inp" style="width:auto;" data-name="${esc(name)}" onchange="setStudentGenre('${esc(cls.name)}',this.dataset.name,this.value)">
-        <option value="" ${!g?'selected':''}>—</option>
-        <option value="garcon" ${g==='garcon'?'selected':''}>♂ Garçon</option>
-        <option value="fille" ${g==='fille'?'selected':''}>♀ Fille</option>
-      </select>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <input type="text" class="atp-param-inp" style="width:120px;" placeholder="Nom" value="${esc(nf)}" data-name="${esc(name)}" onchange="setStudentNomFamille('${esc(cls.name)}',this.dataset.name,this.value)" />
+        <select class="atp-param-inp" style="width:auto;" data-name="${esc(name)}" onchange="setStudentGenre('${esc(cls.name)}',this.dataset.name,this.value)">
+          <option value="" ${!g?'selected':''}>—</option>
+          <option value="garcon" ${g==='garcon'?'selected':''}>♂ Garçon</option>
+          <option value="fille" ${g==='fille'?'selected':''}>♀ Fille</option>
+        </select>
+      </div>
     </div>`;
   }).join('');
 }
@@ -2728,12 +2747,76 @@ function swissResultReset(){
 }
 // Raccourci : cliquer sur la carte d'un élève sur le tableau le présélectionne comme vainqueur dans le bandeau.
 function swissPickWinnerFromBoard(name){
-  const sel=$('swiss-res-winner');
-  sel.value=name;
-  swissResultWinnerChanged();
-  const bar=$('swiss-result-bar');
-  bar.classList.remove('swiss-result-pulse'); void bar.offsetWidth; bar.classList.add('swiss-result-pulse');
+  const ci = swissColumns.findIndex(col=>col.includes(name));
+  if(ci===-1) return;
+  // Ouvrir le popup intuitif au lieu du bandeau
+  swissOpenMatchModal(name, ci);
 }
+
+// ── Popup intuitif pour saisir les résultats ──
+let swissMatchWinner = null;
+let swissMatchLoser = null;
+
+function swissOpenMatchModal(preselectName, preselectCi){
+  swissMatchWinner = (preselectName !== undefined) ? {name: preselectName, ci: preselectCi} : null;
+  swissMatchLoser = null;
+  openOv('ov-swiss-match');
+  if(swissMatchWinner) swissRenderMatchStepLoser();
+  else swissRenderMatchStepWinner();
+}
+
+function swissRenderMatchStepWinner(){
+  $('swiss-match-step-w').style.display = '';
+  $('swiss-match-step-l').style.display = 'none';
+  $('swiss-match-recap').style.display = 'none';
+  const all = swissAllStudents();
+  $('swiss-match-grid-w').innerHTML = all.length
+    ? all.map(s => `<button class="atp-p-btn" style="border-color:${swissColors[s.ci]};" onclick="swissPickWinner('${esc(s.name)}',${s.ci})">${esc(s.name)} <span style="opacity:.55;font-size:10px;">(${COL_NAMES[s.ci]})</span></button>`).join('')
+    : '<p style="font-size:12px;color:var(--muted);">Aucun élève sur le tableau</p>';
+}
+
+function swissPickWinner(name, ci){
+  swissMatchWinner = {name, ci};
+  swissRenderMatchStepLoser();
+}
+
+function swissRenderMatchStepLoser(){
+  $('swiss-match-step-w').style.display = 'none';
+  $('swiss-match-step-l').style.display = '';
+  $('swiss-match-recap').style.display = 'none';
+  const ci = swissMatchWinner.ci;
+  const opponents = swissColumns[ci].filter(n => n !== swissMatchWinner.name);
+  $('swiss-match-l-hint').textContent = `Adversaires possibles dans « ${COL_NAMES[ci]} » (même colonne que ${swissMatchWinner.name}).`;
+  $('swiss-match-grid-l').innerHTML = opponents.length
+    ? opponents.map(n => `<button class="atp-p-btn" onclick="swissPickLoser('${esc(n)}')">${esc(n)}</button>`).join('')
+    : '<p style="font-size:12px;color:var(--muted);">Personne d\'autre dans cette colonne pour l\'instant.</p>';
+}
+
+function swissBackToWinnerStep(){
+  swissMatchWinner = null;
+  swissRenderMatchStepWinner();
+}
+
+function swissPickLoser(loser){
+  swissMatchLoser = loser;
+  $('swiss-match-step-l').style.display = 'none';
+  $('swiss-match-recap').style.display = '';
+  $('swiss-match-recap-content').innerHTML = `<div style="font-size:14px;">🏆 <strong>${esc(swissMatchWinner.name)}</strong> a gagné contre <strong>${esc(loser)}</strong></div>`;
+}
+
+function swissConfirmMatchResult(){
+  if(!swissMatchWinner || !swissMatchLoser) return;
+  swissApplyMatchResult(swissMatchWinner.name, swissMatchLoser);
+  swissCancelMatch();
+}
+
+function swissCancelMatch(){
+  swissMatchWinner = null;
+  swissMatchLoser = null;
+  closeOv('ov-swiss-match');
+}
+
+
 function swissApplyMatchResult(winner, loser){
   const ci = swissColumns.findIndex(col=>col.includes(winner));
   if(ci===-1) return;
@@ -3325,6 +3408,73 @@ function atpResetSeance(){
   A2.students.forEach(s=>{ s.seancePts=0; s.wins=0; s.losses=0; s.refs=0; s.history=[]; });
   a2Save(); atpShowSub('main'); atpRenderMain(); toast('🔄 Séance réinitialisée (archivée dans l\'historique)');
 }
+
+function atpFinSeance(){
+  if(!A2 || !A2.students || !A2.students.length){ toast('❌ Pas de séance en cours'); return; }
+  _endSessionMode='atp';
+  openEndSessionModal('atp');
+}
+
+function swissFinSeance(){
+  const hasStudents = swissColumns.some(c=>c.length);
+  if(!hasStudents && !swissMatches.length){ toast('❌ Pas de séance en cours'); return; }
+  _endSessionMode='swiss';
+  openEndSessionModal('swiss');
+}
+
+let _endSessionMode='atp';
+
+function openEndSessionModal(mode){
+  _endSessionMode=mode;
+  openOv('ov-end-session');
+}
+
+function proceedEndSessionProlonger(){
+  closeOv('ov-end-session');
+  if(_endSessionMode==='atp'){
+    archiveAtpSession('Fin de séance');
+    A2.matches=[];
+    A2.students.forEach(s=>{ s.seancePts=0; s.wins=0; s.losses=0; s.refs=0; s.history=[]; });
+    a2Save();
+    atpShowSub('main');
+    atpRenderMain();
+    toast('✅ Séance archivée. Nouvelle série en cours...');
+  }else if(_endSessionMode==='swiss'){
+    archiveSwissSession('Fin de séance');
+    swissColumns=[...(Array(9).fill(null).map(_=>[]))];
+    swissMatches=[];
+    swissHistory=[];
+    swissFuture=[];
+    swissSaveState();
+    renderSwissBoard();
+    toast('✅ Séance archivée. Nouvelle ronde en cours...');
+  }
+}
+
+function proceedEndSessionContinuer(){
+  closeOv('ov-end-session');
+  if(_endSessionMode==='atp'){
+    archiveAtpSession('Fin de séance');
+    localStorage.removeItem(ATP2_KEY);
+    A2={className:'',sport:'🏸 Badminton',ptsWin:5,ptsLoss:2,ptsRef:1,rankGap:5,students:[],matches:[],seanceStart:{}};
+    _a2uid=1;
+    atpShowSub('main');
+    atpRenderMain();
+    toast('✅ Séance archivée. Tournoi réinitialisé.');
+  }else if(_endSessionMode==='swiss'){
+    archiveSwissSession('Fin de séance');
+    swissClassName='';
+    swissColumns=[...(Array(9).fill(null).map(_=>[]))];
+    swissMatches=[];
+    swissHistory=[];
+    swissFuture=[];
+    swissSaveState();
+    renderSwissBoard();
+    toast('✅ Séance archivée. Ronde réinitialisée.');
+  }
+}
+
+
 
 function atpResetAll2(){
   if(!confirm('Tout supprimer (élèves, matchs, points) ? Action irréversible.')) return;
@@ -4067,6 +4217,53 @@ window.addEventListener('load',()=>{
       <button onclick="saveGitHubSetup()" style="flex:1;padding:10px 16px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:12px;transition:all .2s;">✅ Sauvegarder</button>
       <button onclick="closeGitHubSetupModal()" style="flex:1;padding:10px 16px;background:var(--bg3);color:var(--text);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-weight:600;font-size:12px;transition:all .2s;">❌ Annuler</button>
     </div>
+  </div>
+</div>
+
+<!-- Résultat d'un match en Ronde Suisse : vainqueur -> perdant (popup intuitif) -->
+<div class="overlay" id="ov-swiss-match">
+  <div class="modal wide">
+    <h2>⚡ Résultat d'un match</h2>
+    <div class="atp-step" id="swiss-match-step-w">
+      <div class="atp-step-lbl"><span class="atp-step-num">1</span> Qui a <strong>gagné</strong> ?</div>
+      <div class="atp-player-grid" id="swiss-match-grid-w"></div>
+    </div>
+    <div class="atp-step" id="swiss-match-step-l" style="display:none;">
+      <div class="atp-step-lbl"><span class="atp-step-num">2</span> Qui a <strong>perdu</strong> ?</div>
+      <div class="atp-step-hint" id="swiss-match-l-hint">Seuls les élèves de la même colonne peuvent s'affronter.</div>
+      <div class="atp-player-grid" id="swiss-match-grid-l"></div>
+      <button class="atp-skip-btn" onclick="swissBackToWinnerStep()">← Changer de vainqueur</button>
+    </div>
+    <div class="atp-recap-box" id="swiss-match-recap" style="display:none;">
+      <div class="atp-recap-title">Confirmer ce résultat ?</div>
+      <div id="swiss-match-recap-content"></div>
+      <div style="display:flex;gap:8px;margin-top:12px;">
+        <button class="atp-btn-cancel" onclick="swissCancelMatch()">✕ Annuler</button>
+        <button class="atp-btn-confirm" onclick="swissConfirmMatchResult()">✅ Confirmer</button>
+      </div>
+    </div>
+    <div class="modal-btns" style="margin-top:10px;">
+      <button class="btn btn-gray" onclick="swissCancelMatch()">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal : Fin de séance - Prolonger ou Continuer -->
+<div class="overlay" id="ov-end-session">
+  <div class="modal">
+    <h2>🏁 Fin de séance</h2>
+    <p style="font-size:14px;margin-bottom:16px;">Comment voulez-vous continuer ?</p>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px;">
+      <button class="btn btn-primary" onclick="proceedEndSessionProlonger()" style="text-align:left;padding:12px;">
+        <div style="font-weight:600;">🔄 Prolonger la séance</div>
+        <div style="font-size:12px;opacity:0.8;margin-top:4px;">Garder les mêmes élèves, recommencer une nouvelle série de matchs</div>
+      </button>
+      <button class="btn btn-primary" onclick="proceedEndSessionContinuer()" style="text-align:left;padding:12px;">
+        <div style="font-weight:600;">➜ Continuer vers une nouvelle séance</div>
+        <div style="font-size:12px;opacity:0.8;margin-top:4px;">Charger une nouvelle classe ou réinitialiser</div>
+      </button>
+    </div>
+    <button class="btn btn-gray" onclick="closeOv('ov-end-session')">Annuler</button>
   </div>
 </div>
 
