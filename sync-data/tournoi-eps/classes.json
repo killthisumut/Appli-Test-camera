@@ -166,7 +166,33 @@
       "fecs": {
         "genre": "garcon"
       }
+    },
+    "Classe test synchro": {
+      "Elève-1": {
+        "genre": "",
+        "nomFamille": "Bata"
+      },
+      "Elève-2": {
+        "genre": "",
+        "nomFamille": "advayh"
+      },
+      "Elève-4": {
+        "genre": "",
+        "nomFamille": "ytubj"
+      },
+      "Elève-5": {
+        "genre": "",
+        "nomFamille": "ytfuyvbuon"
+      },
+      "Elève-6": {
+        "genre": "",
+        "nomFamille": "ftugyvbhn"
+      },
+      "Elève-9": {
+        "genre": "",
+        "nomFamille": "tgbhj"
+      }
     }
   },
-  "synced": "2026-09-12T20:27:59.309Z"
+  "synced": "2026-09-12T20:38:34.768Z"
 }
