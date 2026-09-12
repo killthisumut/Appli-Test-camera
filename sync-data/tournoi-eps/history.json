@@ -1,6 +1,93 @@
 {
   "history": [
     {
+      "id": "1789244849276_0ydmq",
+      "type": "swiss",
+      "className": "Classe test synchro",
+      "date": "2026-09-12T20:27:29.276Z",
+      "label": "Fin de séance",
+      "state": {
+        "columns": [
+          [
+            "Elève-4",
+            "Elève-7"
+          ],
+          [
+            "Elève-1",
+            "Elève-9",
+            "Elève-5"
+          ],
+          [
+            "Elève-3",
+            "Elève-6",
+            "Elève-10"
+          ],
+          [
+            "Elève-11",
+            "Elève-2"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": [
+          {
+            "winner": "Elève-6",
+            "loser": "Elève-5",
+            "date": "2026-09-12T20:26:04.050Z"
+          },
+          {
+            "winner": "Elève-6",
+            "loser": "Elève-1",
+            "date": "2026-09-12T20:26:30.209Z"
+          },
+          {
+            "winner": "Elève-9",
+            "loser": "Elève-5",
+            "date": "2026-09-12T20:26:33.898Z"
+          },
+          {
+            "winner": "Elève-10",
+            "loser": "Elève-4",
+            "date": "2026-09-12T20:26:37.394Z"
+          },
+          {
+            "winner": "Elève-5",
+            "loser": "Elève-7",
+            "date": "2026-09-12T20:26:40.796Z"
+          },
+          {
+            "winner": "Elève-10",
+            "loser": "Elève-2",
+            "date": "2026-09-12T20:26:44.116Z"
+          },
+          {
+            "winner": "Elève-2",
+            "loser": "Elève-9",
+            "date": "2026-09-12T20:26:47.579Z"
+          },
+          {
+            "winner": "Elève-2",
+            "loser": "Elève-6",
+            "date": "2026-09-12T20:26:51.896Z"
+          }
+        ]
+      }
+    },
+    {
       "id": "1789135196259_7cy57",
       "type": "swiss",
       "className": "Classe test synchro",
@@ -884,5 +971,5 @@
       }
     }
   ],
-  "synced": "2026-09-11T14:00:29.970Z"
+  "synced": "2026-09-12T20:28:00.801Z"
 }
