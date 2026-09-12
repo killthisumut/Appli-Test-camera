@@ -234,16 +234,15 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
 
 /* Swiss bottom bar */
 .swiss-bar{background:var(--bg2);border-top:1px solid var(--border);padding:8px 12px;display:flex;align-items:center;justify-content:space-between;gap:6px;flex-shrink:0;flex-wrap:wrap;box-shadow:0 -2px 8px rgba(0,0,0,.05);}
-/* Bandeau permanent de saisie des résultats — grands boutons/menus, pensés pour être tapés par des élèves */
-.swiss-result-bar{flex-shrink:0;background:var(--bg2);border-top:2px solid var(--accent);padding:10px 12px;display:flex;flex-direction:column;gap:8px;}
-.swiss-result-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.swiss-result-ico{font-size:20px;flex-shrink:0;}
-.swiss-result-sel{font-family:'Poppins',sans-serif;font-weight:700;border:2px solid var(--border);border-radius:10px;background:var(--bg3);color:var(--text);padding:10px 12px;font-size:14px;flex:1;min-width:120px;max-width:260px;}
-.swiss-result-sel-winner{font-size:16px;border-color:var(--accent);}
+/* Bandeau permanent de saisie des résultats — désormais 1 ligne, compacté */
+.swiss-result-bar{flex-shrink:0;background:var(--bg2);border-top:2px solid var(--accent);padding:8px 12px;display:flex;flex-direction:row;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-start;}
+.swiss-result-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:0 1 auto;}
+.swiss-result-ico{font-size:16px;flex-shrink:0;}
+.swiss-result-sel{font-family:'Poppins',sans-serif;font-weight:700;border:2px solid var(--border);border-radius:8px;background:var(--bg3);color:var(--text);padding:8px 10px;font-size:13px;flex:0 1 140px;min-width:auto;}
+.swiss-result-sel-winner{font-size:14px;border-color:var(--accent);}
 .swiss-result-sel:disabled{opacity:.45;}
-.swiss-result-vs{font-size:12px;color:var(--muted);font-weight:600;flex-shrink:0;}
-.swiss-result-validate,.swiss-result-change{font-size:15px;font-weight:700;padding:14px 18px;border-radius:12px;flex:1;min-width:160px;}
-.swiss-result-validate:disabled,.swiss-result-change:disabled{opacity:.4;}
+.swiss-result-vs{font-size:11px;color:var(--muted);font-weight:600;flex-shrink:0;}
+.swiss-result-validate,.swiss-result-change{font-size:12px;font-weight:700;padding:8px 12px;border-radius:8px;flex:0 1 auto;white-space:nowrap;min-width:auto;}
 @keyframes swissResultPulse{0%{box-shadow:0 0 0 0 rgba(91,156,246,.55);}70%{box-shadow:0 0 0 10px rgba(91,156,246,0);}100%{box-shadow:0 0 0 0 rgba(91,156,246,0);}}
 .swiss-result-pulse{animation:swissResultPulse .7s ease;}
 .swiss-bar .btn-grp{gap:5px;}
@@ -2050,10 +2049,19 @@ function renderClassHistoryListInto(targetId, className){
       icon='🔀';
       const stats=swissComputeStats(h.state);
       nStu=stats.length; nM=(h.state.matches||[]).length;
-      detail=stats.map(s=>`<div style="padding:4px 0;font-size:12px;border-bottom:1px dashed var(--border);">
-        <div style="display:flex;justify-content:space-between;"><strong>${esc(s.name)}</strong><span>${s.finalCol>=0?COL_NAMES[s.finalCol]:'—'} · V:${s.wins} D:${s.losses}</span></div>
-        <div style="color:var(--muted);font-size:11px;">${esc(swissOpponentsLabel(s.opponents))}</div>
-      </div>`).join('');
+      detail=stats.map(s=>{
+        const matchsJoues = s.wins + s.losses;
+        return `<div style="padding:4px 0;font-size:12px;border-bottom:1px dashed var(--border);">
+        <div style="display:flex;justify-content:space-between;align-items:start;">
+          <div>
+            <strong>${esc(s.name)}</strong>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px;">${matchsJoues} match${matchsJoues>1?'s':''}</div>
+          </div>
+          <span style="text-align:right;font-size:11px;">${s.finalCol>=0?COL_NAMES[s.finalCol]:'—'}<br/>V:${s.wins} D:${s.losses}</span>
+        </div>
+        <div style="color:var(--muted);font-size:11px;margin-top:4px;">${esc(swissOpponentsLabel(s.opponents))}</div>
+      </div>`;
+      }).join('');
     } else {
       const students=(h.state.students||[]);
       nStu=students.length; nM=(h.state.matches||[]).length;
@@ -2769,6 +2777,7 @@ function swissRenderMatchStepWinner(){
   $('swiss-match-step-w').style.display = '';
   $('swiss-match-step-l').style.display = 'none';
   $('swiss-match-recap').style.display = 'none';
+  $('swiss-match-winner-banner').style.display = 'none';
   const all = swissAllStudents();
   $('swiss-match-grid-w').innerHTML = all.length
     ? all.map(s => `<button class="atp-p-btn" style="border-color:${swissColors[s.ci]};" onclick="swissPickWinner('${esc(s.name)}',${s.ci})">${esc(s.name)} <span style="opacity:.55;font-size:10px;">(${COL_NAMES[s.ci]})</span></button>`).join('')
@@ -2784,6 +2793,11 @@ function swissRenderMatchStepLoser(){
   $('swiss-match-step-w').style.display = 'none';
   $('swiss-match-step-l').style.display = '';
   $('swiss-match-recap').style.display = 'none';
+  // Afficher le bandeau vainqueur
+  const banner = $('swiss-match-winner-banner');
+  banner.style.display = '';
+  $('swiss-match-winner-name').textContent = swissMatchWinner.name;
+  
   const ci = swissMatchWinner.ci;
   const opponents = swissColumns[ci].filter(n => n !== swissMatchWinner.name);
   $('swiss-match-l-hint').textContent = `Adversaires possibles dans « ${COL_NAMES[ci]} » (même colonne que ${swissMatchWinner.name}).`;
@@ -4224,6 +4238,11 @@ window.addEventListener('load',()=>{
 <div class="overlay" id="ov-swiss-match">
   <div class="modal wide">
     <h2>⚡ Résultat d'un match</h2>
+    <!-- BANDEAU VAINQUEUR -->
+    <div id="swiss-match-winner-banner" style="display:none;background:linear-gradient(135deg,rgba(76,175,80,.15),rgba(76,175,80,.08));border-left:4px solid var(--green);padding:12px 16px;margin-bottom:16px;border-radius:4px;">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">🏆 Vainqueur</div>
+      <div style="font-size:18px;font-weight:700;color:var(--green);" id="swiss-match-winner-name"></div>
+    </div>
     <div class="atp-step" id="swiss-match-step-w">
       <div class="atp-step-lbl"><span class="atp-step-num">1</span> Qui a <strong>gagné</strong> ?</div>
       <div class="atp-player-grid" id="swiss-match-grid-w"></div>
