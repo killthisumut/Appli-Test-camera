@@ -1,4 +1,40 @@
 {
-  "history": [],
-  "synced": "2026-09-13T11:07:48.160Z"
+  "history": [
+    {
+      "id": "1789297902130_8sfjh",
+      "type": "swiss",
+      "className": "Test 123",
+      "date": "2026-09-13T11:11:42.130Z",
+      "label": "Remplacée par une nouvelle ronde",
+      "state": {
+        "columns": [
+          [
+            "Hhh",
+            "Hh"
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": []
+      }
+    }
+  ],
+  "synced": "2026-09-13T11:12:13.683Z"
 }
