@@ -1,16 +1,104 @@
 {
   "classes": [
     {
+      "id": 1789108718190,
+      "name": "3e2",
+      "students": [
+        "Rodaina",
+        "ilef",
+        "Mohamed",
+        "Hamza",
+        "Abdourahmane",
+        "Lassana",
+        "Riles",
+        "Meryem",
+        "Djibril",
+        "Youhaidini",
+        "Anais",
+        "idriss",
+        "Souleymane",
+        "Fenda",
+        "Keyron",
+        "Cyiane",
+        "Nour",
+        "Mohamed-Amine",
+        "Zakaria",
+        "Mouni",
+        "Zhihan",
+        "Koussay",
+        "insaf",
+        "Emma"
+      ]
+    },
+    {
+      "id": 1789108718191,
+      "name": "5e2",
+      "students": [
+        "Louay",
+        "Steve-Akins",
+        "Younes",
+        "Trecy",
+        "Lynna",
+        "Camilia",
+        "Yassir",
+        "Rayane",
+        "Jùlio",
+        "Wassim",
+        "Rimes",
+        "Nibras",
+        "Fatumata",
+        "Hiba",
+        "Lina",
+        "Farah",
+        "Ortencia",
+        "Limi",
+        "Layana",
+        "Saadia",
+        "Dyvane",
+        "Eden",
+        "Loyiel",
+        "Jennah",
+        "Rayane-Foudi"
+      ]
+    },
+    {
+      "id": 1789108718192,
+      "name": "5e3",
+      "students": [
+        "Zayd",
+        "Raouad"
+      ]
+    },
+    {
+      "id": 1789133991848.2056,
+      "name": "Classe test synchro",
+      "students": [
+        "Elève-1",
+        "Elève-2",
+        "Elève-3",
+        "Elève-4",
+        "Elève-5",
+        "Elève-6",
+        "Elève-7",
+        "Elève-9",
+        "Elève-10",
+        "Elève-11"
+      ]
+    },
+    {
       "id": 1789297882238.069,
       "name": "Test 123",
       "students": [
         "Fjjdud",
         "uzjezjz",
         "diqujqjs",
-        "qtgqhha"
+        "qtgqhha",
+        "cfgvbnj",
+        "dfgbn",
+        "dcghbn"
       ]
     }
   ],
   "infos": {},
-  "synced": "2026-09-13T11:12:12.131Z"
+  "synced": "2026-09-14T07:47:27.863Z"
 }
