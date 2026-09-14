@@ -1094,7 +1094,6 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
           <button class="btn btn-gray btn-sm" id="swiss-redo-btn" onclick="swissRedo()">↪ Retour</button>
         </div>
         <div class="btn-grp">
-          <button class="btn btn-green btn-sm" onclick="swissOpenSave()">💾 Sauvegarder</button>
           <button class="btn btn-green btn-sm" onclick="swissFinSeance()">🏁 Fin de séance</button>
           <button class="btn btn-green btn-sm" onclick="swissOpenLoad()">📂 Charger</button>
         </div>
@@ -1112,7 +1111,22 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
   <div class="screen" id="screen-atp">
 
     <!-- SUB-SCREEN : CLASSEMENT INITIAL -->
-    <div id="atp-sub-seed" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
+        <!-- SUB-SCREEN : CHARGER UN TOURNOI -->
+    <div id="atp-sub-load" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
+      <div style="background:var(--atp-a);padding:12px 16px;flex-shrink:0;display:flex;align-items:center;gap:10px;">
+        <div style="font-size:1.5rem">📂</div>
+        <div>
+          <div style="font-family:'Poppins',sans-serif;font-weight:800;font-size:16px;color:#fff;">Charger un tournoi</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.75);">Reprendre ou continuer une séance</div>
+        </div>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:12px 14px;" id="atp-load-list"></div>
+      <div style="padding:12px 14px;background:var(--bg2);border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;">
+        <button class="atp-btn-main" onclick="atpSkipLoadAndStart()">➜ Nouveau tournoi →</button>
+      </div>
+    </div>
+
+<div id="atp-sub-seed" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
       <div style="background:var(--atp-a);padding:12px 16px;flex-shrink:0;display:flex;align-items:center;gap:10px;">
         <div style="font-size:1.5rem">🏅</div>
         <div>
@@ -1141,7 +1155,7 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
         <div class="atp-top-right">
           <button class="atp-icon-btn" onclick="atpShowSub('params')" title="Paramètres">⚙️</button>
           <button class="atp-icon-btn" onclick="atpShowSub('prof')" title="Vue prof">📊</button>
-          <button class="atp-icon-btn" onclick="atpSaveData()" title="Sauvegarder">💾</button>
+          <button class="atp-icon-btn" onclick="atpResetSeance()" title="Fin de séance">🏁</button>
           <button class="atp-icon-btn" data-proj-btn onclick="openProjection('atp')" title="Mode projection" style="background:rgba(255,255,255,.35);font-size:14px;">📺</button>
         </div>
       </div>
@@ -1281,7 +1295,7 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
         </div>
         <div class="atp-section">
           <div class="atp-section-title">🏁 Fin de séance</div>
-          <button class="btn btn-green" onclick="atpFinSeance()" style="width:100%;">🏁 Enregistrer et terminer cette séance</button>
+          <button class="btn btn-green" onclick="atpResetSeance()" style="width:100%;">🏁 Enregistrer et terminer cette séance</button>
         </div>
         <div class="atp-section">
           <div class="atp-section-title" style="color:var(--red)">⚠️ Zone de danger</div>
@@ -2113,7 +2127,7 @@ function resumeTrnHistory(id){
   archiveAtpSession('Remplacée avant reprise'); // on ne perd pas la séance en cours
   A2=JSON.parse(JSON.stringify(h.state));
   a2Save();
-  showScreen('screen-atp'); atpShowSub('main'); atpRenderMain();
+  showScreen('screen-atp'); atpShowSub('load'); atpOpenLoad();
   toast('Séance reprise ✓');
 }
 
@@ -3502,13 +3516,140 @@ function atpSaveParams(){
   toast('✅ Paramètres enregistrés');
 }
 
-function atpResetSeance(){
-  if(!confirm('Effacer uniquement les matchs de cette séance (les points totaux cumulés sont conservés) ?')) return;
-  archiveAtpSession('Fin de séance');
-  A2.matches=[];
-  A2.students.forEach(s=>{ s.seancePts=0; s.wins=0; s.losses=0; s.refs=0; s.history=[]; });
-  a2Save(); atpShowSub('main'); atpRenderMain(); toast('🔄 Séance réinitialisée (archivée dans l\'historique)');
+
+
+function atpOpenLoad(){
+  const hist = getTrnHistory().filter(h => h.type === 'atp');
+  const list = $('atp-load-list');list.innerHTML = '';
+  
+  if(!hist.length){
+    list.innerHTML = '<div class="atp-empty">Aucun tournoi sauvegardé</div>';
+  } else {
+    hist.forEach(h => {
+      const item = document.createElement('div');
+      item.className = 'atp-history-item';
+      item.style.cssText = 'padding:10px 14px;border-bottom:1px dashed var(--border);cursor:pointer;';
+      
+      const d = new Date(h.date);
+      const dStr = d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+      
+      item.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-weight:600;font-size:14px;color:var(--text);">${esc(h.label)}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:3px;">${dStr}</div>
+        </div>
+      </div>`;
+      
+      item.onclick = () => {
+        atpLoadedSession = h;
+        atpShowSub('load');
+        openOv('ov-atp-prolonger-continuer');
+      };
+      
+      list.appendChild(item);
+    });
+  }
+  
+  atpShowSub('load');
 }
+
+
+function atpProlongerSeance(){
+  if(!atpLoadedSession) return;
+  closeOv('ov-atp-prolonger-continuer');
+  // Charger EXACTEMENT
+  A2 = JSON.parse(JSON.stringify(atpLoadedSession.state));
+  atpCurrentSaveKey = atpLoadedSession.label;
+  a2Save();
+  atpShowSub('main');
+  atpRenderMain();
+  toast(`✅ Tournoi "${atpLoadedSession.label}" prolongé`);
+}
+
+function atpContinuerSeance(){
+  if(!atpLoadedSession) return;
+  closeOv('ov-atp-prolonger-continuer');
+  // Charger structure + ZÉRO matchs
+  A2 = JSON.parse(JSON.stringify(atpLoadedSession.state));
+  A2.matches = [];
+  A2.students.forEach(s => { s.seancePts = 0; s.wins = 0; s.losses = 0; s.refs = 0; s.history = []; });
+  atpCurrentSaveKey = atpLoadedSession.label + ' (2)';
+  a2Save();
+  atpShowSub('main');
+  atpRenderMain();
+  toast(`✅ Nouveau tournoi (classement conservé)`);
+}
+
+function atpSkipLoadAndStart(){
+  atpCurrentSaveKey = null;
+  atpLoadedSession = null;
+  atpShowSub('seed');
+}
+
+function atpDoSaveFinal(){
+  const name = ($('atp-save-inp').value || '').trim();
+  if(!name){ toast('⚠️ Entrez un nom'); return; }
+  closeOv('ov-atp-save');
+  
+  // Sauvegarder localement
+  const saves = getATPSaves();
+  saves[name] = {
+    date: new Date().toLocaleDateString('fr-FR'),
+    state: JSON.parse(JSON.stringify(A2))
+  };
+  localStorage.setItem(ATP2_SAVES_KEY, JSON.stringify(saves));
+  
+  // Archiver dans historique
+  const hist = getTrnHistory();
+  let histEntry = null;
+  
+  if(atpCurrentSaveKey){
+    // Prolongation → UPDATE
+    histEntry = hist.find(h => h.label === name && h.type === 'atp');
+    if(histEntry){
+      histEntry.state = JSON.parse(JSON.stringify(A2));
+      histEntry.date = new Date().toISOString();
+    } else {
+      histEntry = {
+        id: String(Date.now()) + '_' + Math.random().toString(36).slice(2,7),
+        type: 'atp',
+        className: A2.className || 'Sans nom',
+        date: new Date().toISOString(),
+        label: name,
+        state: JSON.parse(JSON.stringify(A2))
+      };
+      hist.unshift(histEntry);
+    }
+  } else {
+    // Nouvelle sauvegarde
+    histEntry = {
+      id: String(Date.now()) + '_' + Math.random().toString(36).slice(2,7),
+      type: 'atp',
+      className: A2.className || 'Sans nom',
+      date: new Date().toISOString(),
+      label: name,
+      state: JSON.parse(JSON.stringify(A2))
+    };
+    hist.unshift(histEntry);
+  }
+  
+  if(hist.length > 200) hist.length = 200;
+  saveTrnHistoryArr(hist);
+  atpCurrentSaveKey = name;
+  queueGitHubSync();
+  toast(`✅ Tournoi "${name}" sauvegardé`);
+}
+
+function atpResetSeance(){
+  if(!A2 || !A2.students || !A2.students.length){ toast('❌ Pas de tournoi en cours'); return; }
+  let prefilled = atpCurrentSaveKey || '';
+  const el=$('atp-save-inp');
+  el.value=prefilled;
+  openOv('ov-atp-save');
+  setTimeout(()=>el.focus(),60);
+  el.onkeydown=e=>{if(e.key==='Enter')atpDoSaveFinal();};
+}
+
 
 function atpFinSeance(){
   if(!A2 || !A2.students || !A2.students.length){ toast('❌ Pas de séance en cours'); return; }
@@ -4407,6 +4548,76 @@ function swissContinuerSeance(){
   showScreen('screen-swiss');
   toast(`✅ Nouvelle séance commencée (classement conservé)`);
 }
+
+<!-- Modal ATP : Prolonger ou Continuer -->
+<div class="overlay" id="ov-atp-prolonger-continuer">
+  <div class="modal">
+    <h2>⏳ Charger un tournoi</h2>
+    <p style="font-size:14px;margin-bottom:16px;color:var(--text);">Comment voulez-vous charger ce tournoi ?</p>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px;">
+      <button class="btn btn-primary" onclick="atpProlongerSeance()" style="text-align:left;padding:12px;">
+        <div style="font-weight:600;">⏸️ Prolonger le tournoi</div>
+        <div style="font-size:12px;opacity:0.8;margin-top:4px;">Reprendre depuis où vous avez arrêté (même ligne de stats)</div>
+      </button>
+      <button class="btn btn-primary" onclick="atpContinuerSeance()" style="text-align:left;padding:12px;">
+        <div style="font-weight:600;">📊 Continuer avec nouveau classement</div>
+        <div style="font-size:12px;opacity:0.8;margin-top:4px;">Garder le classement, recommencer les matchs à 0</div>
+      </button>
+    </div>
+    <button class="btn btn-gray" onclick="closeOv('ov-atp-prolonger-continuer')">Annuler</button>
+  </div>
+</div>
+
+
+function atpProlongerSeance(){
+  if(!atpLoadedSession) return;
+  closeOv('ov-atp-prolonger-continuer');
+  // Charger EXACTEMENT
+  A2 = JSON.parse(JSON.stringify(atpLoadedSession.state));
+  atpCurrentSaveKey = atpLoadedSession.label;
+  a2Save();
+  atpShowSub('main');
+  atpRenderMain();
+  toast(`✅ Tournoi "${atpLoadedSession.label}" prolongé`);
+}
+
+function atpContinuerSeance(){
+  if(!atpLoadedSession) return;
+  closeOv('ov-atp-prolonger-continuer');
+  // Charger structure + ZÉRO matchs
+  A2 = JSON.parse(JSON.stringify(atpLoadedSession.state));
+  A2.matches = [];
+  A2.students.forEach(s => { s.seancePts = 0; s.wins = 0; s.losses = 0; s.refs = 0; s.history = []; });
+  atpCurrentSaveKey = atpLoadedSession.label + ' (2)';
+  a2Save();
+  atpShowSub('main');
+  atpRenderMain();
+  toast(`✅ Nouveau tournoi (classement conservé)`);
+}
+
+<!-- Modal ATP : Sauvegarde -->
+<div class="overlay" id="ov-atp-save">
+  <div class="modal">
+    <h2>🏁 Fin de séance</h2>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Entrez le nom de ce tournoi pour le sauvegarder et l'archiver :</p>
+    <input type="text" id="atp-save-inp" placeholder="Ex : ATP 6e2…" autocomplete="off">
+    <div class="modal-btns">
+      <button class="btn btn-green" onclick="atpDoSaveFinal()">✅ Fin de séance</button>
+      <button class="btn btn-gray" onclick="closeOv('ov-atp-save')">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal ATP : Chargement -->
+<div class="overlay" id="ov-atp-load">
+  <div class="modal">
+    <h2>📂 Charger un tournoi</h2>
+    <div style="flex:1;overflow-y:auto;max-height:300px;" id="atp-load-list"></div>
+    <div class="modal-btns" style="margin-top:12px;">
+      <button class="btn btn-gray" onclick="closeOv('ov-atp-load')">Fermer</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
