@@ -3627,7 +3627,8 @@ function atpContinuerSeance(){
 function atpSkipLoadAndStart(){
   atpCurrentSaveKey = null;
   atpLoadedSession = null;
-  atpShowSub('seed');
+  showScreen('screen-setup');
+  setupInit('atp');
 }
 
 function atpDoSaveFinal(){
