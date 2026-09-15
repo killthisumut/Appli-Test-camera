@@ -3636,14 +3636,6 @@ function atpDoSaveFinal(){
   if(!name){ toast('⚠️ Entrez un nom'); return; }
   closeOv('ov-atp-save');
   
-  // Sauvegarder localement
-  const saves = getATPSaves();
-  saves[name] = {
-    date: new Date().toLocaleDateString('fr-FR'),
-    state: JSON.parse(JSON.stringify(A2))
-  };
-  localStorage.setItem(ATP2_SAVES_KEY, JSON.stringify(saves));
-  
   // Archiver dans historique
   const hist = getTrnHistory();
   let histEntry = null;
