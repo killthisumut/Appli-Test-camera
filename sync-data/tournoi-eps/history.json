@@ -1,6 +1,62 @@
 {
   "history": [
     {
+      "id": "1789461714442_mx0c2",
+      "type": "swiss",
+      "className": "6e2",
+      "date": "2026-09-15T08:41:54.442Z",
+      "label": "Remplacée par une nouvelle ronde",
+      "state": {
+        "columns": [
+          [
+            "Hana",
+            "Ahmed",
+            "Tala",
+            "Mohamed",
+            "Youssouf",
+            "Mohamed-Cherif",
+            "Diahoumba",
+            "Lina",
+            "Elione",
+            "Amin",
+            "Youssef",
+            "Ouassim",
+            "Oscar",
+            "Larin",
+            "Laila",
+            "Tariq",
+            "Kawthar",
+            "Sammah",
+            "Abdenour",
+            "Retage",
+            "Siraje",
+            "Mariama-Ledy",
+            "Farouk"
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": []
+      }
+    },
+    {
       "id": "1789245483318_z5a1t",
       "type": "swiss",
       "className": "Classe test synchro",
@@ -1056,5 +1112,5 @@
       }
     }
   ],
-  "synced": "2026-09-15T07:56:27.520Z"
+  "synced": "2026-09-15T08:42:31.870Z"
 }
