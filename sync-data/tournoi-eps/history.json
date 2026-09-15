@@ -1,6 +1,147 @@
 {
   "history": [
     {
+      "id": "1789484182437_es7fb",
+      "type": "atp",
+      "className": "Sans nom",
+      "date": "2026-09-15T14:56:22.437Z",
+      "label": "tfvgfhyunj,olojbhvgty-f",
+      "state": {
+        "className": "",
+        "sport": "🏸 Badminton",
+        "ptsWin": 5,
+        "ptsLoss": 2,
+        "ptsRef": 1,
+        "rankGap": 5,
+        "students": [
+          {
+            "id": 56,
+            "name": "Fjjdud",
+            "rank": 1,
+            "totalPts": 5,
+            "seancePts": 5,
+            "wins": 1,
+            "losses": 0,
+            "refs": 0,
+            "history": [
+              {
+                "type": "win",
+                "oppName": "diqujqjs",
+                "refName": "uzjezjz",
+                "pts": 5,
+                "date": "16:56"
+              }
+            ]
+          },
+          {
+            "id": 57,
+            "name": "uzjezjz",
+            "rank": 2,
+            "totalPts": 1,
+            "seancePts": 1,
+            "wins": 0,
+            "losses": 0,
+            "refs": 1,
+            "history": [
+              {
+                "type": "ref",
+                "oppName": "Fjjdud vs diqujqjs",
+                "refName": null,
+                "pts": 1,
+                "date": "16:56"
+              }
+            ]
+          },
+          {
+            "id": 58,
+            "name": "diqujqjs",
+            "rank": 3,
+            "totalPts": 2,
+            "seancePts": 2,
+            "wins": 0,
+            "losses": 1,
+            "refs": 0,
+            "history": [
+              {
+                "type": "loss",
+                "oppName": "Fjjdud",
+                "refName": "uzjezjz",
+                "pts": 2,
+                "date": "16:56"
+              }
+            ]
+          },
+          {
+            "id": 59,
+            "name": "qtgqhha",
+            "rank": 4,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 60,
+            "name": "cfgvbnj",
+            "rank": 5,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 61,
+            "name": "dfgbn",
+            "rank": 6,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 62,
+            "name": "dcghbn",
+            "rank": 7,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          }
+        ],
+        "matches": [
+          {
+            "wId": 56,
+            "lId": 58,
+            "rId": 57,
+            "wName": "Fjjdud",
+            "lName": "diqujqjs",
+            "rName": "uzjezjz",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "16:56"
+          }
+        ],
+        "seanceStart": {
+          "56": 0,
+          "57": 0,
+          "58": 0,
+          "59": 0,
+          "60": 0,
+          "61": 0,
+          "62": 0
+        }
+      }
+    },
+    {
       "id": "1789461714442_mx0c2",
       "type": "swiss",
       "className": "6e2",
@@ -1112,5 +1253,5 @@
       }
     }
   ],
-  "synced": "2026-09-15T08:42:31.870Z"
+  "synced": "2026-09-15T14:56:54.165Z"
 }
