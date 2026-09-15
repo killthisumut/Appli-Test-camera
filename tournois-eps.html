@@ -859,6 +859,18 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
 .hidden{display:none !important;}
 #qr-render-classes:not(:empty){background:#fff;border-radius:12px;margin-top:8px;}
 </style>
+<meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="expires" content="0">
+<script>
+  // Cache busting version - force hard refresh to ignore cache
+  const VERSION = '202609151430';
+  console.log(`EPS Tournois App v${VERSION}`);
+  // Empêcher les requêtes en cache lors d'un refresh manuel
+  if (performance.navigation.type === 1) {
+    console.log('Page reload detected - cache busting active');
+  }
+</script>
 </head>
 <body>
 
@@ -1915,7 +1927,7 @@ function goHome(){showScreen('screen-home');updateHomeBanner();}
 function openScreen(mode){
   if(mode==='class'){showScreen('screen-class');renderClassList();renderClassDetail();}
   else if(mode==='swiss'){showScreen('screen-setup');setupInit('swiss');}
-  else if(mode==='atp'){showScreen('screen-setup');setupInit('atp');}
+  else if(mode==='atp'){showScreen('screen-atp');atpShowSub('load');atpOpenLoad();}
 }
 
 function openTournament(type){
@@ -4599,8 +4611,7 @@ function atpContinuerSeance(){
 <div class="overlay" id="ov-atp-save">
   <div class="modal">
     <h2>🏁 Fin de séance</h2>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Entrez le nom de ce tournoi pour le sauvegarder et l'archiver :</p>
-    <input type="text" id="atp-save-inp" placeholder="Ex : ATP 6e2…" autocomplete="off">
+    <input type="text" id="atp-save-inp" placeholder="Nom du tournoi (ex : ATP 6e2)…" autocomplete="off">
     <div class="modal-btns">
       <button class="btn btn-green" onclick="atpDoSaveFinal()">✅ Fin de séance</button>
       <button class="btn btn-gray" onclick="closeOv('ov-atp-save')">Annuler</button>
