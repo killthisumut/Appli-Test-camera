@@ -3188,7 +3188,7 @@ function atpInit(){
 }
 
 function atpShowSub(name){
-  ['seed','main','prof','detail','params'].forEach(n=>{
+  ['load','seed','main','prof','detail','params'].forEach(n=>{
     const el = $('atp-sub-'+n);
     if(el){ el.style.display = n===name ? 'flex' : 'none'; }
   });
