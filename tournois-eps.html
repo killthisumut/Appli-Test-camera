@@ -866,10 +866,12 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
   // Cache busting version - force hard refresh to ignore cache
   const VERSION = '202609151430';
   console.log(`EPS Tournois App v${VERSION}`);
-  // Empêcher les requêtes en cache lors d'un refresh manuel
-  if (performance.navigation.type === 1) {
-    console.log('Page reload detected - cache busting active');
-  }
+  // Empêcher les requêtes en cache lors d'un refresh manuel (API dépréciée, on protège l'appel)
+  try {
+    if (performance.navigation && performance.navigation.type === 1) {
+      console.log('Page reload detected - cache busting active');
+    }
+  } catch(e) {}
 </script>
 </head>
 <body>
@@ -3090,6 +3092,36 @@ function swissOpenLoad(){
   openOv('ov-swiss-load');
 }
 
+function swissProlongerSeance(){
+  if(!swissLoadedSession) return;
+  closeOv('ov-swiss-prolonger-continuer');
+  // Charger la séance exactement comme elle était
+  swissColumns=swissLoadedSession.state.columns.map(c=>[...c]);
+  swissColors=swissLoadedSession.state.columnColors?[...swissLoadedSession.state.columnColors]:swissColors;
+  swissMatches=(swissLoadedSession.state.matches||[]).map(m=>({...m}));
+  swissCurrentSaveKey=swissLoadedSession.label;
+  swissClassName=swissLoadedSession.className||'';
+  swissHistory=[];swissFuture=[];
+  swissRender();
+  showScreen('screen-swiss');
+  toast(`✅ Séance "${swissLoadedSession.label}" prolongée`);
+}
+
+function swissContinuerSeance(){
+  if(!swissLoadedSession) return;
+  closeOv('ov-swiss-prolonger-continuer');
+  // Charger UNIQUEMENT la structure (classement), zéro les stats
+  swissColumns=swissLoadedSession.state.columns.map(c=>[...c]);
+  swissColors=swissLoadedSession.state.columnColors?[...swissLoadedSession.state.columnColors]:swissColors;
+  swissMatches=[]; // ZÉRO les matchs
+  swissCurrentSaveKey=swissLoadedSession.label+' (2)'; // Nouveau titre
+  swissClassName=swissLoadedSession.className||'';
+  swissHistory=[];swissFuture=[];
+  swissRender();
+  showScreen('screen-swiss');
+  toast(`✅ Nouvelle séance commencée (classement conservé)`);
+}
+
 function archiveSwissSaveByName(key){
   const saves=getSwissSaves();
   const save=saves[key];
@@ -4530,36 +4562,24 @@ window.addEventListener('load',()=>{
   </div>
 </div>
 
-
-function swissProlongerSeance(){
-  if(!swissLoadedSession) return;
-  closeOv('ov-swiss-prolonger-continuer');
-  // Charger la séance exactement comme elle était
-  swissColumns=swissLoadedSession.state.columns.map(c=>[...c]);
-  swissColors=swissLoadedSession.state.columnColors?[...swissLoadedSession.state.columnColors]:swissColors;
-  swissMatches=(swissLoadedSession.state.matches||[]).map(m=>({...m}));
-  swissCurrentSaveKey=swissLoadedSession.label;
-  swissClassName=swissLoadedSession.className||'';
-  swissHistory=[];swissFuture=[];
-  swissRender();
-  showScreen('screen-swiss');
-  toast(`✅ Séance "${swissLoadedSession.label}" prolongée`);
-}
-
-function swissContinuerSeance(){
-  if(!swissLoadedSession) return;
-  closeOv('ov-swiss-prolonger-continuer');
-  // Charger UNIQUEMENT la structure (classement), zéro les stats
-  swissColumns=swissLoadedSession.state.columns.map(c=>[...c]);
-  swissColors=swissLoadedSession.state.columnColors?[...swissLoadedSession.state.columnColors]:swissColors;
-  swissMatches=[]; // ZÉRO les matchs
-  swissCurrentSaveKey=swissLoadedSession.label+' (2)'; // Nouveau titre
-  swissClassName=swissLoadedSession.className||'';
-  swissHistory=[];swissFuture=[];
-  swissRender();
-  showScreen('screen-swiss');
-  toast(`✅ Nouvelle séance commencée (classement conservé)`);
-}
+<!-- Modal Ronde Suisse : Prolonger ou Continuer -->
+<div class="overlay" id="ov-swiss-prolonger-continuer">
+  <div class="modal">
+    <h2>⏳ Charger une séance</h2>
+    <p style="font-size:14px;margin-bottom:16px;color:var(--text);">Comment voulez-vous charger cette séance ?</p>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px;">
+      <button class="btn btn-primary" onclick="swissProlongerSeance()" style="text-align:left;padding:12px;">
+        <div style="font-weight:600;">⏸️ Prolonger la séance</div>
+        <div style="font-size:12px;opacity:0.8;margin-top:4px;">Reprendre depuis où vous avez arrêté (même ligne de stats)</div>
+      </button>
+      <button class="btn btn-primary" onclick="swissContinuerSeance()" style="text-align:left;padding:12px;">
+        <div style="font-weight:600;">📊 Continuer avec nouveau classement</div>
+        <div style="font-size:12px;opacity:0.8;margin-top:4px;">Garder le classement, recommencer les matchs à 0</div>
+      </button>
+    </div>
+    <button class="btn btn-gray" onclick="closeOv('ov-swiss-prolonger-continuer')">Annuler</button>
+  </div>
+</div>
 
 <!-- Modal ATP : Prolonger ou Continuer -->
 <div class="overlay" id="ov-atp-prolonger-continuer">
@@ -4579,33 +4599,6 @@ function swissContinuerSeance(){
     <button class="btn btn-gray" onclick="closeOv('ov-atp-prolonger-continuer')">Annuler</button>
   </div>
 </div>
-
-
-function atpProlongerSeance(){
-  if(!atpLoadedSession) return;
-  closeOv('ov-atp-prolonger-continuer');
-  // Charger EXACTEMENT
-  A2 = JSON.parse(JSON.stringify(atpLoadedSession.state));
-  atpCurrentSaveKey = atpLoadedSession.label;
-  a2Save();
-  atpShowSub('main');
-  atpRenderMain();
-  toast(`✅ Tournoi "${atpLoadedSession.label}" prolongé`);
-}
-
-function atpContinuerSeance(){
-  if(!atpLoadedSession) return;
-  closeOv('ov-atp-prolonger-continuer');
-  // Charger structure + ZÉRO matchs
-  A2 = JSON.parse(JSON.stringify(atpLoadedSession.state));
-  A2.matches = [];
-  A2.students.forEach(s => { s.seancePts = 0; s.wins = 0; s.losses = 0; s.refs = 0; s.history = []; });
-  atpCurrentSaveKey = atpLoadedSession.label + ' (2)';
-  a2Save();
-  atpShowSub('main');
-  atpRenderMain();
-  toast(`✅ Nouveau tournoi (classement conservé)`);
-}
 
 <!-- Modal ATP : Sauvegarde -->
 <div class="overlay" id="ov-atp-save">
