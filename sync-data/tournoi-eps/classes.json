@@ -1,6 +1,16 @@
 {
   "classes": [
     {
+      "id": 1789297882238.069,
+      "name": "Test 123",
+      "students": [
+        "Fjjdud",
+        "uzjezjz",
+        "diqujqjs",
+        "qtgqhha"
+      ]
+    },
+    {
       "id": 1789108718190,
       "name": "3e2",
       "students": [
@@ -86,19 +96,6 @@
       ]
     },
     {
-      "id": 1789297882238.069,
-      "name": "Test 123",
-      "students": [
-        "Fjjdud",
-        "uzjezjz",
-        "diqujqjs",
-        "qtgqhha",
-        "cfgvbnj",
-        "dfgbn",
-        "dcghbn"
-      ]
-    },
-    {
       "id": 1789458784342.253,
       "name": "6e2",
       "students": [
@@ -129,5 +126,5 @@
     }
   ],
   "infos": {},
-  "synced": "2026-09-15T14:56:52.494Z"
+  "synced": "2026-09-16T03:35:52.000Z"
 }
