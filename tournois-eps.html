@@ -272,17 +272,17 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
    Même appareil que le vidéoprojecteur en recopie simple (ex: iPad) : c'est cette disposition qui sert d'écran "dissocié" de facto,
    puisque le classement reste toujours visible sans scroller pour retrouver les commandes. */
 .atp-wrap{display:flex;flex:1;overflow:hidden;min-height:0;}
-.atp-rank-panel{width:38%;min-width:260px;max-width:440px;flex-shrink:0;display:flex;flex-direction:column;
+.atp-rank-panel{width:38%;min-width:260px;max-width:440px;flex-shrink:0;display:flex;flex-direction:column;max-height:85vh;
   overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;border-right:1px solid var(--border);}
 .atp-cmd-panel{flex:1;display:flex;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;min-width:0;}
 @media(max-width:820px){
   .atp-wrap{flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;}
-  .atp-rank-panel{width:100%;max-width:none;flex-shrink:0;border-right:none;border-bottom:1px solid var(--border);max-height:clamp(40vh,auto,50vh);overflow-y:auto;}
+  .atp-rank-panel{width:100%;max-width:none;flex-shrink:0;border-right:none;border-bottom:1px solid var(--border);max-height:50vh;overflow-y:auto;}
   .atp-cmd-panel{flex:none;overflow-y:visible;}
 }
 /* ─── PHASE 8 : Responsive classement (max 35 élèves) ─── */
 @media(max-width:600px){
-  .atp-rank-panel{max-height:clamp(45vh,auto,60vh);}
+  .atp-rank-panel{max-height:55vh;}
   .atp-rank-name{font-size:clamp(10px,2.2vw,12px);}
   .atp-rank-pts{font-size:clamp(11px,2.2vw,13px);}
 }
@@ -2682,7 +2682,9 @@ function setupLaunch(){
     swissRender();
     toast(`✅ Ronde lancée avec ${setupPlayers.length} élèves`);
   } else if(setupMode==='atp'){
-    a2StartWithPlayers(setupPlayers, A2.className||'');
+    // ✅ Utiliser getActiveClass().name comme Swiss, pas A2.className (qui est vide)
+    const activeClassName = (getActiveClass() && getActiveClass().name) || '';
+    a2StartWithPlayers(setupPlayers, activeClassName);
   } else if(setupMode==='ranked'){
     // Élimination avec têtes de série → aller à l'écran seed
     trnPlayers=setupPlayers.map(name=>({name,wins:0,losses:0,byes:0,path:[]}));
@@ -3598,6 +3600,11 @@ function a2ReorganizeRanks(fromIndex, toIndex){
   }
   
   A2.students[toIndex] = student;
+  
+  // ✅ IMPORTANT : Mettre à jour les rangs de tous les élèves après réorganisation
+  A2.students.forEach((s, idx) => {
+    s.rank = idx + 1;
+  });
 }
 
 function a2MoveRank(i, dir){
@@ -5104,7 +5111,7 @@ window.addEventListener('load',()=>{
 <!-- ═══ MODALS MODE PROF ═══ -->
 
 <!-- Modal : Configuration password prof (1ère utilisation) -->
-<div class="overlay" id="ov-prof-setup-password" style="display:none;">
+<div class="overlay" id="ov-prof-setup-password">
   <div class="modal" style="background:#FFD700; color:#000;">
     <h2>🔐 Configurer le mot de passe Prof</h2>
     <p style="font-size:13px; color:#333; margin-bottom:12px;">Ceci est la première fois que vous accédez au Mode Prof. Définissez un mot de passe :</p>
@@ -5118,7 +5125,7 @@ window.addEventListener('load',()=>{
 </div>
 
 <!-- Modal : Vérification password prof -->
-<div class="overlay" id="ov-prof-verify-password" style="display:none;">
+<div class="overlay" id="ov-prof-verify-password">
   <div class="modal" style="background:#FFD700; color:#000;">
     <h2>🔐 Authentification Mode Prof</h2>
     <input type="password" id="prof-verify-pwd" placeholder="Mot de passe prof" autocomplete="off">
@@ -5130,7 +5137,7 @@ window.addEventListener('load',()=>{
 </div>
 
 <!-- Modal : Quitter Mode Prof -->
-<div class="overlay" id="ov-prof-exit-confirm" style="display:none;">
+<div class="overlay" id="ov-prof-exit-confirm">
   <div class="modal" style="background:#FFD700; color:#000;">
     <h2>🚪 Quitter Mode Prof ?</h2>
     <p style="font-size:13px; color:#333;">Voulez-vous vraiment quitter le Mode Prof et revenir à l'interface standard ?</p>
