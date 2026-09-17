@@ -1,11 +1,11 @@
 {
   "history": [
     {
-      "id": "1789529721995_0e6nj",
+      "id": "1789619450478_ds9tp",
       "type": "atp",
       "className": "Sans nom",
-      "date": "2026-09-16T03:35:21.995Z",
-      "label": "Test ATP",
+      "date": "2026-09-17T04:30:50.478Z",
+      "label": "Test ATP (2)",
       "state": {
         "className": "",
         "sport": "🏸 Badminton",
@@ -19,71 +19,33 @@
             "name": "Elève-1",
             "rank": 1,
             "totalPts": 5,
-            "seancePts": 5,
-            "wins": 1,
+            "seancePts": 0,
+            "wins": 0,
             "losses": 0,
             "refs": 0,
-            "history": [
-              {
-                "type": "win",
-                "oppName": "Elève-2",
-                "refName": "Elève-3",
-                "pts": 5,
-                "date": "05:35"
-              }
-            ]
+            "history": []
           },
           {
             "id": 6,
             "name": "Elève-2",
             "rank": 2,
             "totalPts": 7,
-            "seancePts": 7,
-            "wins": 1,
-            "losses": 1,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
             "refs": 0,
-            "history": [
-              {
-                "type": "loss",
-                "oppName": "Elève-1",
-                "refName": "Elève-3",
-                "pts": 2,
-                "date": "05:35"
-              },
-              {
-                "type": "win",
-                "oppName": "Elève-3",
-                "refName": "Elève-7",
-                "pts": 5,
-                "date": "05:35"
-              }
-            ]
+            "history": []
           },
           {
             "id": 7,
             "name": "Elève-3",
             "rank": 3,
             "totalPts": 3,
-            "seancePts": 3,
+            "seancePts": 0,
             "wins": 0,
-            "losses": 1,
-            "refs": 1,
-            "history": [
-              {
-                "type": "ref",
-                "oppName": "Elève-1 vs Elève-2",
-                "refName": null,
-                "pts": 1,
-                "date": "05:35"
-              },
-              {
-                "type": "loss",
-                "oppName": "Elève-2",
-                "refName": "Elève-7",
-                "pts": 2,
-                "date": "05:35"
-              }
-            ]
+            "losses": 0,
+            "refs": 0,
+            "history": []
           },
           {
             "id": 8,
@@ -101,57 +63,33 @@
             "name": "Elève-5",
             "rank": 5,
             "totalPts": 5,
-            "seancePts": 5,
-            "wins": 1,
+            "seancePts": 0,
+            "wins": 0,
             "losses": 0,
             "refs": 0,
-            "history": [
-              {
-                "type": "win",
-                "oppName": "Elève-6",
-                "refName": "Elève-11",
-                "pts": 5,
-                "date": "05:35"
-              }
-            ]
+            "history": []
           },
           {
             "id": 10,
             "name": "Elève-6",
             "rank": 6,
             "totalPts": 2,
-            "seancePts": 2,
+            "seancePts": 0,
             "wins": 0,
-            "losses": 1,
+            "losses": 0,
             "refs": 0,
-            "history": [
-              {
-                "type": "loss",
-                "oppName": "Elève-5",
-                "refName": "Elève-11",
-                "pts": 2,
-                "date": "05:35"
-              }
-            ]
+            "history": []
           },
           {
             "id": 11,
             "name": "Elève-7",
             "rank": 7,
             "totalPts": 1,
-            "seancePts": 1,
+            "seancePts": 0,
             "wins": 0,
             "losses": 0,
-            "refs": 1,
-            "history": [
-              {
-                "type": "ref",
-                "oppName": "Elève-2 vs Elève-3",
-                "refName": null,
-                "pts": 1,
-                "date": "05:35"
-              }
-            ]
+            "refs": 0,
+            "history": []
           },
           {
             "id": 12,
@@ -180,59 +118,14 @@
             "name": "Elève-11",
             "rank": 10,
             "totalPts": 1,
-            "seancePts": 1,
+            "seancePts": 0,
             "wins": 0,
             "losses": 0,
-            "refs": 1,
-            "history": [
-              {
-                "type": "ref",
-                "oppName": "Elève-5 vs Elève-6",
-                "refName": null,
-                "pts": 1,
-                "date": "05:35"
-              }
-            ]
+            "refs": 0,
+            "history": []
           }
         ],
-        "matches": [
-          {
-            "wId": 9,
-            "lId": 10,
-            "rId": 14,
-            "wName": "Elève-5",
-            "lName": "Elève-6",
-            "rName": "Elève-11",
-            "ptsW": 5,
-            "ptsL": 2,
-            "ptsR": 1,
-            "date": "05:35"
-          },
-          {
-            "wId": 6,
-            "lId": 7,
-            "rId": 11,
-            "wName": "Elève-2",
-            "lName": "Elève-3",
-            "rName": "Elève-7",
-            "ptsW": 5,
-            "ptsL": 2,
-            "ptsR": 1,
-            "date": "05:35"
-          },
-          {
-            "wId": 5,
-            "lId": 6,
-            "rId": 7,
-            "wName": "Elève-1",
-            "lName": "Elève-2",
-            "rName": "Elève-3",
-            "ptsW": 5,
-            "ptsL": 2,
-            "ptsR": 1,
-            "date": "05:35"
-          }
-        ],
+        "matches": [],
         "seanceStart": {
           "5": 0,
           "6": 0,
@@ -248,113 +141,178 @@
       }
     },
     {
-      "id": "1789297993309_qpzo1",
-      "type": "swiss",
-      "className": "Test 123",
-      "date": "2026-09-13T11:13:13.309Z",
-      "label": "Remplacée par une nouvelle ronde",
+      "id": "1789484182437_es7fb",
+      "type": "atp",
+      "className": "Sans nom",
+      "date": "2026-09-15T14:56:22.437Z",
+      "label": "tfvgfhyunj,olojbhvgty-f",
       "state": {
-        "columns": [
-          [
-            "Fjjdud",
-            "uzjezjz",
-            "diqujqjs",
-            "qtgqhha"
-          ],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          []
-        ],
-        "columnColors": [
-          "#FFD6D6",
-          "#FFE4C2",
-          "#FFF5BC",
-          "#D4F5CE",
-          "#C4E6FF",
-          "#D4CCFF",
-          "#EEC4FF",
-          "#FFD0E6",
-          "#C2F5EC"
-        ],
-        "matches": []
-      }
-    },
-    {
-      "id": "1789297968839_6own6",
-      "type": "swiss",
-      "className": "Test 123",
-      "date": "2026-09-13T11:12:48.839Z",
-      "label": "Remplacée par une nouvelle ronde",
-      "state": {
-        "columns": [
-          [
-            "qtgqhha"
-          ],
-          [
-            "Fjjdud",
-            "uzjezjz"
-          ],
-          [
-            "diqujqjs"
-          ],
-          [],
-          [],
-          [],
-          [],
-          [],
-          []
-        ],
-        "columnColors": [
-          "#FFD6D6",
-          "#FFE4C2",
-          "#FFF5BC",
-          "#D4F5CE",
-          "#C4E6FF",
-          "#D4CCFF",
-          "#EEC4FF",
-          "#FFD0E6",
-          "#C2F5EC"
+        "className": "",
+        "sport": "🏸 Badminton",
+        "ptsWin": 5,
+        "ptsLoss": 2,
+        "ptsRef": 1,
+        "rankGap": 5,
+        "students": [
+          {
+            "id": 56,
+            "name": "Fjjdud",
+            "rank": 1,
+            "totalPts": 5,
+            "seancePts": 5,
+            "wins": 1,
+            "losses": 0,
+            "refs": 0,
+            "history": [
+              {
+                "type": "win",
+                "oppName": "diqujqjs",
+                "refName": "uzjezjz",
+                "pts": 5,
+                "date": "16:56"
+              }
+            ]
+          },
+          {
+            "id": 57,
+            "name": "uzjezjz",
+            "rank": 2,
+            "totalPts": 1,
+            "seancePts": 1,
+            "wins": 0,
+            "losses": 0,
+            "refs": 1,
+            "history": [
+              {
+                "type": "ref",
+                "oppName": "Fjjdud vs diqujqjs",
+                "refName": null,
+                "pts": 1,
+                "date": "16:56"
+              }
+            ]
+          },
+          {
+            "id": 58,
+            "name": "diqujqjs",
+            "rank": 3,
+            "totalPts": 2,
+            "seancePts": 2,
+            "wins": 0,
+            "losses": 1,
+            "refs": 0,
+            "history": [
+              {
+                "type": "loss",
+                "oppName": "Fjjdud",
+                "refName": "uzjezjz",
+                "pts": 2,
+                "date": "16:56"
+              }
+            ]
+          },
+          {
+            "id": 59,
+            "name": "qtgqhha",
+            "rank": 4,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 60,
+            "name": "cfgvbnj",
+            "rank": 5,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 61,
+            "name": "dfgbn",
+            "rank": 6,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 62,
+            "name": "dcghbn",
+            "rank": 7,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          }
         ],
         "matches": [
           {
-            "winner": "Fjjdud",
-            "loser": "diqujqjs",
-            "date": "2026-09-13T11:11:45.583Z"
-          },
-          {
-            "winner": "diqujqjs",
-            "loser": "qtgqhha",
-            "date": "2026-09-13T11:11:47.818Z"
-          },
-          {
-            "winner": "diqujqjs",
-            "loser": "Fjjdud",
-            "date": "2026-09-13T11:11:50.367Z"
-          },
-          {
-            "winner": "uzjezjz",
-            "loser": "qtgqhha",
-            "date": "2026-09-13T11:11:53.487Z"
+            "wId": 56,
+            "lId": 58,
+            "rId": 57,
+            "wName": "Fjjdud",
+            "lName": "diqujqjs",
+            "rName": "uzjezjz",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "16:56"
           }
-        ]
+        ],
+        "seanceStart": {
+          "56": 0,
+          "57": 0,
+          "58": 0,
+          "59": 0,
+          "60": 0,
+          "61": 0,
+          "62": 0
+        }
       }
     },
     {
-      "id": "1789297902130_8sfjh",
+      "id": "1789461714442_mx0c2",
       "type": "swiss",
-      "className": "Test 123",
-      "date": "2026-09-13T11:11:42.130Z",
+      "className": "6e2",
+      "date": "2026-09-15T08:41:54.442Z",
       "label": "Remplacée par une nouvelle ronde",
       "state": {
         "columns": [
           [
-            "Hhh",
-            "Hh"
+            "Hana",
+            "Ahmed",
+            "Tala",
+            "Mohamed",
+            "Youssouf",
+            "Mohamed-Cherif",
+            "Diahoumba",
+            "Lina",
+            "Elione",
+            "Amin",
+            "Youssef",
+            "Ouassim",
+            "Oscar",
+            "Larin",
+            "Laila",
+            "Tariq",
+            "Kawthar",
+            "Sammah",
+            "Abdenour",
+            "Retage",
+            "Siraje",
+            "Mariama-Ledy",
+            "Farouk"
           ],
           [],
           [],
@@ -1400,178 +1358,16 @@
       }
     },
     {
-      "id": "1789484182437_es7fb",
-      "type": "atp",
-      "className": "Sans nom",
-      "date": "2026-09-15T14:56:22.437Z",
-      "label": "tfvgfhyunj,olojbhvgty-f",
-      "state": {
-        "className": "",
-        "sport": "🏸 Badminton",
-        "ptsWin": 5,
-        "ptsLoss": 2,
-        "ptsRef": 1,
-        "rankGap": 5,
-        "students": [
-          {
-            "id": 56,
-            "name": "Fjjdud",
-            "rank": 1,
-            "totalPts": 5,
-            "seancePts": 5,
-            "wins": 1,
-            "losses": 0,
-            "refs": 0,
-            "history": [
-              {
-                "type": "win",
-                "oppName": "diqujqjs",
-                "refName": "uzjezjz",
-                "pts": 5,
-                "date": "16:56"
-              }
-            ]
-          },
-          {
-            "id": 57,
-            "name": "uzjezjz",
-            "rank": 2,
-            "totalPts": 1,
-            "seancePts": 1,
-            "wins": 0,
-            "losses": 0,
-            "refs": 1,
-            "history": [
-              {
-                "type": "ref",
-                "oppName": "Fjjdud vs diqujqjs",
-                "refName": null,
-                "pts": 1,
-                "date": "16:56"
-              }
-            ]
-          },
-          {
-            "id": 58,
-            "name": "diqujqjs",
-            "rank": 3,
-            "totalPts": 2,
-            "seancePts": 2,
-            "wins": 0,
-            "losses": 1,
-            "refs": 0,
-            "history": [
-              {
-                "type": "loss",
-                "oppName": "Fjjdud",
-                "refName": "uzjezjz",
-                "pts": 2,
-                "date": "16:56"
-              }
-            ]
-          },
-          {
-            "id": 59,
-            "name": "qtgqhha",
-            "rank": 4,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 60,
-            "name": "cfgvbnj",
-            "rank": 5,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 61,
-            "name": "dfgbn",
-            "rank": 6,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 62,
-            "name": "dcghbn",
-            "rank": 7,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          }
-        ],
-        "matches": [
-          {
-            "wId": 56,
-            "lId": 58,
-            "rId": 57,
-            "wName": "Fjjdud",
-            "lName": "diqujqjs",
-            "rName": "uzjezjz",
-            "ptsW": 5,
-            "ptsL": 2,
-            "ptsR": 1,
-            "date": "16:56"
-          }
-        ],
-        "seanceStart": {
-          "56": 0,
-          "57": 0,
-          "58": 0,
-          "59": 0,
-          "60": 0,
-          "61": 0,
-          "62": 0
-        }
-      }
-    },
-    {
-      "id": "1789461714442_mx0c2",
+      "id": "1789297902130_8sfjh",
       "type": "swiss",
-      "className": "6e2",
-      "date": "2026-09-15T08:41:54.442Z",
+      "className": "Test 123",
+      "date": "2026-09-13T11:11:42.130Z",
       "label": "Remplacée par une nouvelle ronde",
       "state": {
         "columns": [
           [
-            "Hana",
-            "Ahmed",
-            "Tala",
-            "Mohamed",
-            "Youssouf",
-            "Mohamed-Cherif",
-            "Diahoumba",
-            "Lina",
-            "Elione",
-            "Amin",
-            "Youssef",
-            "Ouassim",
-            "Oscar",
-            "Larin",
-            "Laila",
-            "Tariq",
-            "Kawthar",
-            "Sammah",
-            "Abdenour",
-            "Retage",
-            "Siraje",
-            "Mariama-Ledy",
-            "Farouk"
+            "Hhh",
+            "Hh"
           ],
           [],
           [],
@@ -1595,7 +1391,351 @@
         ],
         "matches": []
       }
+    },
+    {
+      "id": "1789529721995_0e6nj",
+      "type": "atp",
+      "className": "Sans nom",
+      "date": "2026-09-16T03:35:21.995Z",
+      "label": "Test ATP",
+      "state": {
+        "className": "",
+        "sport": "🏸 Badminton",
+        "ptsWin": 5,
+        "ptsLoss": 2,
+        "ptsRef": 1,
+        "rankGap": 5,
+        "students": [
+          {
+            "id": 5,
+            "name": "Elève-1",
+            "rank": 1,
+            "totalPts": 5,
+            "seancePts": 5,
+            "wins": 1,
+            "losses": 0,
+            "refs": 0,
+            "history": [
+              {
+                "type": "win",
+                "oppName": "Elève-2",
+                "refName": "Elève-3",
+                "pts": 5,
+                "date": "05:35"
+              }
+            ]
+          },
+          {
+            "id": 6,
+            "name": "Elève-2",
+            "rank": 2,
+            "totalPts": 7,
+            "seancePts": 7,
+            "wins": 1,
+            "losses": 1,
+            "refs": 0,
+            "history": [
+              {
+                "type": "loss",
+                "oppName": "Elève-1",
+                "refName": "Elève-3",
+                "pts": 2,
+                "date": "05:35"
+              },
+              {
+                "type": "win",
+                "oppName": "Elève-3",
+                "refName": "Elève-7",
+                "pts": 5,
+                "date": "05:35"
+              }
+            ]
+          },
+          {
+            "id": 7,
+            "name": "Elève-3",
+            "rank": 3,
+            "totalPts": 3,
+            "seancePts": 3,
+            "wins": 0,
+            "losses": 1,
+            "refs": 1,
+            "history": [
+              {
+                "type": "ref",
+                "oppName": "Elève-1 vs Elève-2",
+                "refName": null,
+                "pts": 1,
+                "date": "05:35"
+              },
+              {
+                "type": "loss",
+                "oppName": "Elève-2",
+                "refName": "Elève-7",
+                "pts": 2,
+                "date": "05:35"
+              }
+            ]
+          },
+          {
+            "id": 8,
+            "name": "Elève-4",
+            "rank": 4,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 9,
+            "name": "Elève-5",
+            "rank": 5,
+            "totalPts": 5,
+            "seancePts": 5,
+            "wins": 1,
+            "losses": 0,
+            "refs": 0,
+            "history": [
+              {
+                "type": "win",
+                "oppName": "Elève-6",
+                "refName": "Elève-11",
+                "pts": 5,
+                "date": "05:35"
+              }
+            ]
+          },
+          {
+            "id": 10,
+            "name": "Elève-6",
+            "rank": 6,
+            "totalPts": 2,
+            "seancePts": 2,
+            "wins": 0,
+            "losses": 1,
+            "refs": 0,
+            "history": [
+              {
+                "type": "loss",
+                "oppName": "Elève-5",
+                "refName": "Elève-11",
+                "pts": 2,
+                "date": "05:35"
+              }
+            ]
+          },
+          {
+            "id": 11,
+            "name": "Elève-7",
+            "rank": 7,
+            "totalPts": 1,
+            "seancePts": 1,
+            "wins": 0,
+            "losses": 0,
+            "refs": 1,
+            "history": [
+              {
+                "type": "ref",
+                "oppName": "Elève-2 vs Elève-3",
+                "refName": null,
+                "pts": 1,
+                "date": "05:35"
+              }
+            ]
+          },
+          {
+            "id": 12,
+            "name": "Elève-9",
+            "rank": 8,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 13,
+            "name": "Elève-10",
+            "rank": 9,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 14,
+            "name": "Elève-11",
+            "rank": 10,
+            "totalPts": 1,
+            "seancePts": 1,
+            "wins": 0,
+            "losses": 0,
+            "refs": 1,
+            "history": [
+              {
+                "type": "ref",
+                "oppName": "Elève-5 vs Elève-6",
+                "refName": null,
+                "pts": 1,
+                "date": "05:35"
+              }
+            ]
+          }
+        ],
+        "matches": [
+          {
+            "wId": 9,
+            "lId": 10,
+            "rId": 14,
+            "wName": "Elève-5",
+            "lName": "Elève-6",
+            "rName": "Elève-11",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "05:35"
+          },
+          {
+            "wId": 6,
+            "lId": 7,
+            "rId": 11,
+            "wName": "Elève-2",
+            "lName": "Elève-3",
+            "rName": "Elève-7",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "05:35"
+          },
+          {
+            "wId": 5,
+            "lId": 6,
+            "rId": 7,
+            "wName": "Elève-1",
+            "lName": "Elève-2",
+            "rName": "Elève-3",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "05:35"
+          }
+        ],
+        "seanceStart": {
+          "5": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "9": 0,
+          "10": 0,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0
+        }
+      }
+    },
+    {
+      "id": "1789297993309_qpzo1",
+      "type": "swiss",
+      "className": "Test 123",
+      "date": "2026-09-13T11:13:13.309Z",
+      "label": "Remplacée par une nouvelle ronde",
+      "state": {
+        "columns": [
+          [
+            "Fjjdud",
+            "uzjezjz",
+            "diqujqjs",
+            "qtgqhha"
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": []
+      }
+    },
+    {
+      "id": "1789297968839_6own6",
+      "type": "swiss",
+      "className": "Test 123",
+      "date": "2026-09-13T11:12:48.839Z",
+      "label": "Remplacée par une nouvelle ronde",
+      "state": {
+        "columns": [
+          [
+            "qtgqhha"
+          ],
+          [
+            "Fjjdud",
+            "uzjezjz"
+          ],
+          [
+            "diqujqjs"
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": [
+          {
+            "winner": "Fjjdud",
+            "loser": "diqujqjs",
+            "date": "2026-09-13T11:11:45.583Z"
+          },
+          {
+            "winner": "diqujqjs",
+            "loser": "qtgqhha",
+            "date": "2026-09-13T11:11:47.818Z"
+          },
+          {
+            "winner": "diqujqjs",
+            "loser": "Fjjdud",
+            "date": "2026-09-13T11:11:50.367Z"
+          },
+          {
+            "winner": "uzjezjz",
+            "loser": "qtgqhha",
+            "date": "2026-09-13T11:11:53.487Z"
+          }
+        ]
+      }
     }
   ],
-  "synced": "2026-09-16T03:35:53.285Z"
+  "synced": "2026-09-17T04:31:37.389Z"
 }
