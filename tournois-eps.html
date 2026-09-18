@@ -272,9 +272,9 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
    Même appareil que le vidéoprojecteur en recopie simple (ex: iPad) : c'est cette disposition qui sert d'écran "dissocié" de facto,
    puisque le classement reste toujours visible sans scroller pour retrouver les commandes. */
 .atp-wrap{display:flex;flex:1;overflow:hidden;min-height:0;}
-.atp-rank-panel{width:38%;min-width:260px;max-width:440px;flex-shrink:0;display:flex;flex-direction:column;max-height:85vh;
-  overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;border-right:1px solid var(--border);}
-.atp-cmd-panel{flex:1;display:flex;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;min-width:0;}
+.atp-rank-panel{width:50%;flex-shrink:0;display:flex;flex-direction:column;max-height:100vh;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;border-right:2px solid var(--border);}
+.atp-cmd-panel{width:50%;flex:1;display:flex;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;min-width:0;}
 @media(max-width:820px){
   .atp-wrap{flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;}
   .atp-rank-panel{width:100%;max-width:none;flex-shrink:0;border-right:none;border-bottom:1px solid var(--border);max-height:50vh;overflow-y:auto;}
@@ -570,26 +570,26 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
 .atp-empty{text-align:center;padding:18px;color:var(--muted);font-size:13px;}
 
 /* Classement cards */
-.atp-rank-card{display:flex;align-items:center;gap:4px;padding:3px 6px;border-radius:6px;margin-bottom:2px;border:1px solid transparent;transition:all .17s;cursor:default;font-size:12px;}
+.atp-rank-card{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:6px;margin-bottom:2px;border:1px solid transparent;transition:all .17s;cursor:default;font-size:14px;font-weight:600;}
 .atp-rank-card.rank-1{background:rgba(245,166,35,.1);border-color:rgba(245,166,35,.3);}
 .atp-rank-card.rank-2{background:rgba(148,163,184,.1);border-color:rgba(148,163,184,.25);}
 .atp-rank-card.rank-3{background:rgba(201,124,58,.1);border-color:rgba(201,124,58,.25);}
 .atp-rank-card.rank-other{background:var(--bg3);border-color:var(--border);}
 
 /* ✅ GRID 2 COLONNES pour plus d'élèves visibles */
-#atp-rank-cards{display:grid;grid-template-columns:1fr 1fr;gap:4px;}
+#atp-rank-cards{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
 
 @media(max-width:820px){
   #atp-rank-cards{grid-template-columns:1fr;gap:2px;}
 }
 
-/* Réduire les espacements des éléments */
-.atp-rank-pos{font-size:10px;min-width:18px;text-align:center;line-height:1;}
-.atp-rank-name{flex:1;font-weight:600;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.atp-rank-pts{font-weight:700;font-size:11px;color:var(--accent);min-width:20px;text-align:right;}
-.atp-rank-delta{font-size:7px;font-weight:600;padding:1px 2px;border-radius:4px;margin-left:2px;}
+/* Espacements des éléments - FONT PLUS GROSSE */
+.atp-rank-pos{font-size:13px;min-width:22px;text-align:center;line-height:1;font-weight:700;}
+.atp-rank-name{flex:1;font-weight:700;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.atp-rank-pts{font-weight:800;font-size:13px;color:var(--accent);min-width:30px;text-align:right;}
+.atp-rank-delta{display:none;}
 .atp-rank-badges{display:none;} /* Masquer les badges pour gagner de place */
-.atp-section-title{margin-bottom:6px;}
+.atp-section-title{margin-bottom:8px;font-size:15px;}
 .atp-rank-pos{font-family:'Poppins',sans-serif;font-weight:800;font-size:clamp(14px,3vw,18px);min-width:clamp(24px,5vw,30px);text-align:center;line-height:1;}
 .atp-rank-pos.p1{color:var(--atp-gold);}.atp-rank-pos.p2{color:#9ca3af;}.atp-rank-pos.p3{color:#cd7f32;}.atp-rank-pos.pn{color:var(--muted);}
 .atp-rank-name{flex:1;font-weight:700;font-size:clamp(11px,2.5vw,14px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -1117,7 +1117,7 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
 
       <div class="swiss-bar">
         <div class="btn-grp">
-          <button class="btn btn-gray btn-sm" onclick="swissOpenProfMode()">👨‍🏫 Mode Prof</button>
+          <button class="btn btn-gray btn-sm" onclick="swissToggleProfMode()">👨‍🏫 Mode Prof</button>
           <button class="btn btn-gray btn-sm" onclick="swissRenameClass()">🏷️ <span id="swiss-class-lbl">Classe ?</span></button>
           <button class="btn btn-gray btn-sm" onclick="openSwissHistoryModal()">🕓 Historique des matchs</button>
         </div>
@@ -1189,7 +1189,7 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
           </div>
         </div>
         <div class="atp-top-right">
-          <button class="atp-icon-btn" onclick="atpOpenProfMode()" title="Mode Prof">👨‍🏫</button>
+          <button class="atp-icon-btn" onclick="atpToggleProfMode()" title="Mode Prof">👨‍🏫</button>
           <button class="atp-icon-btn" onclick="atpShowSub('params')" title="Paramètres">⚙️</button>
           <button class="atp-icon-btn" onclick="atpShowSub('prof')" title="Vue prof">📊</button>
           <button class="atp-icon-btn" onclick="atpResetSeance()" title="Fin de séance">🏁</button>
@@ -3437,6 +3437,18 @@ function profConfirmExit(){
   }
 }
 
+function atpToggleProfMode(){
+  // ✅ Si déjà en mode prof → quitter DIRECTEMENT (NO confirmation)
+  if (profIsActive() && PROF_MODE_SECTION === 'atp') {
+    profExitMode();
+    toast('👋 Mode professeur désactivé');
+    return;
+  }
+  
+  // Sinon → ouvrir le mode prof (demander authentification)
+  atpOpenProfMode();
+}
+
 function atpOpenProfMode(){
   if (profIsActive()) {
     // Déjà en mode prof -> demander confirmation pour quitter
@@ -3457,10 +3469,26 @@ function atpOpenProfMode(){
   }
 }
 
+// ─── Toggle Mode Prof Ronde Suisse ────────────────────────────────────────
+function swissToggleProfMode(){
+  // ✅ Si déjà en mode prof → quitter DIRECTEMENT (NO confirmation)
+  if (profIsActive() && PROF_MODE_SECTION === 'swiss') {
+    profExitMode();
+    toast('👋 Mode professeur désactivé');
+    swissRender(); // Rafraîchir l'affichage normal
+    return;
+  }
+  
+  // Sinon → ouvrir le mode prof (demander authentification)
+  swissOpenProfMode();
+}
+
 function swissOpenProfMode(){
   if (profIsActive()) {
-    // Déjà en mode prof -> demander confirmation pour quitter
-    openOv('ov-prof-exit-confirm');
+    // Déjà en mode prof -> quitter directement
+    profExitMode();
+    toast('👋 Mode professeur désactivé');
+    swissRender();
     return;
   }
   
@@ -3491,41 +3519,43 @@ function swissShowProfInterface(){
 
 function swissRenderProfInterface(){
   // Afficher toutes les colonnes avec élèves cliquables en mode prof
-  const main = document.querySelector('[id*="swiss-main"]') || document.querySelector('main') || document.body;
+  const screen = document.getElementById('screen-swiss');
+  if (!screen) return;
   
   // Créer l'affichage par colonnes
-  let html = '<div style="display:flex;gap:20px;padding:20px;flex-wrap:wrap;overflow-y:auto;">';
+  let html = '<div style="display:flex;gap:20px;padding:20px;flex-wrap:wrap;overflow-y:auto;width:100%;">';
   
   for (let colIdx = 0; colIdx < swissColumns.length; colIdx++) {
     const col = swissColumns[colIdx];
-    html += `<div style="border:2px solid #FF6B35;padding:15px;border-radius:8px;min-width:200px;background:rgba(255,107,53,0.08);">`;
-    html += `<div style="font-weight:bold;margin-bottom:12px;color:#FF6B35;text-align:center;">📍 Colonne ${colIdx + 1}</div>`;
+    html += `<div style="border:3px solid #FF6B35;padding:15px;border-radius:10px;min-width:220px;background:rgba(255,107,53,0.12);flex:1;min-height:300px;">`;
+    html += `<div style="font-weight:bold;margin-bottom:15px;color:#FF6B35;text-align:center;font-size:16px;">📍 Colonne ${colIdx + 1}</div>`;
     
-    col.forEach(studentId => {
-      const student = A2.students.find(s => s.id === studentId);
-      if (student) {
-        // ✅ CLIC DIRECT = monte SANS confirmation !
-        html += `<div style="padding:10px;margin:6px 0;background:white;border-radius:6px;cursor:pointer;border-left:4px solid #FF6B35;transition:0.2s;box-shadow:0 2px 4px rgba(0,0,0,0.1);" 
-                      onmouseover="this.style.background='#f5f5f5'" 
-                      onmouseout="this.style.background='white'"
-                      onclick="swissBoostStudent(${studentId})">
-          <strong style="font-size:15px;">${esc(student.name)}</strong>
-          <br><small style="color:#888;font-size:12px;">👆 Cliquez pour monter</small>
-        </div>`;
-      }
-    });
+    if (col.length === 0) {
+      html += `<div style="color:#999;text-align:center;padding:20px;font-style:italic;">Aucun élève</div>`;
+    } else {
+      col.forEach(studentId => {
+        // ✅ CHERCHER DANS swissStudents (pas A2.students) !
+        const student = swissStudents.find(s => s.id === studentId);
+        if (student) {
+          // ✅ CLIC DIRECT = monte SANS confirmation !
+          html += `<div style="padding:12px;margin:8px 0;background:white;border-radius:8px;cursor:pointer;border-left:5px solid #FF6B35;transition:0.2s;box-shadow:0 2px 6px rgba(255,107,53,0.2);" 
+                        onmouseover="this.style.background='#fff3e6';this.style.boxShadow='0 4px 10px rgba(255,107,53,0.3)'" 
+                        onmouseout="this.style.background='white';this.style.boxShadow='0 2px 6px rgba(255,107,53,0.2)'"
+                        onclick="swissBoostStudent(${studentId})">
+            <strong style="font-size:16px;color:#333;">${esc(student.name)}</strong>
+            <br><small style="color:#FF6B35;font-size:12px;font-weight:600;">👆 Cliquez pour monter</small>
+          </div>`;
+        }
+      });
+    }
     
     html += `</div>`;
   }
   
   html += '</div>';
   
-  // Trouver le conteneur et remplacer le contenu
-  const screen = document.getElementById('screen-swiss');
-  if (screen) {
-    const content = screen.querySelector('.swiss-main') || screen;
-    content.innerHTML = html;
-  }
+  // Remplacer tout le contenu de l'écran Swiss
+  screen.innerHTML = html;
 }
 
 function swissBoostStudent(studentId){
@@ -4019,7 +4049,37 @@ function a2ProfEditRank(rankIndex){
   
   if (newRank === currentRank) return;
   
-  if (!confirm(`Changer le rang de ${esc(student.name)} à ${newRank}e ?`)) return;
+  // ✅ NOUVEAU : Calculer les points nécessaires pour ce rang
+  const ranked = a2Ranked();
+  let pointsNeeded = 0;
+  
+  if (newRank === 1) {
+    // Passer 1er : ajouter les points du 1er actuel + 1
+    const firstStudent = ranked[0];
+    pointsNeeded = firstStudent.totalPts + 1;
+  } else if (newRank > currentRank) {
+    // Descendre : les points du rang cible + 1
+    const targetStudent = ranked[newRank - 1];
+    pointsNeeded = targetStudent.totalPts + 1;
+  } else {
+    // Monter (newRank < currentRank) : les points du rang cible + 1
+    const targetStudent = ranked[newRank - 1];
+    pointsNeeded = targetStudent.totalPts + 1;
+  }
+  
+  const pointsToAdd = Math.max(0, pointsNeeded - student.totalPts);
+  
+  // ✅ Confirmer l'ajout de points
+  const confirmMsg = pointsToAdd > 0 
+    ? `Pour passer ${newRank}e, ${esc(student.name)} doit avoir ${pointsNeeded}pts.\nAjouter ${pointsToAdd} points et changer le rang ?`
+    : `Changer le rang de ${esc(student.name)} à ${newRank}e ?`;
+  
+  if (!confirm(confirmMsg)) return;
+  
+  // ✅ Ajouter les points
+  if (pointsToAdd > 0) {
+    student.totalPts = pointsNeeded;
+  }
   
   const actualIndex = A2.students.findIndex(s => s.id === student.id);
   if (actualIndex === -1) return;
@@ -4027,8 +4087,14 @@ function a2ProfEditRank(rankIndex){
   a2ReorganizeRanks(actualIndex, newRank - 1);
   a2Save();
   a2RenderProf();
-  a2RenderMain(); // ✅ AJOUTER : Rafraîchir le classement élève
-  toast(`✅ Rang modifié`);
+  a2RenderMain(); // ✅ Rafraîchir le classement élève IMMÉDIATEMENT
+  
+  // ✅ NOUVEAU : Proposer de quitter le mode prof
+  setTimeout(() => {
+    if (confirm(`✅ Rang et points modifiés !\n\nQuitter le mode professeur ?`)) {
+      profExitMode();
+    }
+  }, 500);
 }
 
 function a2ProfEditPoints(studentId, type){
@@ -4060,8 +4126,14 @@ function a2ProfEditPoints(studentId, type){
   
   a2Save();
   a2RenderProf();
-  a2RenderMain(); // ✅ AJOUTER : Rafraîchir le classement élève
-  toast(`✅ Points modifiés`);
+  a2RenderMain(); // ✅ Rafraîchir le classement élève IMMÉDIATEMENT
+  
+  // ✅ NOUVEAU : Proposer de quitter le mode prof
+  setTimeout(() => {
+    if (confirm(`✅ Points modifiés !\n\nQuitter le mode professeur ?`)) {
+      profExitMode();
+    }
+  }, 500);
 }
 
 function a2UndoProfMatch(i){ a2UndoMatch(i); a2RenderProf(); }
