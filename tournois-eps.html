@@ -576,8 +576,8 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
 .atp-rank-card.rank-3{background:rgba(201,124,58,.1);border-color:rgba(201,124,58,.25);}
 .atp-rank-card.rank-other{background:var(--bg3);border-color:var(--border);}
 
-/* ✅ GRID 2 COLONNES pour plus d'élèves visibles */
-#atp-rank-cards{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
+/* ✅ GRID 2 COLONNES - Remplir colonne gauche entièrement PUIS colonne droite */
+#atp-rank-cards{display:grid;grid-template-columns:1fr 1fr;gap:2px;grid-auto-flow:column;grid-auto-rows:min-content;}
 
 @media(max-width:820px){
   #atp-rank-cards{grid-template-columns:1fr;gap:2px;}
@@ -3511,7 +3511,7 @@ function swissShowProfInterface(){
   showScreen('screen-swiss');
   
   // Afficher un message clair
-  toast('👨‍🏫 Mode Prof: Cliquez sur un élève pour le monter de colonne (SANS confirmation)');
+  toast('👨‍🏫 Mode Prof: Cliquez sur un élève pour le monter de colonne');
   
   // Afficher les colonnes avec élèves cliquables
   swissRenderProfInterface();
@@ -3520,30 +3520,36 @@ function swissShowProfInterface(){
 function swissRenderProfInterface(){
   // Afficher toutes les colonnes avec élèves cliquables en mode prof
   const screen = document.getElementById('screen-swiss');
-  if (!screen) return;
+  if (!screen) {
+    console.error('screen-swiss introuvable');
+    return;
+  }
   
-  // Créer l'affichage par colonnes
-  let html = '<div style="display:flex;gap:20px;padding:20px;flex-wrap:wrap;overflow-y:auto;width:100%;">';
+  // Créer l'affichage par colonnes avec TOUS les élèves
+  let html = '<div style="padding:20px;background:#f8f9fa;height:100%;display:flex;flex-direction:column;">';
+  html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">';
+  html += '<h2 style="color:#FF6B35;margin:0;">👨‍🏫 Mode Professeur</h2>';
+  html += '<button onclick="swissToggleProfMode()" style="padding:10px 15px;background:#FF6B35;color:white;border:none;border-radius:6px;cursor:pointer;font-weight:bold;font-size:14px;">👈 Quitter</button>';
+  html += '</div>';
+  html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px;flex:1;overflow-y:auto;">';
   
   for (let colIdx = 0; colIdx < swissColumns.length; colIdx++) {
     const col = swissColumns[colIdx];
-    html += `<div style="border:3px solid #FF6B35;padding:15px;border-radius:10px;min-width:220px;background:rgba(255,107,53,0.12);flex:1;min-height:300px;">`;
-    html += `<div style="font-weight:bold;margin-bottom:15px;color:#FF6B35;text-align:center;font-size:16px;">📍 Colonne ${colIdx + 1}</div>`;
+    html += `<div style="border:3px solid #FF6B35;padding:20px;border-radius:12px;background:white;box-shadow:0 4px 10px rgba(0,0,0,0.1);">`;
+    html += `<div style="font-weight:bold;margin-bottom:15px;color:#FF6B35;text-align:center;font-size:18px;">📍 Colonne ${colIdx + 1}</div>`;
     
     if (col.length === 0) {
       html += `<div style="color:#999;text-align:center;padding:20px;font-style:italic;">Aucun élève</div>`;
     } else {
       col.forEach(studentId => {
-        // ✅ CHERCHER DANS swissStudents (pas A2.students) !
         const student = swissStudents.find(s => s.id === studentId);
         if (student) {
-          // ✅ CLIC DIRECT = monte SANS confirmation !
-          html += `<div style="padding:12px;margin:8px 0;background:white;border-radius:8px;cursor:pointer;border-left:5px solid #FF6B35;transition:0.2s;box-shadow:0 2px 6px rgba(255,107,53,0.2);" 
-                        onmouseover="this.style.background='#fff3e6';this.style.boxShadow='0 4px 10px rgba(255,107,53,0.3)'" 
-                        onmouseout="this.style.background='white';this.style.boxShadow='0 2px 6px rgba(255,107,53,0.2)'"
-                        onclick="swissBoostStudent(${studentId})">
-            <strong style="font-size:16px;color:#333;">${esc(student.name)}</strong>
-            <br><small style="color:#FF6B35;font-size:12px;font-weight:600;">👆 Cliquez pour monter</small>
+          html += `<div style="padding:14px;margin:10px 0;background:#f0f0f0;border-radius:8px;cursor:pointer;border-left:5px solid #FF6B35;transition:0.2s;user-select:none;" 
+                        onmouseover="this.style.background='#fff3e6';this.style.transform='translateX(5px)';this.style.boxShadow='0 4px 12px rgba(255,107,53,0.3)'" 
+                        onmouseout="this.style.background='#f0f0f0';this.style.transform='translateX(0)';this.style.boxShadow='none'"
+                        onclick="swissBoostStudent('${studentId}')">
+            <strong style="font-size:16px;color:#333;display:block;margin-bottom:4px;">${esc(student.name)}</strong>
+            <small style="color:#FF6B35;font-size:13px;font-weight:600;display:block;">👆 Cliquez pour monter</small>
           </div>`;
         }
       });
@@ -3552,16 +3558,20 @@ function swissRenderProfInterface(){
     html += `</div>`;
   }
   
-  html += '</div>';
+  html += '</div></div>';
   
-  // Remplacer tout le contenu de l'écran Swiss
+  // REMPLACER COMPLÈTEMENT le contenu
   screen.innerHTML = html;
 }
 
 function swissBoostStudent(studentId){
   // Monter un élève d'une colonne en Ronde Suisse (sans match gagné)
-  const student = A2.students.find(s => s.id === studentId);
-  if (!student) return;
+  // ✅ Chercher dans swissStudents, PAS A2.students !
+  const student = swissStudents.find(s => s.id == studentId);
+  if (!student) {
+    console.error('Élève non trouvé:', studentId);
+    return;
+  }
   
   // Créer un "faux" match contre "personne"
   const fakeMatch = {
@@ -3575,9 +3585,16 @@ function swissBoostStudent(studentId){
   
   // Recalculer les colonnes
   recalcSwissColumns();
-  renderSwitchMatrix();
   
-  toast(`✅ ${esc(student.name)} monté de colonne`);
+  // ✅ Si en mode prof → réafficher interface prof, sinon affichage normal
+  if (profIsActive() && PROF_MODE_SECTION === 'swiss') {
+    swissRenderProfInterface();
+    toast(`✅ ${esc(student.name)} monté de colonne`);
+  } else {
+    swissRender();
+    toast(`✅ ${esc(student.name)} monté de colonne`);
+  }
+  
   a2Save();
 }
 
