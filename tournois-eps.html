@@ -580,7 +580,8 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
 #atp-rank-cards{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
 
 @media(max-width:820px){
-  #atp-rank-cards{grid-template-columns:1fr;gap:2px;}
+  /* En mobile : revenir à 1 colonne simple, pas colonne-par-colonne */
+  #atp-rank-cards{grid-template-columns:1fr;gap:2px;grid-auto-flow:row !important;grid-template-rows:auto !important;}
 }
 
 /* Espacements des éléments - FONT PLUS GROSSE */
@@ -3754,6 +3755,12 @@ function a2RenderRanking(){
   const el = $('atp-rank-cards');
   if(!el) return;
   $('atpRankCnt') && ($('atpRankCnt').textContent = ranked.length+' élève(s)');
+  
+  // ✅ NOUVEAU : Calculer nombre de lignes pour affichage colonne-par-colonne
+  const numRows = Math.ceil(ranked.length / 2);
+  el.style.gridTemplateRows = `repeat(${numRows}, auto)`;
+  el.style.gridAutoFlow = 'column';
+  
   el.innerHTML = ranked.map((s,i)=>{
     const delta = s.seancePts;
     const posClass = i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'rank-other';
