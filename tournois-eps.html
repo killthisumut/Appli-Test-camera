@@ -1263,6 +1263,7 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
       <div class="atp-sub-hdr">
         <button class="atp-back-btn" onclick="atpShowSub('main')">← Retour</button>
         <div class="atp-sub-hdr-title">📊 Vue professeur</div>
+        <button class="atp-icon-btn" onclick="a2ProfShowAddStudent()" title="Ajouter élève">➕</button>
         <button class="atp-icon-btn" onclick="atpSaveData()">💾</button>
       </div>
       <div style="flex:1;overflow-y:auto;padding:12px 14px;">
@@ -2170,6 +2171,10 @@ function resumeTrnHistory(id){
   archiveAtpSession('Remplacée avant reprise'); // on ne perd pas la séance en cours
   A2=JSON.parse(JSON.stringify(h.state));
   atpResetClassementSnapshots(); // ✅ Réinitialiser l'historique de classement pour cette séance
+  
+  // ✅ FEATURE 2 : Synchroniser les élèves avec la classe actuelle
+  a2SyncWithClassOnResume();
+  
   a2Save();
   showScreen('screen-atp'); atpShowSub('load'); atpOpenLoad();
   toast('Séance reprise ✓');
@@ -3286,10 +3291,20 @@ function profEnterMode(section){
 }
 
 function profExitMode(){
+  // ✅ Sauvegarder la section AVANT de désactiver (sinon on ne sait pas d'où on vient)
+  const lastSection = PROF_MODE_SECTION;
+  
   // Désactive le mode prof
   PROF_MODE_ACTIVE = false;
   PROF_MODE_SECTION = null;
   localStorage.setItem('prof_mode_active', 'false');
+  
+  // ✅ NOUVEAU : Rafraîchir l'affichage en fonction de la section d'où on vient
+  if (lastSection === 'atp') {
+    a2RenderMain(); // Rafraîchir le classement ATP
+  } else if (lastSection === 'swiss') {
+    swissRender(); // Rafraîchir la Ronde Suisse
+  }
 }
 
 function profIsActive(){
@@ -3326,13 +3341,17 @@ function atpSaveClassementSnapshot(matchId){
 function atpCanPlayTogetherGlidingHistory(p1Id, p2Id){
   // Vérifier si deux élèves peuvent jouer ensemble (avec historique glissant)
   
-  // D'abord vérifier les rangs actuels
-  const p1Curr = A2.students.find(s => s.id === p1Id);
-  const p2Curr = A2.students.find(s => s.id === p2Id);
+  // ✅ NOUVEAU : Calculer les rangs actuels dynamiquement (pas utiliser .rank périmé)
+  const ranked = a2Ranked();
+  const p1Idx = ranked.findIndex(s => s.id === p1Id);
+  const p2Idx = ranked.findIndex(s => s.id === p2Id);
   
-  if (!p1Curr || !p2Curr) return false;
+  if (p1Idx === -1 || p2Idx === -1) return false;
   
-  const rankGapCurrent = Math.abs(p1Curr.rank - p2Curr.rank);
+  const p1CurrRank = p1Idx + 1;
+  const p2CurrRank = p2Idx + 1;
+  const rankGapCurrent = Math.abs(p1CurrRank - p2CurrRank);
+  
   if (rankGapCurrent <= A2.rankGap) return true;
   
   // Si écart current > rankGap, vérifier dans les 10 derniers matchs
@@ -3631,7 +3650,24 @@ function a2StartWithPlayers(names, className){
   atpResetClassementSnapshots(); // ✅ Réinitialiser l'historique de classement
   if(className) A2.className = className;
   names.forEach((name,i)=>{
-    const s = {id:a2uid(),name,rank:i+1,totalPts:0,seancePts:0,wins:0,losses:0,refs:0,history:[]};
+    // ✅ FEATURE 2 : Parser firstname/lastname (pour synchro ultérieure)
+    const nameParts = name.split(' ');
+    const firstname = nameParts[0] || '';
+    const lastname = nameParts.slice(1).join(' ') || '';
+    
+    const s = {
+      id:a2uid(),
+      name,
+      firstname: firstname,
+      lastname: lastname,
+      rank:i+1,
+      totalPts:0,
+      seancePts:0,
+      wins:0,
+      losses:0,
+      refs:0,
+      history:[]
+    };
     A2.students.push(s);
     A2.seanceStart[s.id] = 0;
   });
@@ -3978,6 +4014,144 @@ function a2UndoMatch(idx){
   toast('↩️ Match annulé');
 }
 
+// ── FEATURE 1 : Ajouter élève en mode prof ────────────────────────────────────
+function a2ProfShowAddStudent(){
+  // Ouvrir la modale d'ajout
+  $('prof-add-student-firstname').value = '';
+  $('prof-add-student-lastname').value = '';
+  openOv('ov-prof-add-student');
+  // Focus sur le prénom
+  setTimeout(() => $('prof-add-student-firstname').focus(), 300);
+}
+
+function a2ProfAddStudentFromModal(){
+  const firstname = $('prof-add-student-firstname').value.trim();
+  const lastname = $('prof-add-student-lastname').value.trim();
+  
+  if (!firstname) {
+    toast('❌ Le prénom est obligatoire');
+    return;
+  }
+  
+  closeOv('ov-prof-add-student');
+  a2ProfAddStudent(firstname, lastname);
+}
+
+function a2ProfAddStudent(firstname, lastname){
+  if (!firstname) {
+    toast('❌ Le prénom est obligatoire');
+    return;
+  }
+  
+  // Créer le nouvel élève
+  const newStudent = {
+    id: a2uid(),
+    name: firstname + (lastname ? ' ' + lastname : ''),
+    firstname: firstname,
+    lastname: lastname || '',
+    rank: A2.students.length + 1,
+    totalPts: 0,
+    seancePts: 0,
+    wins: 0,
+    losses: 0,
+    refs: 0,
+    history: []
+  };
+  
+  A2.students.push(newStudent);
+  A2.seanceStart[newStudent.id] = 0;
+  a2Save();
+  
+  // Rafraîchir l'affichage prof
+  a2RenderProf();
+  a2RenderRanking();
+  
+  toast(`✅ ${esc(newStudent.name)} ajouté(e) au tournoi`);
+}
+
+// ── FEATURE 2 : Synchroniser élèves au chargement d'une séance ────────────────
+function a2SyncWithClassOnResume(){
+  // Cette fonction s'exécute APRÈS avoir chargé une séance ATP
+  // Elle synchronise les élèves du tournoi avec ceux de la classe actuelle
+  
+  const activeClass = getActiveClass();
+  if (!activeClass) return; // Pas de classe active, pas de synchro
+  
+  const classStudents = activeClass.students || [];
+  
+  // ✅ ÉTAPE 1 : Identifier les élèves à garder/mettre à jour/ajouter/supprimer
+  const toDelete = [];
+  
+  // Parcourir les élèves actuels du tournoi
+  A2.students.forEach(tourneyStudent => {
+    // Chercher cet élève dans la classe actuelle (par firstname + lastname)
+    const classStudent = classStudents.find(cs => 
+      cs.firstname.toLowerCase() === (tourneyStudent.firstname || '').toLowerCase() &&
+      (cs.lastname || '').toLowerCase() === (tourneyStudent.lastname || '').toLowerCase()
+    );
+    
+    if (!classStudent) {
+      // Élève SUPPRIMÉ de la classe → à supprimer du tournoi
+      toDelete.push(tourneyStudent.id);
+    } else {
+      // Élève EXISTE toujours → mettre à jour ses infos (au cas où elles ont changé)
+      tourneyStudent.name = classStudent.firstname + (classStudent.lastname ? ' ' + classStudent.lastname : '');
+      tourneyStudent.firstname = classStudent.firstname;
+      tourneyStudent.lastname = classStudent.lastname || '';
+      // ✅ Le classement et les points sont CONSERVÉS
+    }
+  });
+  
+  // ✅ ÉTAPE 2 : Supprimer les élèves qui n'existent plus
+  toDelete.forEach(id => {
+    const idx = A2.students.findIndex(s => s.id === id);
+    if (idx !== -1) {
+      A2.students.splice(idx, 1);
+      delete A2.seanceStart[id];
+    }
+  });
+  
+  // ✅ ÉTAPE 3 : Ajouter les nouveaux élèves
+  classStudents.forEach(classStudent => {
+    const exists = A2.students.find(ts =>
+      ts.firstname.toLowerCase() === classStudent.firstname.toLowerCase() &&
+      (ts.lastname || '').toLowerCase() === (classStudent.lastname || '').toLowerCase()
+    );
+    
+    if (!exists) {
+      // Nouvel élève → ajouter avec 0 points en dernière position
+      const newStudent = {
+        id: a2uid(),
+        name: classStudent.firstname + (classStudent.lastname ? ' ' + classStudent.lastname : ''),
+        firstname: classStudent.firstname,
+        lastname: classStudent.lastname || '',
+        rank: A2.students.length + 1,
+        totalPts: 0,
+        seancePts: 0,
+        wins: 0,
+        losses: 0,
+        refs: 0,
+        history: []
+      };
+      
+      A2.students.push(newStudent);
+      A2.seanceStart[newStudent.id] = 0;
+    }
+  });
+  
+  // ✅ ÉTAPE 4 : Recalculer les rangs (les positions peuvent avoir changé)
+  A2.students.forEach((s, idx) => {
+    s.rank = idx + 1;
+  });
+  
+  a2Save();
+  
+  // Notification discrète
+  if (toDelete.length > 0) {
+    toast(`🔄 Synchro : ${toDelete.length} élève(s) supprimé(s)`);
+  }
+}
+
 // ── Vue prof ──────────────────────────────────────────────────────────────────
 function a2RenderProf(){
   const ranked = a2Ranked();
@@ -4158,6 +4332,140 @@ function a2ProfEditPoints(studentId, type){
       profExitMode();
     }
   }, 500);
+}
+
+// ─── FEATURE 1 : Ajouter un élève en mode prof ATP ────────────────────────────────
+function a2ProfShowAddStudent(){
+  // ✅ Wrapper pour le bouton HTML
+  a2ProfAddStudent();
+}
+
+function a2ProfAddStudent(){
+  const name = prompt('Prénom de l\'élève à ajouter :');
+  if (!name || name.trim() === '') return;
+  
+  // ✅ Ajouter l'élève à la fin (0 points, dernière position)
+  const newStudent = {
+    id: a2uid(),
+    name: name.trim(),
+    rank: A2.students.length + 1,
+    totalPts: 0,
+    seancePts: 0,
+    wins: 0,
+    losses: 0,
+    refs: 0,
+    history: []
+  };
+  
+  A2.students.push(newStudent);
+  A2.seanceStart[newStudent.id] = 0;
+  
+  a2Save();
+  a2RenderProf();
+  a2RenderMain();
+  toast(`✅ ${esc(name)} ajouté(e) au tournoi (0 points, dernière position)`);
+}
+
+// ─── FEATURE 2 : Synchroniser élèves avec la classe lors du chargement ─────────────
+function a2SyncWithClassOnResume(){
+  // ✅ Synchroniser les élèves ATP avec ceux de la classe actuelle
+  
+  const activeClass = getActiveClass();
+  if (!activeClass) {
+    console.warn('Pas de classe active, synchro impossible');
+    return;
+  }
+  
+  const classStudents = activeClass.students || [];
+  const currentStudents = A2.students;
+  
+  // ✅ Créer une fonction pour matcher les élèves (prénom + classe, avec nom en cas d'homonyme)
+  function findStudentInClass(tournamentStudent) {
+    // Chercher par prénom (pas besoin de classe, on est déjà dans la bonne)
+    let matches = classStudents.filter(cs => 
+      cs.name && cs.name.toLowerCase() === tournamentStudent.name.toLowerCase()
+    );
+    
+    // Si plusieurs matches (homonymes), utiliser le nom de famille
+    if (matches.length > 1 && tournamentStudent.lastname) {
+      matches = matches.filter(cs => 
+        cs.lastname && cs.lastname.toLowerCase() === tournamentStudent.lastname.toLowerCase()
+      );
+    }
+    
+    return matches.length > 0 ? matches[0] : null;
+  }
+  
+  // ✅ CAS 1 : Élèves existants + modifiés
+  currentStudents.forEach(tStudent => {
+    const classStudent = findStudentInClass(tStudent);
+    
+    if (classStudent) {
+      // ✅ Élève existe en classe : mettre à jour son nom/infos (conserve points et rang)
+      const oldName = tStudent.name;
+      tStudent.name = classStudent.name;
+      if (classStudent.lastname) tStudent.lastname = classStudent.lastname;
+      
+      if (oldName !== classStudent.name) {
+        console.log(`✅ Élève mis à jour: "${oldName}" → "${classStudent.name}" (points et classement conservés)`);
+      }
+    }
+  });
+  
+  // ✅ CAS 2 : Ajouter les nouveaux élèves de la classe
+  classStudents.forEach(classStudent => {
+    const exists = currentStudents.find(ts => {
+      // Matcher par prénom
+      if (ts.name.toLowerCase() !== classStudent.name.toLowerCase()) return false;
+      // Si homonymes, vérifier le nom de famille
+      if (classStudent.lastname && ts.lastname) {
+        return ts.lastname.toLowerCase() === classStudent.lastname.toLowerCase();
+      }
+      return true;
+    });
+    
+    if (!exists) {
+      // ✅ Nouvel élève détecté
+      const newStudent = {
+        id: a2uid(),
+        name: classStudent.name,
+        lastname: classStudent.lastname || '',
+        rank: currentStudents.length + 1,
+        totalPts: 0,
+        seancePts: 0,
+        wins: 0,
+        losses: 0,
+        refs: 0,
+        history: []
+      };
+      
+      currentStudents.push(newStudent);
+      A2.seanceStart[newStudent.id] = 0;
+      console.log(`✅ Nouvel élève ajouté: "${newStudent.name}" (0 points, dernière position)`);
+    }
+  });
+  
+  // ✅ CAS 3 : Supprimer les élèves qui ne sont plus en classe
+  for (let i = currentStudents.length - 1; i >= 0; i--) {
+    const tStudent = currentStudents[i];
+    const stillExists = classStudents.some(cs => {
+      if (cs.name.toLowerCase() !== tStudent.name.toLowerCase()) return false;
+      if (cs.lastname && tStudent.lastname) {
+        return cs.lastname.toLowerCase() === tStudent.lastname.toLowerCase();
+      }
+      return true;
+    });
+    
+    if (!stillExists) {
+      console.log(`✅ Élève supprimé: "${tStudent.name}" (absent de la classe)`);
+      currentStudents.splice(i, 1);
+      delete A2.seanceStart[tStudent.id];
+    }
+  }
+  
+  // ✅ Sauvegarder et re-rendre
+  a2Save();
+  console.log(`✅ Synchronisation terminée. Total élèves: ${currentStudents.length}`);
 }
 
 function a2UndoProfMatch(i){ a2UndoMatch(i); a2RenderProf(); }
@@ -5296,6 +5604,21 @@ window.addEventListener('load',()=>{
     <div class="modal-btns">
       <button class="btn btn-red" onclick="profConfirmExit()">✅ Oui, quitter</button>
       <button class="btn btn-gray" onclick="closeOv('ov-prof-exit-confirm')">❌ Non, rester</button>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ FEATURE 1 : Modale d'ajout d'élève en mode prof ATP -->
+<div class="overlay" id="ov-prof-add-student">
+  <div class="modal" style="background:#4CAF50; color:#fff;">
+    <h2>➕ Ajouter un élève</h2>
+    <div style="margin:15px 0;">
+      <input type="text" id="prof-add-student-firstname" placeholder="Prénom" style="width:100%;padding:10px;margin-bottom:10px;border:none;border-radius:6px;"/>
+      <input type="text" id="prof-add-student-lastname" placeholder="Nom de famille (optionnel)" style="width:100%;padding:10px;border:none;border-radius:6px;"/>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-green" onclick="a2ProfAddStudentFromModal()">✅ Ajouter</button>
+      <button class="btn btn-gray" onclick="closeOv('ov-prof-add-student')">❌ Annuler</button>
     </div>
   </div>
 </div>
