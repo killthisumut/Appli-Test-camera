@@ -3302,6 +3302,7 @@ function profExitMode(){
   // ✅ NOUVEAU : Rafraîchir l'affichage en fonction de la section d'où on vient
   if (lastSection === 'atp') {
     a2RenderMain(); // Rafraîchir le classement ATP
+    a2RenderProf(); // Re-rendre la vue (bascule vers affichage normal, pas tableau prof)
   } else if (lastSection === 'swiss') {
     swissRender(); // Rafraîchir la Ronde Suisse
   }
@@ -4465,6 +4466,7 @@ function a2SyncWithClassOnResume(){
   
   // ✅ Sauvegarder et re-rendre
   a2Save();
+  a2RenderMain(); // ✅ Rafraîchir l'affichage du classement après synchro
   console.log(`✅ Synchronisation terminée. Total élèves: ${currentStudents.length}`);
 }
 
