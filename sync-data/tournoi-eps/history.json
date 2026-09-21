@@ -1,6 +1,2568 @@
 {
   "history": [
     {
+      "id": "1789656114392_gt48d",
+      "type": "swiss",
+      "className": "Test 123",
+      "date": "2026-09-17T14:41:54.392Z",
+      "label": "Remplacée par une nouvelle ronde",
+      "state": {
+        "columns": [
+          [
+            "Fjjdud",
+            "uzjezjz",
+            "diqujqjs",
+            "qtgqhha",
+            "cfgvbnj",
+            "dfgbn",
+            "dcghbn",
+            "Bob-1",
+            "Bob-2",
+            "Bob-3",
+            "Bob-4",
+            "Bob-5",
+            "Bob-6",
+            "Bob-7",
+            "Bob-8",
+            "Bob-10",
+            "Bob-11",
+            "Bob-12",
+            "Bob-13",
+            "Bob-14",
+            "Bob-15",
+            "Bob-16",
+            "Bob-17",
+            "Bob-18",
+            "Bob-19",
+            "Bob-20"
+          ],
+          [
+            "Bob-9"
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": [
+          {
+            "winner": "Bob-9",
+            "loser": "Fjjdud",
+            "date": "2026-09-17T14:30:24.782Z"
+          }
+        ]
+      }
+    },
+    {
+      "id": "1789655575570_lyzdb",
+      "type": "atp",
+      "className": "Test 123",
+      "date": "2026-09-17T14:32:55.571Z",
+      "label": "test de l'atp pour la 50e fos",
+      "state": {
+        "className": "Test 123",
+        "sport": "🏸 Badminton",
+        "ptsWin": 5,
+        "ptsLoss": 2,
+        "ptsRef": 1,
+        "rankGap": 5,
+        "students": [
+          {
+            "id": 42,
+            "name": "Fjjdud",
+            "rank": 1,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 43,
+            "name": "uzjezjz",
+            "rank": 2,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 44,
+            "name": "diqujqjs",
+            "rank": 3,
+            "totalPts": 1,
+            "seancePts": 1,
+            "wins": 0,
+            "losses": 0,
+            "refs": 1,
+            "history": [
+              {
+                "type": "ref",
+                "oppName": "dcghbn vs qtgqhha",
+                "refName": null,
+                "pts": 1,
+                "date": "16:31"
+              }
+            ]
+          },
+          {
+            "id": 45,
+            "name": "qtgqhha",
+            "rank": 4,
+            "totalPts": 4,
+            "seancePts": 4,
+            "wins": 0,
+            "losses": 2,
+            "refs": 0,
+            "history": [
+              {
+                "type": "loss",
+                "oppName": "Bob-2",
+                "refName": "Bob-20",
+                "pts": 2,
+                "date": "16:31"
+              },
+              {
+                "type": "loss",
+                "oppName": "dcghbn",
+                "refName": "diqujqjs",
+                "pts": 2,
+                "date": "16:31"
+              }
+            ]
+          },
+          {
+            "id": 46,
+            "name": "cfgvbnj",
+            "rank": 5,
+            "totalPts": 2,
+            "seancePts": 2,
+            "wins": 0,
+            "losses": 1,
+            "refs": 0,
+            "history": [
+              {
+                "type": "loss",
+                "oppName": "dcghbn",
+                "refName": "Bob-17",
+                "pts": 2,
+                "date": "16:30"
+              }
+            ]
+          },
+          {
+            "id": 47,
+            "name": "dfgbn",
+            "rank": 6,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 48,
+            "name": "dcghbn",
+            "rank": 7,
+            "totalPts": 15,
+            "seancePts": 15,
+            "wins": 3,
+            "losses": 0,
+            "refs": 0,
+            "history": [
+              {
+                "type": "win",
+                "oppName": "cfgvbnj",
+                "refName": "Bob-17",
+                "pts": 5,
+                "date": "16:30"
+              },
+              {
+                "type": "win",
+                "oppName": "qtgqhha",
+                "refName": "diqujqjs",
+                "pts": 5,
+                "date": "16:31"
+              },
+              {
+                "type": "win",
+                "oppName": "Bob-2",
+                "refName": null,
+                "pts": 5,
+                "date": "16:31"
+              }
+            ]
+          },
+          {
+            "id": 49,
+            "name": "Bob-1",
+            "rank": 8,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 50,
+            "name": "Bob-2",
+            "rank": 9,
+            "totalPts": 12,
+            "seancePts": 12,
+            "wins": 2,
+            "losses": 1,
+            "refs": 0,
+            "history": [
+              {
+                "type": "win",
+                "oppName": "qtgqhha",
+                "refName": "Bob-20",
+                "pts": 5,
+                "date": "16:31"
+              },
+              {
+                "type": "loss",
+                "oppName": "dcghbn",
+                "refName": null,
+                "pts": 2,
+                "date": "16:31"
+              },
+              {
+                "type": "win",
+                "oppName": "Bob-3",
+                "refName": "Bob-12",
+                "pts": 5,
+                "date": "16:32"
+              }
+            ]
+          },
+          {
+            "id": 51,
+            "name": "Bob-3",
+            "rank": 10,
+            "totalPts": 4,
+            "seancePts": 4,
+            "wins": 0,
+            "losses": 2,
+            "refs": 0,
+            "history": [
+              {
+                "type": "loss",
+                "oppName": "Bob-4",
+                "refName": "Bob-16",
+                "pts": 2,
+                "date": "16:30"
+              },
+              {
+                "type": "loss",
+                "oppName": "Bob-2",
+                "refName": "Bob-12",
+                "pts": 2,
+                "date": "16:32"
+              }
+            ]
+          },
+          {
+            "id": 52,
+            "name": "Bob-4",
+            "rank": 11,
+            "totalPts": 5,
+            "seancePts": 5,
+            "wins": 1,
+            "losses": 0,
+            "refs": 0,
+            "history": [
+              {
+                "type": "win",
+                "oppName": "Bob-3",
+                "refName": "Bob-16",
+                "pts": 5,
+                "date": "16:30"
+              }
+            ]
+          },
+          {
+            "id": 53,
+            "name": "Bob-5",
+            "rank": 12,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 54,
+            "name": "Bob-6",
+            "rank": 13,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 55,
+            "name": "Bob-7",
+            "rank": 14,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 56,
+            "name": "Bob-8",
+            "rank": 15,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 57,
+            "name": "Bob-9",
+            "rank": 16,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 58,
+            "name": "Bob-10",
+            "rank": 17,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 59,
+            "name": "Bob-11",
+            "rank": 18,
+            "totalPts": 1,
+            "seancePts": 1,
+            "wins": 0,
+            "losses": 0,
+            "refs": 1,
+            "history": [
+              {
+                "type": "ref",
+                "oppName": "Bob-13 vs Bob-18",
+                "refName": null,
+                "pts": 1,
+                "date": "16:30"
+              }
+            ]
+          },
+          {
+            "id": 60,
+            "name": "Bob-12",
+            "rank": 19,
+            "totalPts": 1,
+            "seancePts": 1,
+            "wins": 0,
+            "losses": 0,
+            "refs": 1,
+            "history": [
+              {
+                "type": "ref",
+                "oppName": "Bob-2 vs Bob-3",
+                "refName": null,
+                "pts": 1,
+                "date": "16:32"
+              }
+            ]
+          },
+          {
+            "id": 61,
+            "name": "Bob-13",
+            "rank": 20,
+            "totalPts": 5,
+            "seancePts": 5,
+            "wins": 1,
+            "losses": 0,
+            "refs": 0,
+            "history": [
+              {
+                "type": "win",
+                "oppName": "Bob-18",
+                "refName": "Bob-11",
+                "pts": 5,
+                "date": "16:30"
+              }
+            ]
+          },
+          {
+            "id": 62,
+            "name": "Bob-14",
+            "rank": 21,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 63,
+            "name": "Bob-15",
+            "rank": 22,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 64,
+            "name": "Bob-16",
+            "rank": 23,
+            "totalPts": 1,
+            "seancePts": 1,
+            "wins": 0,
+            "losses": 0,
+            "refs": 1,
+            "history": [
+              {
+                "type": "ref",
+                "oppName": "Bob-4 vs Bob-3",
+                "refName": null,
+                "pts": 1,
+                "date": "16:30"
+              }
+            ]
+          },
+          {
+            "id": 65,
+            "name": "Bob-17",
+            "rank": 24,
+            "totalPts": 1,
+            "seancePts": 1,
+            "wins": 0,
+            "losses": 0,
+            "refs": 1,
+            "history": [
+              {
+                "type": "ref",
+                "oppName": "dcghbn vs cfgvbnj",
+                "refName": null,
+                "pts": 1,
+                "date": "16:30"
+              }
+            ]
+          },
+          {
+            "id": 66,
+            "name": "Bob-18",
+            "rank": 25,
+            "totalPts": 7,
+            "seancePts": 7,
+            "wins": 1,
+            "losses": 1,
+            "refs": 0,
+            "history": [
+              {
+                "type": "loss",
+                "oppName": "Bob-13",
+                "refName": "Bob-11",
+                "pts": 2,
+                "date": "16:30"
+              },
+              {
+                "type": "win",
+                "oppName": "Bob-20",
+                "refName": null,
+                "pts": 5,
+                "date": "16:32"
+              }
+            ]
+          },
+          {
+            "id": 67,
+            "name": "Bob-19",
+            "rank": 26,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 68,
+            "name": "Bob-20",
+            "rank": 27,
+            "totalPts": 3,
+            "seancePts": 3,
+            "wins": 0,
+            "losses": 1,
+            "refs": 1,
+            "history": [
+              {
+                "type": "ref",
+                "oppName": "Bob-2 vs qtgqhha",
+                "refName": null,
+                "pts": 1,
+                "date": "16:31"
+              },
+              {
+                "type": "loss",
+                "oppName": "Bob-18",
+                "refName": null,
+                "pts": 2,
+                "date": "16:32"
+              }
+            ]
+          }
+        ],
+        "matches": [
+          {
+            "wId": 50,
+            "lId": 51,
+            "rId": 60,
+            "wName": "Bob-2",
+            "lName": "Bob-3",
+            "rName": "Bob-12",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "16:32",
+            "matchId": "match-1789655556078-8lqtztnfv"
+          },
+          {
+            "wId": 66,
+            "lId": 68,
+            "rId": null,
+            "wName": "Bob-18",
+            "lName": "Bob-20",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "16:32",
+            "matchId": "match-1789655536644-xmd7yqxfh"
+          },
+          {
+            "wId": 48,
+            "lId": 50,
+            "rId": null,
+            "wName": "dcghbn",
+            "lName": "Bob-2",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "16:31",
+            "matchId": "match-1789655480230-cs5xi4da7"
+          },
+          {
+            "wId": 48,
+            "lId": 45,
+            "rId": 44,
+            "wName": "dcghbn",
+            "lName": "qtgqhha",
+            "rName": "diqujqjs",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "16:31",
+            "matchId": "match-1789655469053-dxlddwua8"
+          },
+          {
+            "wId": 50,
+            "lId": 45,
+            "rId": 68,
+            "wName": "Bob-2",
+            "lName": "qtgqhha",
+            "rName": "Bob-20",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "16:31",
+            "matchId": "match-1789655461338-lygbgrz6v"
+          },
+          {
+            "wId": 52,
+            "lId": 51,
+            "rId": 64,
+            "wName": "Bob-4",
+            "lName": "Bob-3",
+            "rName": "Bob-16",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "16:30",
+            "matchId": "match-1789655454931-jasmw003c"
+          },
+          {
+            "wId": 61,
+            "lId": 66,
+            "rId": 59,
+            "wName": "Bob-13",
+            "lName": "Bob-18",
+            "rName": "Bob-11",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "16:30",
+            "matchId": "match-1789655449734-uczdf7odv"
+          },
+          {
+            "wId": 48,
+            "lId": 46,
+            "rId": 65,
+            "wName": "dcghbn",
+            "lName": "cfgvbnj",
+            "rName": "Bob-17",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "16:30",
+            "matchId": "match-1789655444145-azyrsk1z4"
+          }
+        ],
+        "seanceStart": {
+          "42": 0,
+          "43": 0,
+          "44": 0,
+          "45": 0,
+          "46": 0,
+          "47": 0,
+          "48": 0,
+          "49": 0,
+          "50": 0,
+          "51": 0,
+          "52": 0,
+          "53": 0,
+          "54": 0,
+          "55": 0,
+          "56": 0,
+          "57": 0,
+          "58": 0,
+          "59": 0,
+          "60": 0,
+          "61": 0,
+          "62": 0,
+          "63": 0,
+          "64": 0,
+          "65": 0,
+          "66": 0,
+          "67": 0,
+          "68": 0
+        }
+      }
+    },
+    {
+      "id": "1789619738067_u0t7q",
+      "type": "atp",
+      "className": "Sans nom",
+      "date": "2026-09-17T04:35:38.067Z",
+      "label": "multy test atp",
+      "state": {
+        "className": "",
+        "sport": "🏸 Badminton",
+        "ptsWin": 5,
+        "ptsLoss": 2,
+        "ptsRef": 1,
+        "rankGap": 5,
+        "students": [
+          {
+            "id": 22,
+            "name": "Fjjdud",
+            "rank": 1,
+            "totalPts": 5,
+            "seancePts": 5,
+            "wins": 1,
+            "losses": 0,
+            "refs": 0,
+            "history": [
+              {
+                "type": "win",
+                "oppName": "uzjezjz",
+                "refName": "diqujqjs",
+                "pts": 5,
+                "date": "06:35"
+              }
+            ]
+          },
+          {
+            "id": 23,
+            "name": "uzjezjz",
+            "rank": 2,
+            "totalPts": 2,
+            "seancePts": 2,
+            "wins": 0,
+            "losses": 1,
+            "refs": 0,
+            "history": [
+              {
+                "type": "loss",
+                "oppName": "Fjjdud",
+                "refName": "diqujqjs",
+                "pts": 2,
+                "date": "06:35"
+              }
+            ]
+          },
+          {
+            "id": 24,
+            "name": "diqujqjs",
+            "rank": 3,
+            "totalPts": 1,
+            "seancePts": 1,
+            "wins": 0,
+            "losses": 0,
+            "refs": 1,
+            "history": [
+              {
+                "type": "ref",
+                "oppName": "Fjjdud vs uzjezjz",
+                "refName": null,
+                "pts": 1,
+                "date": "06:35"
+              }
+            ]
+          },
+          {
+            "id": 25,
+            "name": "qtgqhha",
+            "rank": 4,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 26,
+            "name": "cfgvbnj",
+            "rank": 5,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 27,
+            "name": "dfgbn",
+            "rank": 6,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 28,
+            "name": "dcghbn",
+            "rank": 7,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          }
+        ],
+        "matches": [
+          {
+            "wId": 22,
+            "lId": 23,
+            "rId": 24,
+            "wName": "Fjjdud",
+            "lName": "uzjezjz",
+            "rName": "diqujqjs",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "06:35",
+            "matchId": "match-1789619727054-5rat8le4h"
+          }
+        ],
+        "seanceStart": {
+          "22": 0,
+          "23": 0,
+          "24": 0,
+          "25": 0,
+          "26": 0,
+          "27": 0,
+          "28": 0
+        }
+      }
+    },
+    {
+      "id": "1789619450478_ds9tp",
+      "type": "atp",
+      "className": "Sans nom",
+      "date": "2026-09-17T04:30:50.478Z",
+      "label": "Test ATP (2)",
+      "state": {
+        "className": "",
+        "sport": "🏸 Badminton",
+        "ptsWin": 5,
+        "ptsLoss": 2,
+        "ptsRef": 1,
+        "rankGap": 5,
+        "students": [
+          {
+            "id": 5,
+            "name": "Elève-1",
+            "rank": 1,
+            "totalPts": 5,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 6,
+            "name": "Elève-2",
+            "rank": 2,
+            "totalPts": 7,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 7,
+            "name": "Elève-3",
+            "rank": 3,
+            "totalPts": 3,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 8,
+            "name": "Elève-4",
+            "rank": 4,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 9,
+            "name": "Elève-5",
+            "rank": 5,
+            "totalPts": 5,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 10,
+            "name": "Elève-6",
+            "rank": 6,
+            "totalPts": 2,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 11,
+            "name": "Elève-7",
+            "rank": 7,
+            "totalPts": 1,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 12,
+            "name": "Elève-9",
+            "rank": 8,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 13,
+            "name": "Elève-10",
+            "rank": 9,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 14,
+            "name": "Elève-11",
+            "rank": 10,
+            "totalPts": 1,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          }
+        ],
+        "matches": [],
+        "seanceStart": {
+          "5": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "9": 0,
+          "10": 0,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0
+        }
+      }
+    },
+    {
+      "id": "1789484182437_es7fb",
+      "type": "atp",
+      "className": "Sans nom",
+      "date": "2026-09-15T14:56:22.437Z",
+      "label": "tfvgfhyunj,olojbhvgty-f",
+      "state": {
+        "className": "",
+        "sport": "🏸 Badminton",
+        "ptsWin": 5,
+        "ptsLoss": 2,
+        "ptsRef": 1,
+        "rankGap": 5,
+        "students": [
+          {
+            "id": 56,
+            "name": "Fjjdud",
+            "rank": 1,
+            "totalPts": 5,
+            "seancePts": 5,
+            "wins": 1,
+            "losses": 0,
+            "refs": 0,
+            "history": [
+              {
+                "type": "win",
+                "oppName": "diqujqjs",
+                "refName": "uzjezjz",
+                "pts": 5,
+                "date": "16:56"
+              }
+            ]
+          },
+          {
+            "id": 57,
+            "name": "uzjezjz",
+            "rank": 2,
+            "totalPts": 1,
+            "seancePts": 1,
+            "wins": 0,
+            "losses": 0,
+            "refs": 1,
+            "history": [
+              {
+                "type": "ref",
+                "oppName": "Fjjdud vs diqujqjs",
+                "refName": null,
+                "pts": 1,
+                "date": "16:56"
+              }
+            ]
+          },
+          {
+            "id": 58,
+            "name": "diqujqjs",
+            "rank": 3,
+            "totalPts": 2,
+            "seancePts": 2,
+            "wins": 0,
+            "losses": 1,
+            "refs": 0,
+            "history": [
+              {
+                "type": "loss",
+                "oppName": "Fjjdud",
+                "refName": "uzjezjz",
+                "pts": 2,
+                "date": "16:56"
+              }
+            ]
+          },
+          {
+            "id": 59,
+            "name": "qtgqhha",
+            "rank": 4,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 60,
+            "name": "cfgvbnj",
+            "rank": 5,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 61,
+            "name": "dfgbn",
+            "rank": 6,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 62,
+            "name": "dcghbn",
+            "rank": 7,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          }
+        ],
+        "matches": [
+          {
+            "wId": 56,
+            "lId": 58,
+            "rId": 57,
+            "wName": "Fjjdud",
+            "lName": "diqujqjs",
+            "rName": "uzjezjz",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "16:56"
+          }
+        ],
+        "seanceStart": {
+          "56": 0,
+          "57": 0,
+          "58": 0,
+          "59": 0,
+          "60": 0,
+          "61": 0,
+          "62": 0
+        }
+      }
+    },
+    {
+      "id": "1789461714442_mx0c2",
+      "type": "swiss",
+      "className": "6e2",
+      "date": "2026-09-15T08:41:54.442Z",
+      "label": "Remplacée par une nouvelle ronde",
+      "state": {
+        "columns": [
+          [
+            "Hana",
+            "Ahmed",
+            "Tala",
+            "Mohamed",
+            "Youssouf",
+            "Mohamed-Cherif",
+            "Diahoumba",
+            "Lina",
+            "Elione",
+            "Amin",
+            "Youssef",
+            "Ouassim",
+            "Oscar",
+            "Larin",
+            "Laila",
+            "Tariq",
+            "Kawthar",
+            "Sammah",
+            "Abdenour",
+            "Retage",
+            "Siraje",
+            "Mariama-Ledy",
+            "Farouk"
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": []
+      }
+    },
+    {
+      "id": "1789245483318_z5a1t",
+      "type": "swiss",
+      "className": "Classe test synchro",
+      "date": "2026-09-12T20:38:03.318Z",
+      "label": "Remplacée par une nouvelle ronde",
+      "state": {
+        "columns": [
+          [
+            "Elève-1",
+            "Elève-2",
+            "Elève-3",
+            "Elève-4",
+            "Elève-5",
+            "Elève-7",
+            "Elève-9",
+            "Elève-10",
+            "Elève-11"
+          ],
+          [
+            "Elève-6"
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": [
+          {
+            "winner": "Elève-6",
+            "loser": "Elève-7",
+            "date": "2026-09-12T20:31:19.442Z"
+          }
+        ]
+      }
+    },
+    {
+      "id": "1789244849276_0ydmq",
+      "type": "swiss",
+      "className": "Classe test synchro",
+      "date": "2026-09-12T20:27:29.276Z",
+      "label": "Fin de séance",
+      "state": {
+        "columns": [
+          [
+            "Elève-4",
+            "Elève-7"
+          ],
+          [
+            "Elève-1",
+            "Elève-9",
+            "Elève-5"
+          ],
+          [
+            "Elève-3",
+            "Elève-6",
+            "Elève-10"
+          ],
+          [
+            "Elève-11",
+            "Elève-2"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": [
+          {
+            "winner": "Elève-6",
+            "loser": "Elève-5",
+            "date": "2026-09-12T20:26:04.050Z"
+          },
+          {
+            "winner": "Elève-6",
+            "loser": "Elève-1",
+            "date": "2026-09-12T20:26:30.209Z"
+          },
+          {
+            "winner": "Elève-9",
+            "loser": "Elève-5",
+            "date": "2026-09-12T20:26:33.898Z"
+          },
+          {
+            "winner": "Elève-10",
+            "loser": "Elève-4",
+            "date": "2026-09-12T20:26:37.394Z"
+          },
+          {
+            "winner": "Elève-5",
+            "loser": "Elève-7",
+            "date": "2026-09-12T20:26:40.796Z"
+          },
+          {
+            "winner": "Elève-10",
+            "loser": "Elève-2",
+            "date": "2026-09-12T20:26:44.116Z"
+          },
+          {
+            "winner": "Elève-2",
+            "loser": "Elève-9",
+            "date": "2026-09-12T20:26:47.579Z"
+          },
+          {
+            "winner": "Elève-2",
+            "loser": "Elève-6",
+            "date": "2026-09-12T20:26:51.896Z"
+          }
+        ]
+      }
+    },
+    {
+      "id": "1789135196259_7cy57",
+      "type": "swiss",
+      "className": "Classe test synchro",
+      "date": "2026-09-11T13:59:56.259Z",
+      "label": "Remplacée par une nouvelle ronde",
+      "state": {
+        "columns": [
+          [
+            "Elève-4",
+            "Elève-5",
+            "Elève-6",
+            "Elève-7",
+            "Elève-9",
+            "Elève-10"
+          ],
+          [
+            "Elève-1",
+            "Elève-2"
+          ],
+          [
+            "Elève-3"
+          ],
+          [
+            "Elève-11"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": [
+          {
+            "winner": "Elève-1",
+            "loser": "Elève-2",
+            "date": "2026-09-11T13:41:01.211Z"
+          },
+          {
+            "winner": "Elève-2",
+            "loser": "Elève-3",
+            "date": "2026-09-11T13:41:08.788Z"
+          },
+          {
+            "winner": "Elève-3",
+            "loser": "Elève-5",
+            "date": "2026-09-11T13:41:13.632Z"
+          },
+          {
+            "winner": "Elève-11",
+            "loser": "Elève-6",
+            "date": "2026-09-11T13:41:17.882Z"
+          },
+          {
+            "winner": "Elève-3",
+            "loser": "Elève-2",
+            "date": "2026-09-11T13:41:25.568Z"
+          },
+          {
+            "winner": "Elève-11",
+            "loser": "Elève-1",
+            "date": "2026-09-11T13:41:30.780Z"
+          },
+          {
+            "winner": "Elève-11",
+            "loser": "Elève-3",
+            "date": "2026-09-11T13:41:35.135Z"
+          }
+        ]
+      }
+    },
+    {
+      "id": "1789134050770_xnhz3",
+      "type": "swiss",
+      "className": "5e2",
+      "date": "2026-09-11T13:40:50.770Z",
+      "label": "Remplacée par une nouvelle ronde",
+      "state": {
+        "columns": [
+          [],
+          [],
+          [
+            "Mohamed",
+            "Lassana",
+            "Anais"
+          ],
+          [
+            "ilef",
+            "Hamza",
+            "Nour",
+            "HamzaB"
+          ],
+          [
+            "Youhaidini",
+            "Fenda",
+            "Mouni",
+            "Zhihan",
+            "insaf"
+          ],
+          [
+            "Abdourahmane",
+            "Rodaina",
+            "Emma"
+          ],
+          [
+            "Koussay",
+            "Keyron"
+          ],
+          [
+            "idriss",
+            "Zakaria",
+            "Djibril",
+            "Mohamed-Amine"
+          ],
+          [
+            "Souleymane",
+            "Riles",
+            "Meryem",
+            "Cyiane"
+          ]
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": []
+      }
+    },
+    {
+      "id": "1789133919207_03bjs",
+      "type": "swiss",
+      "className": "5e2 Séance 1",
+      "date": "2026-09-11T13:38:39.207Z",
+      "label": "Sauvegarde importée (09/09/2026 11:38)",
+      "state": {
+        "columns": [
+          [
+            "Steve-Akins",
+            "Younes",
+            "Lynna",
+            "Yassir",
+            "Nibras",
+            "Farah"
+          ],
+          [
+            "Camilia",
+            "Lina",
+            "Eden",
+            "Jennah",
+            "Ortencia"
+          ],
+          [
+            "Fatumata",
+            "Saadia",
+            "Rayane",
+            "Limi"
+          ],
+          [
+            "Hiba",
+            "Dyvane",
+            "Trecy"
+          ],
+          [
+            "Layana",
+            "Rimes",
+            "Rayane-Foudi",
+            "Wassim",
+            "Louay"
+          ],
+          [
+            "Loyiel",
+            "Jùlio"
+          ],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": []
+      }
+    },
+    {
+      "id": "1789133770321_9df6y",
+      "type": "swiss",
+      "className": "5e2 séance 1b",
+      "date": "2026-09-11T13:36:10.321Z",
+      "label": "Sauvegarde importée (11/09/2026 08:39)",
+      "state": {
+        "columns": [
+          [
+            "Steve-Akins",
+            "Younes",
+            "Lynna",
+            "Yassir",
+            "Nibras",
+            "Farah"
+          ],
+          [
+            "Camilia",
+            "Lina",
+            "Eden",
+            "Jennah",
+            "Ortencia"
+          ],
+          [
+            "Fatumata",
+            "Saadia",
+            "Rayane",
+            "Limi"
+          ],
+          [
+            "Hiba",
+            "Dyvane",
+            "Trecy"
+          ],
+          [
+            "Layana",
+            "Rimes",
+            "Rayane-Foudi",
+            "Wassim",
+            "Louay"
+          ],
+          [
+            "Loyiel",
+            "Jùlio"
+          ],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": []
+      }
+    },
+    {
+      "id": "1789133768786_g17mw",
+      "type": "swiss",
+      "className": "5e2 Séance 1",
+      "date": "2026-09-11T13:36:08.786Z",
+      "label": "Sauvegarde importée (09/09/2026 11:38)",
+      "state": {
+        "columns": [
+          [
+            "Steve-Akins",
+            "Younes",
+            "Lynna",
+            "Yassir",
+            "Nibras",
+            "Farah"
+          ],
+          [
+            "Camilia",
+            "Lina",
+            "Eden",
+            "Jennah",
+            "Ortencia"
+          ],
+          [
+            "Fatumata",
+            "Saadia",
+            "Rayane",
+            "Limi"
+          ],
+          [
+            "Hiba",
+            "Dyvane",
+            "Trecy"
+          ],
+          [
+            "Layana",
+            "Rimes",
+            "Rayane-Foudi",
+            "Wassim",
+            "Louay"
+          ],
+          [
+            "Loyiel",
+            "Jùlio"
+          ],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": []
+      }
+    },
+    {
+      "id": "1789133766763_tgyiy",
+      "type": "swiss",
+      "className": "test 2",
+      "date": "2026-09-11T13:36:06.763Z",
+      "label": "Sauvegarde importée (09/09/2026 07:48)",
+      "state": {
+        "columns": [
+          [
+            "Rodaina",
+            "ilef",
+            "Hamza",
+            "Abdourahmane",
+            "Riles",
+            "Meryem",
+            "Anais",
+            "idriss",
+            "Fenda",
+            "Cyiane",
+            "Nour",
+            "Mohamed-Amine",
+            "Zakaria",
+            "Mouni",
+            "Zhihan",
+            "Koussay",
+            "insaf",
+            "Emma"
+          ],
+          [
+            "Youhaidini",
+            "Souleymane",
+            "Djibril",
+            "Keyron"
+          ],
+          [
+            "Mohamed"
+          ],
+          [
+            "Lassana"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": []
+      }
+    },
+    {
+      "id": "1789133764682_31r7e",
+      "type": "swiss",
+      "className": "test1",
+      "date": "2026-09-11T13:36:04.682Z",
+      "label": "Sauvegarde importée (09/09/2026 07:41)",
+      "state": {
+        "columns": [
+          [
+            "Rodaina",
+            "ilef",
+            "Mohamed",
+            "Hamza",
+            "Abdourahmane",
+            "Lassana",
+            "Riles",
+            "Meryem",
+            "Djibril",
+            "Youhaidini",
+            "Anais",
+            "idriss",
+            "Fenda",
+            "Keyron",
+            "Cyiane",
+            "Nour",
+            "Mohamed-Amine",
+            "Zakaria",
+            "Mouni",
+            "Zhihan",
+            "Koussay",
+            "insaf",
+            "Emma"
+          ],
+          [
+            "Souleymane"
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": []
+      }
+    },
+    {
+      "id": "1789133760918_r8qsn",
+      "type": "swiss",
+      "className": "3e2",
+      "date": "2026-09-11T13:36:00.918Z",
+      "label": "Sauvegarde importée (08/09/2026 15:28)",
+      "state": {
+        "columns": [
+          [],
+          [],
+          [
+            "Mohamed",
+            "Lassana",
+            "Anais"
+          ],
+          [
+            "ilef",
+            "Hamza",
+            "Nour",
+            "HamzaB"
+          ],
+          [
+            "Youhaidini",
+            "Fenda",
+            "Mouni",
+            "Zhihan",
+            "insaf"
+          ],
+          [
+            "Abdourahmane",
+            "Rodaina",
+            "Emma"
+          ],
+          [
+            "Koussay",
+            "Keyron"
+          ],
+          [
+            "idriss",
+            "Zakaria",
+            "Djibril",
+            "Mohamed-Amine"
+          ],
+          [
+            "Souleymane",
+            "Riles",
+            "Meryem",
+            "Cyiane"
+          ]
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": []
+      }
+    },
+    {
+      "id": "1789109469687_6wxj1",
+      "type": "swiss",
+      "className": "5e2",
+      "date": "2026-09-11T06:51:09.687Z",
+      "label": "Remplacée par une nouvelle ronde",
+      "state": {
+        "columns": [
+          [
+            "Steve-Akins",
+            "Younes",
+            "Lynna",
+            "Yassir",
+            "Nibras",
+            "Farah"
+          ],
+          [
+            "Camilia",
+            "Lina",
+            "Eden",
+            "Jennah",
+            "Ortencia"
+          ],
+          [
+            "Fatumata",
+            "Saadia",
+            "Rayane",
+            "Limi"
+          ],
+          [
+            "Hiba",
+            "Dyvane",
+            "Trecy"
+          ],
+          [
+            "Layana",
+            "Rimes",
+            "Rayane-Foudi",
+            "Wassim",
+            "Louay"
+          ],
+          [
+            "Loyiel",
+            "Jùlio"
+          ],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": []
+      }
+    },
+    {
+      "id": "1789108749512_yreoe",
+      "type": "swiss",
+      "className": "5e2 Séance 1",
+      "date": "2026-09-11T06:39:09.512Z",
+      "label": "Sauvegarde importée (09/09/2026 11:38)",
+      "state": {
+        "columns": [
+          [
+            "Steve-Akins",
+            "Younes",
+            "Lynna",
+            "Yassir",
+            "Nibras",
+            "Farah"
+          ],
+          [
+            "Camilia",
+            "Lina",
+            "Eden",
+            "Jennah",
+            "Ortencia"
+          ],
+          [
+            "Fatumata",
+            "Saadia",
+            "Rayane",
+            "Limi"
+          ],
+          [
+            "Hiba",
+            "Dyvane",
+            "Trecy"
+          ],
+          [
+            "Layana",
+            "Rimes",
+            "Rayane-Foudi",
+            "Wassim",
+            "Louay"
+          ],
+          [
+            "Loyiel",
+            "Jùlio"
+          ],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": []
+      }
+    },
+    {
+      "id": "1789108748129_pw6qz",
+      "type": "swiss",
+      "className": "test 2",
+      "date": "2026-09-11T06:39:08.129Z",
+      "label": "Sauvegarde importée (09/09/2026 07:48)",
+      "state": {
+        "columns": [
+          [
+            "Rodaina",
+            "ilef",
+            "Hamza",
+            "Abdourahmane",
+            "Riles",
+            "Meryem",
+            "Anais",
+            "idriss",
+            "Fenda",
+            "Cyiane",
+            "Nour",
+            "Mohamed-Amine",
+            "Zakaria",
+            "Mouni",
+            "Zhihan",
+            "Koussay",
+            "insaf",
+            "Emma"
+          ],
+          [
+            "Youhaidini",
+            "Souleymane",
+            "Djibril",
+            "Keyron"
+          ],
+          [
+            "Mohamed"
+          ],
+          [
+            "Lassana"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": []
+      }
+    },
+    {
+      "id": "1789108746538_0k7rw",
+      "type": "swiss",
+      "className": "test1",
+      "date": "2026-09-11T06:39:06.538Z",
+      "label": "Sauvegarde importée (09/09/2026 07:41)",
+      "state": {
+        "columns": [
+          [
+            "Rodaina",
+            "ilef",
+            "Mohamed",
+            "Hamza",
+            "Abdourahmane",
+            "Lassana",
+            "Riles",
+            "Meryem",
+            "Djibril",
+            "Youhaidini",
+            "Anais",
+            "idriss",
+            "Fenda",
+            "Keyron",
+            "Cyiane",
+            "Nour",
+            "Mohamed-Amine",
+            "Zakaria",
+            "Mouni",
+            "Zhihan",
+            "Koussay",
+            "insaf",
+            "Emma"
+          ],
+          [
+            "Souleymane"
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": []
+      }
+    },
+    {
+      "id": "1789108743905_8xwcq",
+      "type": "swiss",
+      "className": "3e2",
+      "date": "2026-09-11T06:39:03.905Z",
+      "label": "Sauvegarde importée (08/09/2026 15:28)",
+      "state": {
+        "columns": [
+          [],
+          [],
+          [
+            "Mohamed",
+            "Lassana",
+            "Anais"
+          ],
+          [
+            "ilef",
+            "Hamza",
+            "Nour",
+            "HamzaB"
+          ],
+          [
+            "Youhaidini",
+            "Fenda",
+            "Mouni",
+            "Zhihan",
+            "insaf"
+          ],
+          [
+            "Abdourahmane",
+            "Rodaina",
+            "Emma"
+          ],
+          [
+            "Koussay",
+            "Keyron"
+          ],
+          [
+            "idriss",
+            "Zakaria",
+            "Djibril",
+            "Mohamed-Amine"
+          ],
+          [
+            "Souleymane",
+            "Riles",
+            "Meryem",
+            "Cyiane"
+          ]
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": []
+      }
+    },
+    {
+      "id": "1789133838776_r026k",
+      "type": "swiss",
+      "className": "1",
+      "date": "2026-09-11T13:37:18.776Z",
+      "label": "Remplacée par une nouvelle ronde",
+      "state": {
+        "columns": [
+          [
+            "Louay",
+            "Steve-Akins",
+            "Younes",
+            "Trecy",
+            "Lynna",
+            "Camilia",
+            "Yassir",
+            "Rayane",
+            "Jùlio",
+            "Wassim",
+            "Rimes",
+            "Nibras",
+            "Fatumata",
+            "Hiba",
+            "Lina",
+            "Farah",
+            "Ortencia",
+            "Limi",
+            "Layana",
+            "Saadia",
+            "Dyvane",
+            "Eden",
+            "Loyiel",
+            "Jennah",
+            "Rayane-Foudi"
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": []
+      }
+    },
+    {
+      "id": "1789297902130_8sfjh",
+      "type": "swiss",
+      "className": "Test 123",
+      "date": "2026-09-13T11:11:42.130Z",
+      "label": "Remplacée par une nouvelle ronde",
+      "state": {
+        "columns": [
+          [
+            "Hhh",
+            "Hh"
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": []
+      }
+    },
+    {
+      "id": "1789529721995_0e6nj",
+      "type": "atp",
+      "className": "Sans nom",
+      "date": "2026-09-16T03:35:21.995Z",
+      "label": "Test ATP",
+      "state": {
+        "className": "",
+        "sport": "🏸 Badminton",
+        "ptsWin": 5,
+        "ptsLoss": 2,
+        "ptsRef": 1,
+        "rankGap": 5,
+        "students": [
+          {
+            "id": 5,
+            "name": "Elève-1",
+            "rank": 1,
+            "totalPts": 5,
+            "seancePts": 5,
+            "wins": 1,
+            "losses": 0,
+            "refs": 0,
+            "history": [
+              {
+                "type": "win",
+                "oppName": "Elève-2",
+                "refName": "Elève-3",
+                "pts": 5,
+                "date": "05:35"
+              }
+            ]
+          },
+          {
+            "id": 6,
+            "name": "Elève-2",
+            "rank": 2,
+            "totalPts": 7,
+            "seancePts": 7,
+            "wins": 1,
+            "losses": 1,
+            "refs": 0,
+            "history": [
+              {
+                "type": "loss",
+                "oppName": "Elève-1",
+                "refName": "Elève-3",
+                "pts": 2,
+                "date": "05:35"
+              },
+              {
+                "type": "win",
+                "oppName": "Elève-3",
+                "refName": "Elève-7",
+                "pts": 5,
+                "date": "05:35"
+              }
+            ]
+          },
+          {
+            "id": 7,
+            "name": "Elève-3",
+            "rank": 3,
+            "totalPts": 3,
+            "seancePts": 3,
+            "wins": 0,
+            "losses": 1,
+            "refs": 1,
+            "history": [
+              {
+                "type": "ref",
+                "oppName": "Elève-1 vs Elève-2",
+                "refName": null,
+                "pts": 1,
+                "date": "05:35"
+              },
+              {
+                "type": "loss",
+                "oppName": "Elève-2",
+                "refName": "Elève-7",
+                "pts": 2,
+                "date": "05:35"
+              }
+            ]
+          },
+          {
+            "id": 8,
+            "name": "Elève-4",
+            "rank": 4,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 9,
+            "name": "Elève-5",
+            "rank": 5,
+            "totalPts": 5,
+            "seancePts": 5,
+            "wins": 1,
+            "losses": 0,
+            "refs": 0,
+            "history": [
+              {
+                "type": "win",
+                "oppName": "Elève-6",
+                "refName": "Elève-11",
+                "pts": 5,
+                "date": "05:35"
+              }
+            ]
+          },
+          {
+            "id": 10,
+            "name": "Elève-6",
+            "rank": 6,
+            "totalPts": 2,
+            "seancePts": 2,
+            "wins": 0,
+            "losses": 1,
+            "refs": 0,
+            "history": [
+              {
+                "type": "loss",
+                "oppName": "Elève-5",
+                "refName": "Elève-11",
+                "pts": 2,
+                "date": "05:35"
+              }
+            ]
+          },
+          {
+            "id": 11,
+            "name": "Elève-7",
+            "rank": 7,
+            "totalPts": 1,
+            "seancePts": 1,
+            "wins": 0,
+            "losses": 0,
+            "refs": 1,
+            "history": [
+              {
+                "type": "ref",
+                "oppName": "Elève-2 vs Elève-3",
+                "refName": null,
+                "pts": 1,
+                "date": "05:35"
+              }
+            ]
+          },
+          {
+            "id": 12,
+            "name": "Elève-9",
+            "rank": 8,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 13,
+            "name": "Elève-10",
+            "rank": 9,
+            "totalPts": 0,
+            "seancePts": 0,
+            "wins": 0,
+            "losses": 0,
+            "refs": 0,
+            "history": []
+          },
+          {
+            "id": 14,
+            "name": "Elève-11",
+            "rank": 10,
+            "totalPts": 1,
+            "seancePts": 1,
+            "wins": 0,
+            "losses": 0,
+            "refs": 1,
+            "history": [
+              {
+                "type": "ref",
+                "oppName": "Elève-5 vs Elève-6",
+                "refName": null,
+                "pts": 1,
+                "date": "05:35"
+              }
+            ]
+          }
+        ],
+        "matches": [
+          {
+            "wId": 9,
+            "lId": 10,
+            "rId": 14,
+            "wName": "Elève-5",
+            "lName": "Elève-6",
+            "rName": "Elève-11",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "05:35"
+          },
+          {
+            "wId": 6,
+            "lId": 7,
+            "rId": 11,
+            "wName": "Elève-2",
+            "lName": "Elève-3",
+            "rName": "Elève-7",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "05:35"
+          },
+          {
+            "wId": 5,
+            "lId": 6,
+            "rId": 7,
+            "wName": "Elève-1",
+            "lName": "Elève-2",
+            "rName": "Elève-3",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "05:35"
+          }
+        ],
+        "seanceStart": {
+          "5": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "9": 0,
+          "10": 0,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0
+        }
+      }
+    },
+    {
+      "id": "1789297993309_qpzo1",
+      "type": "swiss",
+      "className": "Test 123",
+      "date": "2026-09-13T11:13:13.309Z",
+      "label": "Remplacée par une nouvelle ronde",
+      "state": {
+        "columns": [
+          [
+            "Fjjdud",
+            "uzjezjz",
+            "diqujqjs",
+            "qtgqhha"
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": []
+      }
+    },
+    {
+      "id": "1789297968839_6own6",
+      "type": "swiss",
+      "className": "Test 123",
+      "date": "2026-09-13T11:12:48.839Z",
+      "label": "Remplacée par une nouvelle ronde",
+      "state": {
+        "columns": [
+          [
+            "qtgqhha"
+          ],
+          [
+            "Fjjdud",
+            "uzjezjz"
+          ],
+          [
+            "diqujqjs"
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "columnColors": [
+          "#FFD6D6",
+          "#FFE4C2",
+          "#FFF5BC",
+          "#D4F5CE",
+          "#C4E6FF",
+          "#D4CCFF",
+          "#EEC4FF",
+          "#FFD0E6",
+          "#C2F5EC"
+        ],
+        "matches": [
+          {
+            "winner": "Fjjdud",
+            "loser": "diqujqjs",
+            "date": "2026-09-13T11:11:45.583Z"
+          },
+          {
+            "winner": "diqujqjs",
+            "loser": "qtgqhha",
+            "date": "2026-09-13T11:11:47.818Z"
+          },
+          {
+            "winner": "diqujqjs",
+            "loser": "Fjjdud",
+            "date": "2026-09-13T11:11:50.367Z"
+          },
+          {
+            "winner": "uzjezjz",
+            "loser": "qtgqhha",
+            "date": "2026-09-13T11:11:53.487Z"
+          }
+        ]
+      }
+    },
+    {
       "id": "1789927111904_9084r",
       "type": "atp",
       "className": "3e2",
@@ -1552,2569 +4114,7 @@
         ],
         "matches": []
       }
-    },
-    {
-      "id": "1789133838776_r026k",
-      "type": "swiss",
-      "className": "1",
-      "date": "2026-09-11T13:37:18.776Z",
-      "label": "Remplacée par une nouvelle ronde",
-      "state": {
-        "columns": [
-          [
-            "Louay",
-            "Steve-Akins",
-            "Younes",
-            "Trecy",
-            "Lynna",
-            "Camilia",
-            "Yassir",
-            "Rayane",
-            "Jùlio",
-            "Wassim",
-            "Rimes",
-            "Nibras",
-            "Fatumata",
-            "Hiba",
-            "Lina",
-            "Farah",
-            "Ortencia",
-            "Limi",
-            "Layana",
-            "Saadia",
-            "Dyvane",
-            "Eden",
-            "Loyiel",
-            "Jennah",
-            "Rayane-Foudi"
-          ],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          []
-        ],
-        "columnColors": [
-          "#FFD6D6",
-          "#FFE4C2",
-          "#FFF5BC",
-          "#D4F5CE",
-          "#C4E6FF",
-          "#D4CCFF",
-          "#EEC4FF",
-          "#FFD0E6",
-          "#C2F5EC"
-        ],
-        "matches": []
-      }
-    },
-    {
-      "id": "1789133770321_9df6y",
-      "type": "swiss",
-      "className": "5e2 séance 1b",
-      "date": "2026-09-11T13:36:10.321Z",
-      "label": "Sauvegarde importée (11/09/2026 08:39)",
-      "state": {
-        "columns": [
-          [
-            "Steve-Akins",
-            "Younes",
-            "Lynna",
-            "Yassir",
-            "Nibras",
-            "Farah"
-          ],
-          [
-            "Camilia",
-            "Lina",
-            "Eden",
-            "Jennah",
-            "Ortencia"
-          ],
-          [
-            "Fatumata",
-            "Saadia",
-            "Rayane",
-            "Limi"
-          ],
-          [
-            "Hiba",
-            "Dyvane",
-            "Trecy"
-          ],
-          [
-            "Layana",
-            "Rimes",
-            "Rayane-Foudi",
-            "Wassim",
-            "Louay"
-          ],
-          [
-            "Loyiel",
-            "Jùlio"
-          ],
-          [],
-          [],
-          []
-        ],
-        "columnColors": [
-          "#FFD6D6",
-          "#FFE4C2",
-          "#FFF5BC",
-          "#D4F5CE",
-          "#C4E6FF",
-          "#D4CCFF",
-          "#EEC4FF",
-          "#FFD0E6",
-          "#C2F5EC"
-        ],
-        "matches": []
-      }
-    },
-    {
-      "id": "1789133768786_g17mw",
-      "type": "swiss",
-      "className": "5e2 Séance 1",
-      "date": "2026-09-11T13:36:08.786Z",
-      "label": "Sauvegarde importée (09/09/2026 11:38)",
-      "state": {
-        "columns": [
-          [
-            "Steve-Akins",
-            "Younes",
-            "Lynna",
-            "Yassir",
-            "Nibras",
-            "Farah"
-          ],
-          [
-            "Camilia",
-            "Lina",
-            "Eden",
-            "Jennah",
-            "Ortencia"
-          ],
-          [
-            "Fatumata",
-            "Saadia",
-            "Rayane",
-            "Limi"
-          ],
-          [
-            "Hiba",
-            "Dyvane",
-            "Trecy"
-          ],
-          [
-            "Layana",
-            "Rimes",
-            "Rayane-Foudi",
-            "Wassim",
-            "Louay"
-          ],
-          [
-            "Loyiel",
-            "Jùlio"
-          ],
-          [],
-          [],
-          []
-        ],
-        "columnColors": [
-          "#FFD6D6",
-          "#FFE4C2",
-          "#FFF5BC",
-          "#D4F5CE",
-          "#C4E6FF",
-          "#D4CCFF",
-          "#EEC4FF",
-          "#FFD0E6",
-          "#C2F5EC"
-        ],
-        "matches": []
-      }
-    },
-    {
-      "id": "1789133766763_tgyiy",
-      "type": "swiss",
-      "className": "test 2",
-      "date": "2026-09-11T13:36:06.763Z",
-      "label": "Sauvegarde importée (09/09/2026 07:48)",
-      "state": {
-        "columns": [
-          [
-            "Rodaina",
-            "ilef",
-            "Hamza",
-            "Abdourahmane",
-            "Riles",
-            "Meryem",
-            "Anais",
-            "idriss",
-            "Fenda",
-            "Cyiane",
-            "Nour",
-            "Mohamed-Amine",
-            "Zakaria",
-            "Mouni",
-            "Zhihan",
-            "Koussay",
-            "insaf",
-            "Emma"
-          ],
-          [
-            "Youhaidini",
-            "Souleymane",
-            "Djibril",
-            "Keyron"
-          ],
-          [
-            "Mohamed"
-          ],
-          [
-            "Lassana"
-          ],
-          [],
-          [],
-          [],
-          [],
-          []
-        ],
-        "columnColors": [
-          "#FFD6D6",
-          "#FFE4C2",
-          "#FFF5BC",
-          "#D4F5CE",
-          "#C4E6FF",
-          "#D4CCFF",
-          "#EEC4FF",
-          "#FFD0E6",
-          "#C2F5EC"
-        ],
-        "matches": []
-      }
-    },
-    {
-      "id": "1789133764682_31r7e",
-      "type": "swiss",
-      "className": "test1",
-      "date": "2026-09-11T13:36:04.682Z",
-      "label": "Sauvegarde importée (09/09/2026 07:41)",
-      "state": {
-        "columns": [
-          [
-            "Rodaina",
-            "ilef",
-            "Mohamed",
-            "Hamza",
-            "Abdourahmane",
-            "Lassana",
-            "Riles",
-            "Meryem",
-            "Djibril",
-            "Youhaidini",
-            "Anais",
-            "idriss",
-            "Fenda",
-            "Keyron",
-            "Cyiane",
-            "Nour",
-            "Mohamed-Amine",
-            "Zakaria",
-            "Mouni",
-            "Zhihan",
-            "Koussay",
-            "insaf",
-            "Emma"
-          ],
-          [
-            "Souleymane"
-          ],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          []
-        ],
-        "columnColors": [
-          "#FFD6D6",
-          "#FFE4C2",
-          "#FFF5BC",
-          "#D4F5CE",
-          "#C4E6FF",
-          "#D4CCFF",
-          "#EEC4FF",
-          "#FFD0E6",
-          "#C2F5EC"
-        ],
-        "matches": []
-      }
-    },
-    {
-      "id": "1789133760918_r8qsn",
-      "type": "swiss",
-      "className": "3e2",
-      "date": "2026-09-11T13:36:00.918Z",
-      "label": "Sauvegarde importée (08/09/2026 15:28)",
-      "state": {
-        "columns": [
-          [],
-          [],
-          [
-            "Mohamed",
-            "Lassana",
-            "Anais"
-          ],
-          [
-            "ilef",
-            "Hamza",
-            "Nour",
-            "HamzaB"
-          ],
-          [
-            "Youhaidini",
-            "Fenda",
-            "Mouni",
-            "Zhihan",
-            "insaf"
-          ],
-          [
-            "Abdourahmane",
-            "Rodaina",
-            "Emma"
-          ],
-          [
-            "Koussay",
-            "Keyron"
-          ],
-          [
-            "idriss",
-            "Zakaria",
-            "Djibril",
-            "Mohamed-Amine"
-          ],
-          [
-            "Souleymane",
-            "Riles",
-            "Meryem",
-            "Cyiane"
-          ]
-        ],
-        "columnColors": [
-          "#FFD6D6",
-          "#FFE4C2",
-          "#FFF5BC",
-          "#D4F5CE",
-          "#C4E6FF",
-          "#D4CCFF",
-          "#EEC4FF",
-          "#FFD0E6",
-          "#C2F5EC"
-        ],
-        "matches": []
-      }
-    },
-    {
-      "id": "1789109469687_6wxj1",
-      "type": "swiss",
-      "className": "5e2",
-      "date": "2026-09-11T06:51:09.687Z",
-      "label": "Remplacée par une nouvelle ronde",
-      "state": {
-        "columns": [
-          [
-            "Steve-Akins",
-            "Younes",
-            "Lynna",
-            "Yassir",
-            "Nibras",
-            "Farah"
-          ],
-          [
-            "Camilia",
-            "Lina",
-            "Eden",
-            "Jennah",
-            "Ortencia"
-          ],
-          [
-            "Fatumata",
-            "Saadia",
-            "Rayane",
-            "Limi"
-          ],
-          [
-            "Hiba",
-            "Dyvane",
-            "Trecy"
-          ],
-          [
-            "Layana",
-            "Rimes",
-            "Rayane-Foudi",
-            "Wassim",
-            "Louay"
-          ],
-          [
-            "Loyiel",
-            "Jùlio"
-          ],
-          [],
-          [],
-          []
-        ],
-        "columnColors": [
-          "#FFD6D6",
-          "#FFE4C2",
-          "#FFF5BC",
-          "#D4F5CE",
-          "#C4E6FF",
-          "#D4CCFF",
-          "#EEC4FF",
-          "#FFD0E6",
-          "#C2F5EC"
-        ],
-        "matches": []
-      }
-    },
-    {
-      "id": "1789108749512_yreoe",
-      "type": "swiss",
-      "className": "5e2 Séance 1",
-      "date": "2026-09-11T06:39:09.512Z",
-      "label": "Sauvegarde importée (09/09/2026 11:38)",
-      "state": {
-        "columns": [
-          [
-            "Steve-Akins",
-            "Younes",
-            "Lynna",
-            "Yassir",
-            "Nibras",
-            "Farah"
-          ],
-          [
-            "Camilia",
-            "Lina",
-            "Eden",
-            "Jennah",
-            "Ortencia"
-          ],
-          [
-            "Fatumata",
-            "Saadia",
-            "Rayane",
-            "Limi"
-          ],
-          [
-            "Hiba",
-            "Dyvane",
-            "Trecy"
-          ],
-          [
-            "Layana",
-            "Rimes",
-            "Rayane-Foudi",
-            "Wassim",
-            "Louay"
-          ],
-          [
-            "Loyiel",
-            "Jùlio"
-          ],
-          [],
-          [],
-          []
-        ],
-        "columnColors": [
-          "#FFD6D6",
-          "#FFE4C2",
-          "#FFF5BC",
-          "#D4F5CE",
-          "#C4E6FF",
-          "#D4CCFF",
-          "#EEC4FF",
-          "#FFD0E6",
-          "#C2F5EC"
-        ],
-        "matches": []
-      }
-    },
-    {
-      "id": "1789108748129_pw6qz",
-      "type": "swiss",
-      "className": "test 2",
-      "date": "2026-09-11T06:39:08.129Z",
-      "label": "Sauvegarde importée (09/09/2026 07:48)",
-      "state": {
-        "columns": [
-          [
-            "Rodaina",
-            "ilef",
-            "Hamza",
-            "Abdourahmane",
-            "Riles",
-            "Meryem",
-            "Anais",
-            "idriss",
-            "Fenda",
-            "Cyiane",
-            "Nour",
-            "Mohamed-Amine",
-            "Zakaria",
-            "Mouni",
-            "Zhihan",
-            "Koussay",
-            "insaf",
-            "Emma"
-          ],
-          [
-            "Youhaidini",
-            "Souleymane",
-            "Djibril",
-            "Keyron"
-          ],
-          [
-            "Mohamed"
-          ],
-          [
-            "Lassana"
-          ],
-          [],
-          [],
-          [],
-          [],
-          []
-        ],
-        "columnColors": [
-          "#FFD6D6",
-          "#FFE4C2",
-          "#FFF5BC",
-          "#D4F5CE",
-          "#C4E6FF",
-          "#D4CCFF",
-          "#EEC4FF",
-          "#FFD0E6",
-          "#C2F5EC"
-        ],
-        "matches": []
-      }
-    },
-    {
-      "id": "1789108746538_0k7rw",
-      "type": "swiss",
-      "className": "test1",
-      "date": "2026-09-11T06:39:06.538Z",
-      "label": "Sauvegarde importée (09/09/2026 07:41)",
-      "state": {
-        "columns": [
-          [
-            "Rodaina",
-            "ilef",
-            "Mohamed",
-            "Hamza",
-            "Abdourahmane",
-            "Lassana",
-            "Riles",
-            "Meryem",
-            "Djibril",
-            "Youhaidini",
-            "Anais",
-            "idriss",
-            "Fenda",
-            "Keyron",
-            "Cyiane",
-            "Nour",
-            "Mohamed-Amine",
-            "Zakaria",
-            "Mouni",
-            "Zhihan",
-            "Koussay",
-            "insaf",
-            "Emma"
-          ],
-          [
-            "Souleymane"
-          ],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          []
-        ],
-        "columnColors": [
-          "#FFD6D6",
-          "#FFE4C2",
-          "#FFF5BC",
-          "#D4F5CE",
-          "#C4E6FF",
-          "#D4CCFF",
-          "#EEC4FF",
-          "#FFD0E6",
-          "#C2F5EC"
-        ],
-        "matches": []
-      }
-    },
-    {
-      "id": "1789108743905_8xwcq",
-      "type": "swiss",
-      "className": "3e2",
-      "date": "2026-09-11T06:39:03.905Z",
-      "label": "Sauvegarde importée (08/09/2026 15:28)",
-      "state": {
-        "columns": [
-          [],
-          [],
-          [
-            "Mohamed",
-            "Lassana",
-            "Anais"
-          ],
-          [
-            "ilef",
-            "Hamza",
-            "Nour",
-            "HamzaB"
-          ],
-          [
-            "Youhaidini",
-            "Fenda",
-            "Mouni",
-            "Zhihan",
-            "insaf"
-          ],
-          [
-            "Abdourahmane",
-            "Rodaina",
-            "Emma"
-          ],
-          [
-            "Koussay",
-            "Keyron"
-          ],
-          [
-            "idriss",
-            "Zakaria",
-            "Djibril",
-            "Mohamed-Amine"
-          ],
-          [
-            "Souleymane",
-            "Riles",
-            "Meryem",
-            "Cyiane"
-          ]
-        ],
-        "columnColors": [
-          "#FFD6D6",
-          "#FFE4C2",
-          "#FFF5BC",
-          "#D4F5CE",
-          "#C4E6FF",
-          "#D4CCFF",
-          "#EEC4FF",
-          "#FFD0E6",
-          "#C2F5EC"
-        ],
-        "matches": []
-      }
-    },
-    {
-      "id": "1789134050770_xnhz3",
-      "type": "swiss",
-      "className": "5e2",
-      "date": "2026-09-11T13:40:50.770Z",
-      "label": "Remplacée par une nouvelle ronde",
-      "state": {
-        "columns": [
-          [],
-          [],
-          [
-            "Mohamed",
-            "Lassana",
-            "Anais"
-          ],
-          [
-            "ilef",
-            "Hamza",
-            "Nour",
-            "HamzaB"
-          ],
-          [
-            "Youhaidini",
-            "Fenda",
-            "Mouni",
-            "Zhihan",
-            "insaf"
-          ],
-          [
-            "Abdourahmane",
-            "Rodaina",
-            "Emma"
-          ],
-          [
-            "Koussay",
-            "Keyron"
-          ],
-          [
-            "idriss",
-            "Zakaria",
-            "Djibril",
-            "Mohamed-Amine"
-          ],
-          [
-            "Souleymane",
-            "Riles",
-            "Meryem",
-            "Cyiane"
-          ]
-        ],
-        "columnColors": [
-          "#FFD6D6",
-          "#FFE4C2",
-          "#FFF5BC",
-          "#D4F5CE",
-          "#C4E6FF",
-          "#D4CCFF",
-          "#EEC4FF",
-          "#FFD0E6",
-          "#C2F5EC"
-        ],
-        "matches": []
-      }
-    },
-    {
-      "id": "1789133919207_03bjs",
-      "type": "swiss",
-      "className": "5e2 Séance 1",
-      "date": "2026-09-11T13:38:39.207Z",
-      "label": "Sauvegarde importée (09/09/2026 11:38)",
-      "state": {
-        "columns": [
-          [
-            "Steve-Akins",
-            "Younes",
-            "Lynna",
-            "Yassir",
-            "Nibras",
-            "Farah"
-          ],
-          [
-            "Camilia",
-            "Lina",
-            "Eden",
-            "Jennah",
-            "Ortencia"
-          ],
-          [
-            "Fatumata",
-            "Saadia",
-            "Rayane",
-            "Limi"
-          ],
-          [
-            "Hiba",
-            "Dyvane",
-            "Trecy"
-          ],
-          [
-            "Layana",
-            "Rimes",
-            "Rayane-Foudi",
-            "Wassim",
-            "Louay"
-          ],
-          [
-            "Loyiel",
-            "Jùlio"
-          ],
-          [],
-          [],
-          []
-        ],
-        "columnColors": [
-          "#FFD6D6",
-          "#FFE4C2",
-          "#FFF5BC",
-          "#D4F5CE",
-          "#C4E6FF",
-          "#D4CCFF",
-          "#EEC4FF",
-          "#FFD0E6",
-          "#C2F5EC"
-        ],
-        "matches": []
-      }
-    },
-    {
-      "id": "1789135196259_7cy57",
-      "type": "swiss",
-      "className": "Classe test synchro",
-      "date": "2026-09-11T13:59:56.259Z",
-      "label": "Remplacée par une nouvelle ronde",
-      "state": {
-        "columns": [
-          [
-            "Elève-4",
-            "Elève-5",
-            "Elève-6",
-            "Elève-7",
-            "Elève-9",
-            "Elève-10"
-          ],
-          [
-            "Elève-1",
-            "Elève-2"
-          ],
-          [
-            "Elève-3"
-          ],
-          [
-            "Elève-11"
-          ],
-          [],
-          [],
-          [],
-          [],
-          []
-        ],
-        "columnColors": [
-          "#FFD6D6",
-          "#FFE4C2",
-          "#FFF5BC",
-          "#D4F5CE",
-          "#C4E6FF",
-          "#D4CCFF",
-          "#EEC4FF",
-          "#FFD0E6",
-          "#C2F5EC"
-        ],
-        "matches": [
-          {
-            "winner": "Elève-1",
-            "loser": "Elève-2",
-            "date": "2026-09-11T13:41:01.211Z"
-          },
-          {
-            "winner": "Elève-2",
-            "loser": "Elève-3",
-            "date": "2026-09-11T13:41:08.788Z"
-          },
-          {
-            "winner": "Elève-3",
-            "loser": "Elève-5",
-            "date": "2026-09-11T13:41:13.632Z"
-          },
-          {
-            "winner": "Elève-11",
-            "loser": "Elève-6",
-            "date": "2026-09-11T13:41:17.882Z"
-          },
-          {
-            "winner": "Elève-3",
-            "loser": "Elève-2",
-            "date": "2026-09-11T13:41:25.568Z"
-          },
-          {
-            "winner": "Elève-11",
-            "loser": "Elève-1",
-            "date": "2026-09-11T13:41:30.780Z"
-          },
-          {
-            "winner": "Elève-11",
-            "loser": "Elève-3",
-            "date": "2026-09-11T13:41:35.135Z"
-          }
-        ]
-      }
-    },
-    {
-      "id": "1789245483318_z5a1t",
-      "type": "swiss",
-      "className": "Classe test synchro",
-      "date": "2026-09-12T20:38:03.318Z",
-      "label": "Remplacée par une nouvelle ronde",
-      "state": {
-        "columns": [
-          [
-            "Elève-1",
-            "Elève-2",
-            "Elève-3",
-            "Elève-4",
-            "Elève-5",
-            "Elève-7",
-            "Elève-9",
-            "Elève-10",
-            "Elève-11"
-          ],
-          [
-            "Elève-6"
-          ],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          []
-        ],
-        "columnColors": [
-          "#FFD6D6",
-          "#FFE4C2",
-          "#FFF5BC",
-          "#D4F5CE",
-          "#C4E6FF",
-          "#D4CCFF",
-          "#EEC4FF",
-          "#FFD0E6",
-          "#C2F5EC"
-        ],
-        "matches": [
-          {
-            "winner": "Elève-6",
-            "loser": "Elève-7",
-            "date": "2026-09-12T20:31:19.442Z"
-          }
-        ]
-      }
-    },
-    {
-      "id": "1789244849276_0ydmq",
-      "type": "swiss",
-      "className": "Classe test synchro",
-      "date": "2026-09-12T20:27:29.276Z",
-      "label": "Fin de séance",
-      "state": {
-        "columns": [
-          [
-            "Elève-4",
-            "Elève-7"
-          ],
-          [
-            "Elève-1",
-            "Elève-9",
-            "Elève-5"
-          ],
-          [
-            "Elève-3",
-            "Elève-6",
-            "Elève-10"
-          ],
-          [
-            "Elève-11",
-            "Elève-2"
-          ],
-          [],
-          [],
-          [],
-          [],
-          []
-        ],
-        "columnColors": [
-          "#FFD6D6",
-          "#FFE4C2",
-          "#FFF5BC",
-          "#D4F5CE",
-          "#C4E6FF",
-          "#D4CCFF",
-          "#EEC4FF",
-          "#FFD0E6",
-          "#C2F5EC"
-        ],
-        "matches": [
-          {
-            "winner": "Elève-6",
-            "loser": "Elève-5",
-            "date": "2026-09-12T20:26:04.050Z"
-          },
-          {
-            "winner": "Elève-6",
-            "loser": "Elève-1",
-            "date": "2026-09-12T20:26:30.209Z"
-          },
-          {
-            "winner": "Elève-9",
-            "loser": "Elève-5",
-            "date": "2026-09-12T20:26:33.898Z"
-          },
-          {
-            "winner": "Elève-10",
-            "loser": "Elève-4",
-            "date": "2026-09-12T20:26:37.394Z"
-          },
-          {
-            "winner": "Elève-5",
-            "loser": "Elève-7",
-            "date": "2026-09-12T20:26:40.796Z"
-          },
-          {
-            "winner": "Elève-10",
-            "loser": "Elève-2",
-            "date": "2026-09-12T20:26:44.116Z"
-          },
-          {
-            "winner": "Elève-2",
-            "loser": "Elève-9",
-            "date": "2026-09-12T20:26:47.579Z"
-          },
-          {
-            "winner": "Elève-2",
-            "loser": "Elève-6",
-            "date": "2026-09-12T20:26:51.896Z"
-          }
-        ]
-      }
-    },
-    {
-      "id": "1789656114392_gt48d",
-      "type": "swiss",
-      "className": "Test 123",
-      "date": "2026-09-17T14:41:54.392Z",
-      "label": "Remplacée par une nouvelle ronde",
-      "state": {
-        "columns": [
-          [
-            "Fjjdud",
-            "uzjezjz",
-            "diqujqjs",
-            "qtgqhha",
-            "cfgvbnj",
-            "dfgbn",
-            "dcghbn",
-            "Bob-1",
-            "Bob-2",
-            "Bob-3",
-            "Bob-4",
-            "Bob-5",
-            "Bob-6",
-            "Bob-7",
-            "Bob-8",
-            "Bob-10",
-            "Bob-11",
-            "Bob-12",
-            "Bob-13",
-            "Bob-14",
-            "Bob-15",
-            "Bob-16",
-            "Bob-17",
-            "Bob-18",
-            "Bob-19",
-            "Bob-20"
-          ],
-          [
-            "Bob-9"
-          ],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          []
-        ],
-        "columnColors": [
-          "#FFD6D6",
-          "#FFE4C2",
-          "#FFF5BC",
-          "#D4F5CE",
-          "#C4E6FF",
-          "#D4CCFF",
-          "#EEC4FF",
-          "#FFD0E6",
-          "#C2F5EC"
-        ],
-        "matches": [
-          {
-            "winner": "Bob-9",
-            "loser": "Fjjdud",
-            "date": "2026-09-17T14:30:24.782Z"
-          }
-        ]
-      }
-    },
-    {
-      "id": "1789655575570_lyzdb",
-      "type": "atp",
-      "className": "Test 123",
-      "date": "2026-09-17T14:32:55.571Z",
-      "label": "test de l'atp pour la 50e fos",
-      "state": {
-        "className": "Test 123",
-        "sport": "🏸 Badminton",
-        "ptsWin": 5,
-        "ptsLoss": 2,
-        "ptsRef": 1,
-        "rankGap": 5,
-        "students": [
-          {
-            "id": 42,
-            "name": "Fjjdud",
-            "rank": 1,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 43,
-            "name": "uzjezjz",
-            "rank": 2,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 44,
-            "name": "diqujqjs",
-            "rank": 3,
-            "totalPts": 1,
-            "seancePts": 1,
-            "wins": 0,
-            "losses": 0,
-            "refs": 1,
-            "history": [
-              {
-                "type": "ref",
-                "oppName": "dcghbn vs qtgqhha",
-                "refName": null,
-                "pts": 1,
-                "date": "16:31"
-              }
-            ]
-          },
-          {
-            "id": 45,
-            "name": "qtgqhha",
-            "rank": 4,
-            "totalPts": 4,
-            "seancePts": 4,
-            "wins": 0,
-            "losses": 2,
-            "refs": 0,
-            "history": [
-              {
-                "type": "loss",
-                "oppName": "Bob-2",
-                "refName": "Bob-20",
-                "pts": 2,
-                "date": "16:31"
-              },
-              {
-                "type": "loss",
-                "oppName": "dcghbn",
-                "refName": "diqujqjs",
-                "pts": 2,
-                "date": "16:31"
-              }
-            ]
-          },
-          {
-            "id": 46,
-            "name": "cfgvbnj",
-            "rank": 5,
-            "totalPts": 2,
-            "seancePts": 2,
-            "wins": 0,
-            "losses": 1,
-            "refs": 0,
-            "history": [
-              {
-                "type": "loss",
-                "oppName": "dcghbn",
-                "refName": "Bob-17",
-                "pts": 2,
-                "date": "16:30"
-              }
-            ]
-          },
-          {
-            "id": 47,
-            "name": "dfgbn",
-            "rank": 6,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 48,
-            "name": "dcghbn",
-            "rank": 7,
-            "totalPts": 15,
-            "seancePts": 15,
-            "wins": 3,
-            "losses": 0,
-            "refs": 0,
-            "history": [
-              {
-                "type": "win",
-                "oppName": "cfgvbnj",
-                "refName": "Bob-17",
-                "pts": 5,
-                "date": "16:30"
-              },
-              {
-                "type": "win",
-                "oppName": "qtgqhha",
-                "refName": "diqujqjs",
-                "pts": 5,
-                "date": "16:31"
-              },
-              {
-                "type": "win",
-                "oppName": "Bob-2",
-                "refName": null,
-                "pts": 5,
-                "date": "16:31"
-              }
-            ]
-          },
-          {
-            "id": 49,
-            "name": "Bob-1",
-            "rank": 8,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 50,
-            "name": "Bob-2",
-            "rank": 9,
-            "totalPts": 12,
-            "seancePts": 12,
-            "wins": 2,
-            "losses": 1,
-            "refs": 0,
-            "history": [
-              {
-                "type": "win",
-                "oppName": "qtgqhha",
-                "refName": "Bob-20",
-                "pts": 5,
-                "date": "16:31"
-              },
-              {
-                "type": "loss",
-                "oppName": "dcghbn",
-                "refName": null,
-                "pts": 2,
-                "date": "16:31"
-              },
-              {
-                "type": "win",
-                "oppName": "Bob-3",
-                "refName": "Bob-12",
-                "pts": 5,
-                "date": "16:32"
-              }
-            ]
-          },
-          {
-            "id": 51,
-            "name": "Bob-3",
-            "rank": 10,
-            "totalPts": 4,
-            "seancePts": 4,
-            "wins": 0,
-            "losses": 2,
-            "refs": 0,
-            "history": [
-              {
-                "type": "loss",
-                "oppName": "Bob-4",
-                "refName": "Bob-16",
-                "pts": 2,
-                "date": "16:30"
-              },
-              {
-                "type": "loss",
-                "oppName": "Bob-2",
-                "refName": "Bob-12",
-                "pts": 2,
-                "date": "16:32"
-              }
-            ]
-          },
-          {
-            "id": 52,
-            "name": "Bob-4",
-            "rank": 11,
-            "totalPts": 5,
-            "seancePts": 5,
-            "wins": 1,
-            "losses": 0,
-            "refs": 0,
-            "history": [
-              {
-                "type": "win",
-                "oppName": "Bob-3",
-                "refName": "Bob-16",
-                "pts": 5,
-                "date": "16:30"
-              }
-            ]
-          },
-          {
-            "id": 53,
-            "name": "Bob-5",
-            "rank": 12,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 54,
-            "name": "Bob-6",
-            "rank": 13,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 55,
-            "name": "Bob-7",
-            "rank": 14,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 56,
-            "name": "Bob-8",
-            "rank": 15,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 57,
-            "name": "Bob-9",
-            "rank": 16,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 58,
-            "name": "Bob-10",
-            "rank": 17,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 59,
-            "name": "Bob-11",
-            "rank": 18,
-            "totalPts": 1,
-            "seancePts": 1,
-            "wins": 0,
-            "losses": 0,
-            "refs": 1,
-            "history": [
-              {
-                "type": "ref",
-                "oppName": "Bob-13 vs Bob-18",
-                "refName": null,
-                "pts": 1,
-                "date": "16:30"
-              }
-            ]
-          },
-          {
-            "id": 60,
-            "name": "Bob-12",
-            "rank": 19,
-            "totalPts": 1,
-            "seancePts": 1,
-            "wins": 0,
-            "losses": 0,
-            "refs": 1,
-            "history": [
-              {
-                "type": "ref",
-                "oppName": "Bob-2 vs Bob-3",
-                "refName": null,
-                "pts": 1,
-                "date": "16:32"
-              }
-            ]
-          },
-          {
-            "id": 61,
-            "name": "Bob-13",
-            "rank": 20,
-            "totalPts": 5,
-            "seancePts": 5,
-            "wins": 1,
-            "losses": 0,
-            "refs": 0,
-            "history": [
-              {
-                "type": "win",
-                "oppName": "Bob-18",
-                "refName": "Bob-11",
-                "pts": 5,
-                "date": "16:30"
-              }
-            ]
-          },
-          {
-            "id": 62,
-            "name": "Bob-14",
-            "rank": 21,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 63,
-            "name": "Bob-15",
-            "rank": 22,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 64,
-            "name": "Bob-16",
-            "rank": 23,
-            "totalPts": 1,
-            "seancePts": 1,
-            "wins": 0,
-            "losses": 0,
-            "refs": 1,
-            "history": [
-              {
-                "type": "ref",
-                "oppName": "Bob-4 vs Bob-3",
-                "refName": null,
-                "pts": 1,
-                "date": "16:30"
-              }
-            ]
-          },
-          {
-            "id": 65,
-            "name": "Bob-17",
-            "rank": 24,
-            "totalPts": 1,
-            "seancePts": 1,
-            "wins": 0,
-            "losses": 0,
-            "refs": 1,
-            "history": [
-              {
-                "type": "ref",
-                "oppName": "dcghbn vs cfgvbnj",
-                "refName": null,
-                "pts": 1,
-                "date": "16:30"
-              }
-            ]
-          },
-          {
-            "id": 66,
-            "name": "Bob-18",
-            "rank": 25,
-            "totalPts": 7,
-            "seancePts": 7,
-            "wins": 1,
-            "losses": 1,
-            "refs": 0,
-            "history": [
-              {
-                "type": "loss",
-                "oppName": "Bob-13",
-                "refName": "Bob-11",
-                "pts": 2,
-                "date": "16:30"
-              },
-              {
-                "type": "win",
-                "oppName": "Bob-20",
-                "refName": null,
-                "pts": 5,
-                "date": "16:32"
-              }
-            ]
-          },
-          {
-            "id": 67,
-            "name": "Bob-19",
-            "rank": 26,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 68,
-            "name": "Bob-20",
-            "rank": 27,
-            "totalPts": 3,
-            "seancePts": 3,
-            "wins": 0,
-            "losses": 1,
-            "refs": 1,
-            "history": [
-              {
-                "type": "ref",
-                "oppName": "Bob-2 vs qtgqhha",
-                "refName": null,
-                "pts": 1,
-                "date": "16:31"
-              },
-              {
-                "type": "loss",
-                "oppName": "Bob-18",
-                "refName": null,
-                "pts": 2,
-                "date": "16:32"
-              }
-            ]
-          }
-        ],
-        "matches": [
-          {
-            "wId": 50,
-            "lId": 51,
-            "rId": 60,
-            "wName": "Bob-2",
-            "lName": "Bob-3",
-            "rName": "Bob-12",
-            "ptsW": 5,
-            "ptsL": 2,
-            "ptsR": 1,
-            "date": "16:32",
-            "matchId": "match-1789655556078-8lqtztnfv"
-          },
-          {
-            "wId": 66,
-            "lId": 68,
-            "rId": null,
-            "wName": "Bob-18",
-            "lName": "Bob-20",
-            "rName": null,
-            "ptsW": 5,
-            "ptsL": 2,
-            "ptsR": 1,
-            "date": "16:32",
-            "matchId": "match-1789655536644-xmd7yqxfh"
-          },
-          {
-            "wId": 48,
-            "lId": 50,
-            "rId": null,
-            "wName": "dcghbn",
-            "lName": "Bob-2",
-            "rName": null,
-            "ptsW": 5,
-            "ptsL": 2,
-            "ptsR": 1,
-            "date": "16:31",
-            "matchId": "match-1789655480230-cs5xi4da7"
-          },
-          {
-            "wId": 48,
-            "lId": 45,
-            "rId": 44,
-            "wName": "dcghbn",
-            "lName": "qtgqhha",
-            "rName": "diqujqjs",
-            "ptsW": 5,
-            "ptsL": 2,
-            "ptsR": 1,
-            "date": "16:31",
-            "matchId": "match-1789655469053-dxlddwua8"
-          },
-          {
-            "wId": 50,
-            "lId": 45,
-            "rId": 68,
-            "wName": "Bob-2",
-            "lName": "qtgqhha",
-            "rName": "Bob-20",
-            "ptsW": 5,
-            "ptsL": 2,
-            "ptsR": 1,
-            "date": "16:31",
-            "matchId": "match-1789655461338-lygbgrz6v"
-          },
-          {
-            "wId": 52,
-            "lId": 51,
-            "rId": 64,
-            "wName": "Bob-4",
-            "lName": "Bob-3",
-            "rName": "Bob-16",
-            "ptsW": 5,
-            "ptsL": 2,
-            "ptsR": 1,
-            "date": "16:30",
-            "matchId": "match-1789655454931-jasmw003c"
-          },
-          {
-            "wId": 61,
-            "lId": 66,
-            "rId": 59,
-            "wName": "Bob-13",
-            "lName": "Bob-18",
-            "rName": "Bob-11",
-            "ptsW": 5,
-            "ptsL": 2,
-            "ptsR": 1,
-            "date": "16:30",
-            "matchId": "match-1789655449734-uczdf7odv"
-          },
-          {
-            "wId": 48,
-            "lId": 46,
-            "rId": 65,
-            "wName": "dcghbn",
-            "lName": "cfgvbnj",
-            "rName": "Bob-17",
-            "ptsW": 5,
-            "ptsL": 2,
-            "ptsR": 1,
-            "date": "16:30",
-            "matchId": "match-1789655444145-azyrsk1z4"
-          }
-        ],
-        "seanceStart": {
-          "42": 0,
-          "43": 0,
-          "44": 0,
-          "45": 0,
-          "46": 0,
-          "47": 0,
-          "48": 0,
-          "49": 0,
-          "50": 0,
-          "51": 0,
-          "52": 0,
-          "53": 0,
-          "54": 0,
-          "55": 0,
-          "56": 0,
-          "57": 0,
-          "58": 0,
-          "59": 0,
-          "60": 0,
-          "61": 0,
-          "62": 0,
-          "63": 0,
-          "64": 0,
-          "65": 0,
-          "66": 0,
-          "67": 0,
-          "68": 0
-        }
-      }
-    },
-    {
-      "id": "1789619738067_u0t7q",
-      "type": "atp",
-      "className": "Sans nom",
-      "date": "2026-09-17T04:35:38.067Z",
-      "label": "multy test atp",
-      "state": {
-        "className": "",
-        "sport": "🏸 Badminton",
-        "ptsWin": 5,
-        "ptsLoss": 2,
-        "ptsRef": 1,
-        "rankGap": 5,
-        "students": [
-          {
-            "id": 22,
-            "name": "Fjjdud",
-            "rank": 1,
-            "totalPts": 5,
-            "seancePts": 5,
-            "wins": 1,
-            "losses": 0,
-            "refs": 0,
-            "history": [
-              {
-                "type": "win",
-                "oppName": "uzjezjz",
-                "refName": "diqujqjs",
-                "pts": 5,
-                "date": "06:35"
-              }
-            ]
-          },
-          {
-            "id": 23,
-            "name": "uzjezjz",
-            "rank": 2,
-            "totalPts": 2,
-            "seancePts": 2,
-            "wins": 0,
-            "losses": 1,
-            "refs": 0,
-            "history": [
-              {
-                "type": "loss",
-                "oppName": "Fjjdud",
-                "refName": "diqujqjs",
-                "pts": 2,
-                "date": "06:35"
-              }
-            ]
-          },
-          {
-            "id": 24,
-            "name": "diqujqjs",
-            "rank": 3,
-            "totalPts": 1,
-            "seancePts": 1,
-            "wins": 0,
-            "losses": 0,
-            "refs": 1,
-            "history": [
-              {
-                "type": "ref",
-                "oppName": "Fjjdud vs uzjezjz",
-                "refName": null,
-                "pts": 1,
-                "date": "06:35"
-              }
-            ]
-          },
-          {
-            "id": 25,
-            "name": "qtgqhha",
-            "rank": 4,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 26,
-            "name": "cfgvbnj",
-            "rank": 5,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 27,
-            "name": "dfgbn",
-            "rank": 6,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 28,
-            "name": "dcghbn",
-            "rank": 7,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          }
-        ],
-        "matches": [
-          {
-            "wId": 22,
-            "lId": 23,
-            "rId": 24,
-            "wName": "Fjjdud",
-            "lName": "uzjezjz",
-            "rName": "diqujqjs",
-            "ptsW": 5,
-            "ptsL": 2,
-            "ptsR": 1,
-            "date": "06:35",
-            "matchId": "match-1789619727054-5rat8le4h"
-          }
-        ],
-        "seanceStart": {
-          "22": 0,
-          "23": 0,
-          "24": 0,
-          "25": 0,
-          "26": 0,
-          "27": 0,
-          "28": 0
-        }
-      }
-    },
-    {
-      "id": "1789619450478_ds9tp",
-      "type": "atp",
-      "className": "Sans nom",
-      "date": "2026-09-17T04:30:50.478Z",
-      "label": "Test ATP (2)",
-      "state": {
-        "className": "",
-        "sport": "🏸 Badminton",
-        "ptsWin": 5,
-        "ptsLoss": 2,
-        "ptsRef": 1,
-        "rankGap": 5,
-        "students": [
-          {
-            "id": 5,
-            "name": "Elève-1",
-            "rank": 1,
-            "totalPts": 5,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 6,
-            "name": "Elève-2",
-            "rank": 2,
-            "totalPts": 7,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 7,
-            "name": "Elève-3",
-            "rank": 3,
-            "totalPts": 3,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 8,
-            "name": "Elève-4",
-            "rank": 4,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 9,
-            "name": "Elève-5",
-            "rank": 5,
-            "totalPts": 5,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 10,
-            "name": "Elève-6",
-            "rank": 6,
-            "totalPts": 2,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 11,
-            "name": "Elève-7",
-            "rank": 7,
-            "totalPts": 1,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 12,
-            "name": "Elève-9",
-            "rank": 8,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 13,
-            "name": "Elève-10",
-            "rank": 9,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 14,
-            "name": "Elève-11",
-            "rank": 10,
-            "totalPts": 1,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          }
-        ],
-        "matches": [],
-        "seanceStart": {
-          "5": 0,
-          "6": 0,
-          "7": 0,
-          "8": 0,
-          "9": 0,
-          "10": 0,
-          "11": 0,
-          "12": 0,
-          "13": 0,
-          "14": 0
-        }
-      }
-    },
-    {
-      "id": "1789484182437_es7fb",
-      "type": "atp",
-      "className": "Sans nom",
-      "date": "2026-09-15T14:56:22.437Z",
-      "label": "tfvgfhyunj,olojbhvgty-f",
-      "state": {
-        "className": "",
-        "sport": "🏸 Badminton",
-        "ptsWin": 5,
-        "ptsLoss": 2,
-        "ptsRef": 1,
-        "rankGap": 5,
-        "students": [
-          {
-            "id": 56,
-            "name": "Fjjdud",
-            "rank": 1,
-            "totalPts": 5,
-            "seancePts": 5,
-            "wins": 1,
-            "losses": 0,
-            "refs": 0,
-            "history": [
-              {
-                "type": "win",
-                "oppName": "diqujqjs",
-                "refName": "uzjezjz",
-                "pts": 5,
-                "date": "16:56"
-              }
-            ]
-          },
-          {
-            "id": 57,
-            "name": "uzjezjz",
-            "rank": 2,
-            "totalPts": 1,
-            "seancePts": 1,
-            "wins": 0,
-            "losses": 0,
-            "refs": 1,
-            "history": [
-              {
-                "type": "ref",
-                "oppName": "Fjjdud vs diqujqjs",
-                "refName": null,
-                "pts": 1,
-                "date": "16:56"
-              }
-            ]
-          },
-          {
-            "id": 58,
-            "name": "diqujqjs",
-            "rank": 3,
-            "totalPts": 2,
-            "seancePts": 2,
-            "wins": 0,
-            "losses": 1,
-            "refs": 0,
-            "history": [
-              {
-                "type": "loss",
-                "oppName": "Fjjdud",
-                "refName": "uzjezjz",
-                "pts": 2,
-                "date": "16:56"
-              }
-            ]
-          },
-          {
-            "id": 59,
-            "name": "qtgqhha",
-            "rank": 4,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 60,
-            "name": "cfgvbnj",
-            "rank": 5,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 61,
-            "name": "dfgbn",
-            "rank": 6,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 62,
-            "name": "dcghbn",
-            "rank": 7,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          }
-        ],
-        "matches": [
-          {
-            "wId": 56,
-            "lId": 58,
-            "rId": 57,
-            "wName": "Fjjdud",
-            "lName": "diqujqjs",
-            "rName": "uzjezjz",
-            "ptsW": 5,
-            "ptsL": 2,
-            "ptsR": 1,
-            "date": "16:56"
-          }
-        ],
-        "seanceStart": {
-          "56": 0,
-          "57": 0,
-          "58": 0,
-          "59": 0,
-          "60": 0,
-          "61": 0,
-          "62": 0
-        }
-      }
-    },
-    {
-      "id": "1789461714442_mx0c2",
-      "type": "swiss",
-      "className": "6e2",
-      "date": "2026-09-15T08:41:54.442Z",
-      "label": "Remplacée par une nouvelle ronde",
-      "state": {
-        "columns": [
-          [
-            "Hana",
-            "Ahmed",
-            "Tala",
-            "Mohamed",
-            "Youssouf",
-            "Mohamed-Cherif",
-            "Diahoumba",
-            "Lina",
-            "Elione",
-            "Amin",
-            "Youssef",
-            "Ouassim",
-            "Oscar",
-            "Larin",
-            "Laila",
-            "Tariq",
-            "Kawthar",
-            "Sammah",
-            "Abdenour",
-            "Retage",
-            "Siraje",
-            "Mariama-Ledy",
-            "Farouk"
-          ],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          []
-        ],
-        "columnColors": [
-          "#FFD6D6",
-          "#FFE4C2",
-          "#FFF5BC",
-          "#D4F5CE",
-          "#C4E6FF",
-          "#D4CCFF",
-          "#EEC4FF",
-          "#FFD0E6",
-          "#C2F5EC"
-        ],
-        "matches": []
-      }
-    },
-    {
-      "id": "1789297902130_8sfjh",
-      "type": "swiss",
-      "className": "Test 123",
-      "date": "2026-09-13T11:11:42.130Z",
-      "label": "Remplacée par une nouvelle ronde",
-      "state": {
-        "columns": [
-          [
-            "Hhh",
-            "Hh"
-          ],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          []
-        ],
-        "columnColors": [
-          "#FFD6D6",
-          "#FFE4C2",
-          "#FFF5BC",
-          "#D4F5CE",
-          "#C4E6FF",
-          "#D4CCFF",
-          "#EEC4FF",
-          "#FFD0E6",
-          "#C2F5EC"
-        ],
-        "matches": []
-      }
-    },
-    {
-      "id": "1789529721995_0e6nj",
-      "type": "atp",
-      "className": "Sans nom",
-      "date": "2026-09-16T03:35:21.995Z",
-      "label": "Test ATP",
-      "state": {
-        "className": "",
-        "sport": "🏸 Badminton",
-        "ptsWin": 5,
-        "ptsLoss": 2,
-        "ptsRef": 1,
-        "rankGap": 5,
-        "students": [
-          {
-            "id": 5,
-            "name": "Elève-1",
-            "rank": 1,
-            "totalPts": 5,
-            "seancePts": 5,
-            "wins": 1,
-            "losses": 0,
-            "refs": 0,
-            "history": [
-              {
-                "type": "win",
-                "oppName": "Elève-2",
-                "refName": "Elève-3",
-                "pts": 5,
-                "date": "05:35"
-              }
-            ]
-          },
-          {
-            "id": 6,
-            "name": "Elève-2",
-            "rank": 2,
-            "totalPts": 7,
-            "seancePts": 7,
-            "wins": 1,
-            "losses": 1,
-            "refs": 0,
-            "history": [
-              {
-                "type": "loss",
-                "oppName": "Elève-1",
-                "refName": "Elève-3",
-                "pts": 2,
-                "date": "05:35"
-              },
-              {
-                "type": "win",
-                "oppName": "Elève-3",
-                "refName": "Elève-7",
-                "pts": 5,
-                "date": "05:35"
-              }
-            ]
-          },
-          {
-            "id": 7,
-            "name": "Elève-3",
-            "rank": 3,
-            "totalPts": 3,
-            "seancePts": 3,
-            "wins": 0,
-            "losses": 1,
-            "refs": 1,
-            "history": [
-              {
-                "type": "ref",
-                "oppName": "Elève-1 vs Elève-2",
-                "refName": null,
-                "pts": 1,
-                "date": "05:35"
-              },
-              {
-                "type": "loss",
-                "oppName": "Elève-2",
-                "refName": "Elève-7",
-                "pts": 2,
-                "date": "05:35"
-              }
-            ]
-          },
-          {
-            "id": 8,
-            "name": "Elève-4",
-            "rank": 4,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 9,
-            "name": "Elève-5",
-            "rank": 5,
-            "totalPts": 5,
-            "seancePts": 5,
-            "wins": 1,
-            "losses": 0,
-            "refs": 0,
-            "history": [
-              {
-                "type": "win",
-                "oppName": "Elève-6",
-                "refName": "Elève-11",
-                "pts": 5,
-                "date": "05:35"
-              }
-            ]
-          },
-          {
-            "id": 10,
-            "name": "Elève-6",
-            "rank": 6,
-            "totalPts": 2,
-            "seancePts": 2,
-            "wins": 0,
-            "losses": 1,
-            "refs": 0,
-            "history": [
-              {
-                "type": "loss",
-                "oppName": "Elève-5",
-                "refName": "Elève-11",
-                "pts": 2,
-                "date": "05:35"
-              }
-            ]
-          },
-          {
-            "id": 11,
-            "name": "Elève-7",
-            "rank": 7,
-            "totalPts": 1,
-            "seancePts": 1,
-            "wins": 0,
-            "losses": 0,
-            "refs": 1,
-            "history": [
-              {
-                "type": "ref",
-                "oppName": "Elève-2 vs Elève-3",
-                "refName": null,
-                "pts": 1,
-                "date": "05:35"
-              }
-            ]
-          },
-          {
-            "id": 12,
-            "name": "Elève-9",
-            "rank": 8,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 13,
-            "name": "Elève-10",
-            "rank": 9,
-            "totalPts": 0,
-            "seancePts": 0,
-            "wins": 0,
-            "losses": 0,
-            "refs": 0,
-            "history": []
-          },
-          {
-            "id": 14,
-            "name": "Elève-11",
-            "rank": 10,
-            "totalPts": 1,
-            "seancePts": 1,
-            "wins": 0,
-            "losses": 0,
-            "refs": 1,
-            "history": [
-              {
-                "type": "ref",
-                "oppName": "Elève-5 vs Elève-6",
-                "refName": null,
-                "pts": 1,
-                "date": "05:35"
-              }
-            ]
-          }
-        ],
-        "matches": [
-          {
-            "wId": 9,
-            "lId": 10,
-            "rId": 14,
-            "wName": "Elève-5",
-            "lName": "Elève-6",
-            "rName": "Elève-11",
-            "ptsW": 5,
-            "ptsL": 2,
-            "ptsR": 1,
-            "date": "05:35"
-          },
-          {
-            "wId": 6,
-            "lId": 7,
-            "rId": 11,
-            "wName": "Elève-2",
-            "lName": "Elève-3",
-            "rName": "Elève-7",
-            "ptsW": 5,
-            "ptsL": 2,
-            "ptsR": 1,
-            "date": "05:35"
-          },
-          {
-            "wId": 5,
-            "lId": 6,
-            "rId": 7,
-            "wName": "Elève-1",
-            "lName": "Elève-2",
-            "rName": "Elève-3",
-            "ptsW": 5,
-            "ptsL": 2,
-            "ptsR": 1,
-            "date": "05:35"
-          }
-        ],
-        "seanceStart": {
-          "5": 0,
-          "6": 0,
-          "7": 0,
-          "8": 0,
-          "9": 0,
-          "10": 0,
-          "11": 0,
-          "12": 0,
-          "13": 0,
-          "14": 0
-        }
-      }
-    },
-    {
-      "id": "1789297993309_qpzo1",
-      "type": "swiss",
-      "className": "Test 123",
-      "date": "2026-09-13T11:13:13.309Z",
-      "label": "Remplacée par une nouvelle ronde",
-      "state": {
-        "columns": [
-          [
-            "Fjjdud",
-            "uzjezjz",
-            "diqujqjs",
-            "qtgqhha"
-          ],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          []
-        ],
-        "columnColors": [
-          "#FFD6D6",
-          "#FFE4C2",
-          "#FFF5BC",
-          "#D4F5CE",
-          "#C4E6FF",
-          "#D4CCFF",
-          "#EEC4FF",
-          "#FFD0E6",
-          "#C2F5EC"
-        ],
-        "matches": []
-      }
-    },
-    {
-      "id": "1789297968839_6own6",
-      "type": "swiss",
-      "className": "Test 123",
-      "date": "2026-09-13T11:12:48.839Z",
-      "label": "Remplacée par une nouvelle ronde",
-      "state": {
-        "columns": [
-          [
-            "qtgqhha"
-          ],
-          [
-            "Fjjdud",
-            "uzjezjz"
-          ],
-          [
-            "diqujqjs"
-          ],
-          [],
-          [],
-          [],
-          [],
-          [],
-          []
-        ],
-        "columnColors": [
-          "#FFD6D6",
-          "#FFE4C2",
-          "#FFF5BC",
-          "#D4F5CE",
-          "#C4E6FF",
-          "#D4CCFF",
-          "#EEC4FF",
-          "#FFD0E6",
-          "#C2F5EC"
-        ],
-        "matches": [
-          {
-            "winner": "Fjjdud",
-            "loser": "diqujqjs",
-            "date": "2026-09-13T11:11:45.583Z"
-          },
-          {
-            "winner": "diqujqjs",
-            "loser": "qtgqhha",
-            "date": "2026-09-13T11:11:47.818Z"
-          },
-          {
-            "winner": "diqujqjs",
-            "loser": "Fjjdud",
-            "date": "2026-09-13T11:11:50.367Z"
-          },
-          {
-            "winner": "uzjezjz",
-            "loser": "qtgqhha",
-            "date": "2026-09-13T11:11:53.487Z"
-          }
-        ]
-      }
     }
   ],
-  "synced": "2026-09-20T18:17:36.394Z"
+  "synced": "2026-09-21T06:34:33.472Z"
 }
