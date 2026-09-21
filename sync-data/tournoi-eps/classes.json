@@ -331,7 +331,105 @@
         "genre": "garcon",
         "nomFamille": "FOUDI"
       }
+    },
+    "3e2": {
+      "Rodaina": {
+        "genre": "fille",
+        "nomFamille": "ASSILA"
+      },
+      "Ilef": {
+        "genre": "fille",
+        "nomFamille": "BEN FRAJ"
+      },
+      "Mohamed": {
+        "genre": "garcon",
+        "nomFamille": "BEN MESSAOUD"
+      },
+      "Hamza": {
+        "genre": "garcon",
+        "nomFamille": "BENKOU"
+      },
+      "Abdourahmane": {
+        "genre": "garcon",
+        "nomFamille": "BIRO"
+      },
+      "Lassana": {
+        "genre": "garcon",
+        "nomFamille": "BIRO"
+      },
+      "Riles": {
+        "genre": "garcon",
+        "nomFamille": "FILAL"
+      },
+      "Meryem": {
+        "genre": "fille",
+        "nomFamille": "GANA"
+      },
+      "Djibril": {
+        "genre": "garcon",
+        "nomFamille": "HASSEINE"
+      },
+      "Youhaidini": {
+        "genre": "garcon",
+        "nomFamille": "IBRAHIM"
+      },
+      "Anais": {
+        "genre": "fille",
+        "nomFamille": "KASSOURI"
+      },
+      "Idriss": {
+        "genre": "garcon",
+        "nomFamille": "LABADI PISANO"
+      },
+      "Souleymane": {
+        "genre": "garcon",
+        "nomFamille": "MARA"
+      },
+      "Fenda": {
+        "genre": "fille",
+        "nomFamille": "MOUSSA N'DIAYE"
+      },
+      "Keyron": {
+        "genre": "garcon",
+        "nomFamille": "PAGONET-DEYRIS"
+      },
+      "Cyiane": {
+        "genre": "garcon",
+        "nomFamille": "ROBERT BACAR"
+      },
+      "Nour": {
+        "genre": "fille",
+        "nomFamille": "SADEQ"
+      },
+      "Mohamed-Amine": {
+        "genre": "garcon",
+        "nomFamille": "SYLLA"
+      },
+      "Zakaria": {
+        "genre": "garcon",
+        "nomFamille": "TATAH"
+      },
+      "Mouni": {
+        "genre": "",
+        "nomFamille": "TEBBAKH"
+      },
+      "Zhihan": {
+        "genre": "fille",
+        "nomFamille": "XIAO"
+      },
+      "Koussay": {
+        "genre": "garcon",
+        "nomFamille": " YOUSSEF"
+      },
+      "Emma": {
+        "genre": "fille",
+        "nomFamille": "SUTHAKARAN"
+      },
+      "Insaf": {
+        "genre": "fille",
+        "nomFamille": "NEZAR"
+      }
     }
   },
-  "synced": "2026-09-21T13:46:28.189Z"
+  "synced": "2026-09-21T13:52:05.025Z"
 }
