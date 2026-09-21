@@ -229,6 +229,109 @@
       ]
     }
   ],
-  "infos": {},
-  "synced": "2026-09-21T13:39:18.715Z"
+  "infos": {
+    "5e2": {
+      "Louay": {
+        "genre": "garcon",
+        "nomFamille": "ABED"
+      },
+      "Steve-Akins": {
+        "genre": "garcon",
+        "nomFamille": "ALEXANDRINE"
+      },
+      "Younes": {
+        "genre": "garcon",
+        "nomFamille": "ALI"
+      },
+      "Trecy": {
+        "genre": "fille",
+        "nomFamille": "ASSOMBALONGA"
+      },
+      "Lynna": {
+        "genre": "fille",
+        "nomFamille": "BARRY"
+      },
+      "Camilia": {
+        "genre": "fille",
+        "nomFamille": "BELKACEM"
+      },
+      "Yassir": {
+        "genre": "garcon",
+        "nomFamille": "BENOUDA"
+      },
+      "Rayane": {
+        "genre": "garcon",
+        "nomFamille": "CHAACHOUE"
+      },
+      "Jùlio": {
+        "genre": "garcon",
+        "nomFamille": "EDUARDO KISOTOKA"
+      },
+      "Wassim": {
+        "genre": "garcon",
+        "nomFamille": "EL BOAZZATI"
+      },
+      "Rimes": {
+        "genre": "garcon",
+        "nomFamille": "GUESSAB"
+      },
+      "Nibras": {
+        "genre": "",
+        "nomFamille": "HELLAL"
+      },
+      "Fatumata": {
+        "genre": "fille",
+        "nomFamille": "KAMARA"
+      },
+      "Hiba": {
+        "genre": "fille",
+        "nomFamille": "KARRAD"
+      },
+      "Lina": {
+        "genre": "fille",
+        "nomFamille": "LECHEKHAB"
+      },
+      "Farah": {
+        "genre": "fille",
+        "nomFamille": "MZOUGHI"
+      },
+      "Ortencia": {
+        "genre": "fille",
+        "nomFamille": "NZONGO RAIMUNDO MARQUES"
+      },
+      "Limi": {
+        "genre": "garcon",
+        "nomFamille": "ODOGBO"
+      },
+      "Layana": {
+        "genre": "fille",
+        "nomFamille": "OMAIMEN"
+      },
+      "Saadia": {
+        "genre": "fille",
+        "nomFamille": "RQIBATE"
+      },
+      "Dyvane": {
+        "genre": "garcon",
+        "nomFamille": "TCHUIMEGNI"
+      },
+      "Eden": {
+        "genre": "garcon",
+        "nomFamille": "TEBBAKH"
+      },
+      "Loyiel": {
+        "genre": "garcon",
+        "nomFamille": "TIRANDAZ"
+      },
+      "Jennah": {
+        "genre": "fille",
+        "nomFamille": "ZEMMA"
+      },
+      "Rayane-Foudi": {
+        "genre": "garcon",
+        "nomFamille": "FOUDI"
+      }
+    }
+  },
+  "synced": "2026-09-21T13:46:28.189Z"
 }
