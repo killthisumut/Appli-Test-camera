@@ -5,10 +5,11 @@
       "name": "3e2",
       "students": [
         "Rodaina",
-        "ilef",
+        "lef",
         "Mohamed",
-        "Hamza-Bouaziz",
+        "Hamza",
         "Abdourahmane",
+        "Lassana",
         "Riles",
         "Meryem",
         "Djibril",
@@ -26,8 +27,7 @@
         "Zhihan",
         "Koussay",
         "insaf",
-        "Emma",
-        "Hamza-Benkou"
+        "Emma"
       ]
     },
     {
@@ -223,5 +223,5 @@
     }
   ],
   "infos": {},
-  "synced": "2026-09-20T18:17:34.590Z"
+  "synced": "2026-09-21T06:34:31.888Z"
 }
