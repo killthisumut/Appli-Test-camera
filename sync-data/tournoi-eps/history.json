@@ -4,7 +4,7 @@
       "id": "1789983900691_ekvrk",
       "type": "atp",
       "className": "3e2",
-      "date": "2026-09-21T09:45:00.691Z",
+      "date": "2026-09-22T06:35:32.708Z",
       "label": "ATP 3e2 (2)",
       "state": {
         "className": "3e2",
@@ -196,10 +196,10 @@
             "id": 99,
             "name": "Meryem",
             "rank": 3,
-            "totalPts": 39,
-            "seancePts": 21,
+            "totalPts": 37,
+            "seancePts": 19,
             "wins": 2,
-            "losses": 4,
+            "losses": 3,
             "refs": 3,
             "history": [
               {
@@ -222,13 +222,6 @@
                 "refName": "Emma",
                 "pts": 5,
                 "date": "11:00"
-              },
-              {
-                "type": "loss",
-                "oppName": "Mouni",
-                "refName": "Hamza-Bouaziz",
-                "pts": 2,
-                "date": "11:04"
               },
               {
                 "type": "ref",
@@ -271,10 +264,10 @@
             "id": 107,
             "name": "Cyiane",
             "rank": 4,
-            "totalPts": 36,
-            "seancePts": 22,
+            "totalPts": 34,
+            "seancePts": 20,
             "wins": 2,
-            "losses": 5,
+            "losses": 4,
             "refs": 2,
             "history": [
               {
@@ -332,13 +325,6 @@
                 "refName": "Zakaria",
                 "pts": 2,
                 "date": "11:38"
-              },
-              {
-                "type": "loss",
-                "oppName": "Mohamed-Amine",
-                "refName": null,
-                "pts": 2,
-                "date": "11:41"
               }
             ]
           },
@@ -627,9 +613,9 @@
             "id": 109,
             "name": "Mohamed-Amine",
             "rank": 8,
-            "totalPts": 53,
-            "seancePts": 37,
-            "wins": 5,
+            "totalPts": 43,
+            "seancePts": 27,
+            "wins": 3,
             "losses": 5,
             "refs": 2,
             "history": [
@@ -653,13 +639,6 @@
                 "refName": "Djibril",
                 "pts": 2,
                 "date": "10:52"
-              },
-              {
-                "type": "win",
-                "oppName": "Mohamed",
-                "refName": null,
-                "pts": 5,
-                "date": "10:53"
               },
               {
                 "type": "ref",
@@ -709,13 +688,6 @@
                 "refName": "Djibril",
                 "pts": 2,
                 "date": "11:40"
-              },
-              {
-                "type": "win",
-                "oppName": "Cyiane",
-                "refName": null,
-                "pts": 5,
-                "date": "11:41"
               }
             ]
           },
@@ -838,9 +810,9 @@
             "id": 97,
             "name": "Abdourahmane",
             "rank": 11,
-            "totalPts": 34,
-            "seancePts": 25,
-            "wins": 4,
+            "totalPts": 29,
+            "seancePts": 20,
+            "wins": 3,
             "losses": 1,
             "refs": 3,
             "history": [
@@ -850,13 +822,6 @@
                 "refName": "Hamza-Bouaziz",
                 "pts": 5,
                 "date": "10:56"
-              },
-              {
-                "type": "win",
-                "oppName": "Mouni",
-                "refName": "Anais",
-                "pts": 5,
-                "date": "11:02"
               },
               {
                 "type": "ref",
@@ -1007,10 +972,10 @@
             "id": 105,
             "name": "Fenda",
             "rank": 14,
-            "totalPts": 18,
-            "seancePts": 17,
-            "wins": 3,
-            "losses": 1,
+            "totalPts": 11,
+            "seancePts": 10,
+            "wins": 2,
+            "losses": 0,
             "refs": 0,
             "history": [
               {
@@ -1019,20 +984,6 @@
                 "refName": "Mohamed-Amine",
                 "pts": 5,
                 "date": "10:46"
-              },
-              {
-                "type": "win",
-                "oppName": "Anais",
-                "refName": "Abdourahmane",
-                "pts": 5,
-                "date": "11:09"
-              },
-              {
-                "type": "loss",
-                "oppName": "Anais",
-                "refName": "Mouni",
-                "pts": 2,
-                "date": "11:10"
               },
               {
                 "type": "win",
@@ -1047,10 +998,10 @@
             "id": 111,
             "name": "Mouni",
             "rank": 15,
-            "totalPts": 25,
-            "seancePts": 16,
-            "wins": 1,
-            "losses": 4,
+            "totalPts": 16,
+            "seancePts": 7,
+            "wins": 0,
+            "losses": 2,
             "refs": 3,
             "history": [
               {
@@ -1066,27 +1017,6 @@
                 "refName": "Hamza-Bouaziz",
                 "pts": 2,
                 "date": "10:56"
-              },
-              {
-                "type": "loss",
-                "oppName": "Abdourahmane",
-                "refName": "Anais",
-                "pts": 2,
-                "date": "11:02"
-              },
-              {
-                "type": "loss",
-                "oppName": "Hamza-Bouaziz",
-                "refName": "Abdourahmane",
-                "pts": 2,
-                "date": "11:03"
-              },
-              {
-                "type": "win",
-                "oppName": "Meryem",
-                "refName": "Hamza-Bouaziz",
-                "pts": 5,
-                "date": "11:04"
               },
               {
                 "type": "ref",
@@ -1155,10 +1085,10 @@
             "id": 114,
             "name": "insaf",
             "rank": 17,
-            "totalPts": 20,
-            "seancePts": 14,
+            "totalPts": 18,
+            "seancePts": 12,
             "wins": 0,
-            "losses": 5,
+            "losses": 4,
             "refs": 4,
             "history": [
               {
@@ -1174,13 +1104,6 @@
                 "refName": "Keyron",
                 "pts": 2,
                 "date": "10:58"
-              },
-              {
-                "type": "loss",
-                "oppName": "Anais",
-                "refName": "Mouni",
-                "pts": 2,
-                "date": "11:10"
               },
               {
                 "type": "loss",
@@ -1338,9 +1261,9 @@
             "id": 96,
             "name": "Hamza-Bouaziz",
             "rank": 20,
-            "totalPts": 18,
-            "seancePts": 18,
-            "wins": 3,
+            "totalPts": 13,
+            "seancePts": 13,
+            "wins": 2,
             "losses": 0,
             "refs": 3,
             "history": [
@@ -1357,13 +1280,6 @@
                 "refName": null,
                 "pts": 1,
                 "date": "10:56"
-              },
-              {
-                "type": "win",
-                "oppName": "Mouni",
-                "refName": "Abdourahmane",
-                "pts": 5,
-                "date": "11:03"
               },
               {
                 "type": "ref",
@@ -1403,10 +1319,10 @@
             "id": 95,
             "name": "Mohamed",
             "rank": 22,
-            "totalPts": 42,
-            "seancePts": 26,
+            "totalPts": 40,
+            "seancePts": 24,
             "wins": 3,
-            "losses": 5,
+            "losses": 4,
             "refs": 1,
             "history": [
               {
@@ -1422,13 +1338,6 @@
                 "refName": null,
                 "pts": 5,
                 "date": "10:50"
-              },
-              {
-                "type": "loss",
-                "oppName": "Mohamed-Amine",
-                "refName": null,
-                "pts": 2,
-                "date": "10:53"
               },
               {
                 "type": "loss",
@@ -1478,10 +1387,10 @@
             "id": 102,
             "name": "Anais",
             "rank": 23,
-            "totalPts": 21,
-            "seancePts": 21,
-            "wins": 3,
-            "losses": 2,
+            "totalPts": 9,
+            "seancePts": 9,
+            "wins": 1,
+            "losses": 1,
             "refs": 2,
             "history": [
               {
@@ -1504,27 +1413,6 @@
                 "refName": null,
                 "pts": 1,
                 "date": "11:02"
-              },
-              {
-                "type": "loss",
-                "oppName": "Fenda",
-                "refName": "Abdourahmane",
-                "pts": 2,
-                "date": "11:09"
-              },
-              {
-                "type": "win",
-                "oppName": "Fenda",
-                "refName": "Mouni",
-                "pts": 5,
-                "date": "11:10"
-              },
-              {
-                "type": "win",
-                "oppName": "insaf",
-                "refName": "Mouni",
-                "pts": 5,
-                "date": "11:10"
               },
               {
                 "type": "ref",
@@ -1622,19 +1510,6 @@
             "ptsR": 1,
             "date": "11:42",
             "matchId": "match-1789983729578-ch2e3ttvb"
-          },
-          {
-            "wId": 109,
-            "lId": 107,
-            "rId": null,
-            "wName": "Mohamed-Amine",
-            "lName": "Cyiane",
-            "rName": null,
-            "ptsW": 5,
-            "ptsL": 2,
-            "ptsR": 1,
-            "date": "11:41",
-            "matchId": "match-1789983712073-hcpzvelqs"
           },
           {
             "wId": 115,
@@ -2027,45 +1902,6 @@
             "matchId": "match-1789981872377-qhc3f11bt"
           },
           {
-            "wId": 102,
-            "lId": 114,
-            "rId": 111,
-            "wName": "Anais",
-            "lName": "insaf",
-            "rName": "Mouni",
-            "ptsW": 5,
-            "ptsL": 2,
-            "ptsR": 1,
-            "date": "11:10",
-            "matchId": "match-1789981857837-c5aw6xlc1"
-          },
-          {
-            "wId": 102,
-            "lId": 105,
-            "rId": 111,
-            "wName": "Anais",
-            "lName": "Fenda",
-            "rName": "Mouni",
-            "ptsW": 5,
-            "ptsL": 2,
-            "ptsR": 1,
-            "date": "11:10",
-            "matchId": "match-1789981813760-l3obfvx6p"
-          },
-          {
-            "wId": 105,
-            "lId": 102,
-            "rId": 97,
-            "wName": "Fenda",
-            "lName": "Anais",
-            "rName": "Abdourahmane",
-            "ptsW": 5,
-            "ptsL": 2,
-            "ptsR": 1,
-            "date": "11:09",
-            "matchId": "match-1789981788957-w0a6mstey"
-          },
-          {
             "wId": 94,
             "lId": 93,
             "rId": 99,
@@ -2131,32 +1967,6 @@
             "matchId": "match-1789981505567-i6asv5h3e"
           },
           {
-            "wId": 111,
-            "lId": 99,
-            "rId": 96,
-            "wName": "Mouni",
-            "lName": "Meryem",
-            "rName": "Hamza-Bouaziz",
-            "ptsW": 5,
-            "ptsL": 2,
-            "ptsR": 1,
-            "date": "11:04",
-            "matchId": "match-1789981471409-2j1t3ggei"
-          },
-          {
-            "wId": 96,
-            "lId": 111,
-            "rId": 97,
-            "wName": "Hamza-Bouaziz",
-            "lName": "Mouni",
-            "rName": "Abdourahmane",
-            "ptsW": 5,
-            "ptsL": 2,
-            "ptsR": 1,
-            "date": "11:03",
-            "matchId": "match-1789981439844-4rpov3is4"
-          },
-          {
             "wId": 110,
             "lId": 98,
             "rId": null,
@@ -2194,19 +2004,6 @@
             "ptsR": 1,
             "date": "11:02",
             "matchId": "match-1789981366218-k5g5i0qo4"
-          },
-          {
-            "wId": 97,
-            "lId": 111,
-            "rId": 102,
-            "wName": "Abdourahmane",
-            "lName": "Mouni",
-            "rName": "Anais",
-            "ptsW": 5,
-            "ptsL": 2,
-            "ptsR": 1,
-            "date": "11:02",
-            "matchId": "match-1789981337850-pzr33zg0s"
           },
           {
             "wId": 100,
@@ -2272,19 +2069,6 @@
             "ptsR": 1,
             "date": "10:56",
             "matchId": "match-1789980992145-rq19wolsl"
-          },
-          {
-            "wId": 109,
-            "lId": 95,
-            "rId": null,
-            "wName": "Mohamed-Amine",
-            "lName": "Mohamed",
-            "rName": null,
-            "ptsW": 5,
-            "ptsL": 2,
-            "ptsR": 1,
-            "date": "10:53",
-            "matchId": "match-1789980837026-oqj72b51v"
           },
           {
             "wId": 110,
@@ -6613,5 +6397,5 @@
       }
     }
   ],
-  "synced": "2026-09-21T13:52:07.728Z"
+  "synced": "2026-09-22T06:36:04.831Z"
 }
