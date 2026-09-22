@@ -4492,7 +4492,8 @@ function a2ShowDetail(id){
     const ref=h.refName?` · arbitre : ${esc(h.refName)}`:'';
     const bg=h.type==='win'?'atp-hist-w':h.type==='loss'?'atp-hist-l':'atp-hist-r';
     // ✅ NOUVEAU : Bouton "Annuler" pour supprimer le match (détection des trucs)
-    const cancelBtn = `<button class="btn-cancel-match" onclick="a2DeleteMatchFromHistory('${id}', ${s.history.length - 1 - idx})" title="Annuler ce match">✕</button>`;
+    // IMPORTANT: Passer l'ID SEM guillemets (c'est un nombre, pas une string)
+    const cancelBtn = `<button class="btn-cancel-match" onclick="a2DeleteMatchFromHistory(${id}, ${s.history.length - 1 - idx})" title="Annuler ce match">✕</button>`;
     return `<div class="atp-match-detail-item">
       <span class="atp-hist-type ${bg}">${ico} ${lbl}</span>
       <span style="flex:1;font-weight:600;">${esc(h.oppName)}</span>
@@ -4510,7 +4511,8 @@ function a2ShowDetail(id){
 function a2DeleteMatchFromHistory(studentId, historyIndex){
   console.log(`DEBUG: Suppression match - studentId=${studentId}, historyIndex=${historyIndex}`);
   
-  const student = A2.students.find(s => s.id === studentId);
+  // ✅ Comparaison flexible (nombre ou string)
+  const student = A2.students.find(s => String(s.id) === String(studentId));
   if (!student) {
     console.error('Élève non trouvé');
     return;
