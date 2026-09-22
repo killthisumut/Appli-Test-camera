@@ -4508,10 +4508,20 @@ function a2ShowDetail(id){
 
 // ─── FEATURE : Supprimer un match de l'historique (détection des trucs) ──────
 function a2DeleteMatchFromHistory(studentId, historyIndex){
+  console.log(`DEBUG: Suppression match - studentId=${studentId}, historyIndex=${historyIndex}`);
+  
   const student = A2.students.find(s => s.id === studentId);
-  if (!student || !student.history[historyIndex]) return;
+  if (!student) {
+    console.error('Élève non trouvé');
+    return;
+  }
+  if (!student.history || !student.history[historyIndex]) {
+    console.error('Historique ou match non trouvé');
+    return;
+  }
   
   const match = student.history[historyIndex];
+  console.log('Match à supprimer:', match);
   
   // ✅ Confirmation avant suppression
   if (!confirm(`⚠️ Annuler ce match ?\n\n${match.type === 'ref' ? 'Arbitrage' : match.type === 'win' ? 'Victoire' : 'Défaite'} ${match.oppName}\nPoints gagnés: ${match.pts}\nHeure: ${match.date}`)) {
@@ -4534,47 +4544,77 @@ function a2DeleteMatchFromHistory(studentId, historyIndex){
   student.history.splice(historyIndex, 1);
   
   // ✅ 3. Mettre à jour l'adversaire (si c'est une victoire/défaite)
+  // Note: oppId peut ne pas exister pour les anciennes données
+  let opponent = null;
   if (match.oppId) {
-    const opponent = A2.students.find(s => s.id === match.oppId);
-    if (opponent) {
-      // L'adversaire perd/gagne le match inverse
-      if (match.type === 'win') {
-        // opponent avait une défaite
-        opponent.totalPts -= A2.ptsLoss;
-        opponent.seancePts -= A2.ptsLoss;
-        opponent.losses--;
-      } else if (match.type === 'loss') {
-        // opponent avait une victoire
-        opponent.totalPts -= A2.ptsWin;
-        opponent.seancePts -= A2.ptsWin;
-        opponent.wins--;
-      }
-      
-      // Supprimer de l'historique de l'adversaire
-      const oppHistoryIdx = opponent.history.findIndex(h => 
-        h.date === match.date && 
-        h.oppId === studentId
-      );
-      if (oppHistoryIdx !== -1) {
-        opponent.history.splice(oppHistoryIdx, 1);
-      }
+    opponent = A2.students.find(s => s.id === match.oppId);
+  } else if (match.type !== 'ref') {
+    // ✅ FALLBACK: chercher par le nom de l'adversaire (anciennes données)
+    opponent = A2.students.find(s => s.name === match.oppName);
+  }
+  
+  if (opponent) {
+    console.log('Mise à jour adversaire:', opponent.name);
+    // L'adversaire perd/gagne le match inverse
+    if (match.type === 'win') {
+      // opponent avait une défaite
+      opponent.totalPts -= A2.ptsLoss;
+      opponent.seancePts -= A2.ptsLoss;
+      opponent.losses--;
+    } else if (match.type === 'loss') {
+      // opponent avait une victoire
+      opponent.totalPts -= A2.ptsWin;
+      opponent.seancePts -= A2.ptsWin;
+      opponent.wins--;
+    }
+    
+    // Supprimer de l'historique de l'adversaire (chercher par date et nom)
+    const oppHistoryIdx = opponent.history.findIndex(h => {
+      const dateMatch = h.date === match.date;
+      const oppMatch = h.oppName === student.name;
+      const typeMatch = (match.type === 'win' && h.type === 'loss') || (match.type === 'loss' && h.type === 'win');
+      return dateMatch && oppMatch && typeMatch;
+    });
+    
+    if (oppHistoryIdx !== -1) {
+      console.log('Suppression match adverse à index', oppHistoryIdx);
+      opponent.history.splice(oppHistoryIdx, 1);
     }
   }
   
-  // ✅ 4. Supprimer le match de A2.matches
-  const matchIdx = A2.matches.findIndex(m => {
-    if (match.type === 'win') {
-      return m.wId === studentId && m.date === match.date && m.lId === match.oppId;
-    } else if (match.type === 'loss') {
-      return m.lId === studentId && m.date === match.date && m.wId === match.oppId;
-    } else {
-      // Arbitrage - trouver par l'heure et que c'est bien l'arbitre
-      return m.rId === studentId && m.date === match.date;
+  // ✅ 4. Supprimer le match de A2.matches (si possible)
+  if (A2.matches && Array.isArray(A2.matches)) {
+    let matchIdx = -1;
+    
+    if (match.oppId) {
+      // Nouvelle donnée avec oppId
+      matchIdx = A2.matches.findIndex(m => {
+        if (match.type === 'win') {
+          return m.wId === studentId && m.date === match.date && m.lId === match.oppId;
+        } else if (match.type === 'loss') {
+          return m.lId === studentId && m.date === match.date && m.wId === match.oppId;
+        } else {
+          return m.rId === studentId && m.date === match.date;
+        }
+      });
+    } else if (opponent && match.type !== 'ref') {
+      // Ancienne donnée sans oppId, chercher par noms
+      matchIdx = A2.matches.findIndex(m => {
+        if (match.type === 'win') {
+          return m.wId === studentId && m.date === match.date && m.lName === match.oppName;
+        } else if (match.type === 'loss') {
+          return m.lId === studentId && m.date === match.date && m.wName === match.oppName;
+        }
+      });
+    } else if (match.type === 'ref') {
+      // Arbitrage
+      matchIdx = A2.matches.findIndex(m => m.rId === studentId && m.date === match.date);
     }
-  });
-  
-  if (matchIdx !== -1) {
-    A2.matches.splice(matchIdx, 1);
+    
+    if (matchIdx !== -1) {
+      console.log('Suppression match A2.matches à index', matchIdx);
+      A2.matches.splice(matchIdx, 1);
+    }
   }
   
   // ✅ 5. Sauvegarder et réafficher
@@ -4584,6 +4624,7 @@ function a2DeleteMatchFromHistory(studentId, historyIndex){
   a2RenderHistory(); // Mettre à jour l'historique des matchs
   
   toast(`✅ Match annulé`);
+  console.log('Match supprimé avec succès');
 }
 
 // ── Paramètres ────────────────────────────────────────────────────────────────
