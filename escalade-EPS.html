@@ -610,6 +610,7 @@ function topbar(){
     </div>
     <div class="topbar-actions">
       ${s? `<span class="badge-pill st-vert" style="margin-right:4px;"><span class="live-dot" style="width:7px;height:7px;background:var(--green);border-radius:50%;display:inline-block;"></span>Séance en cours</span>`:''}
+      <button class="icon-btn" title="Synchronisation GitHub" onclick="openGitHubSetupModal()" style="background:var(--rope);">☁️</button>
       <button class="icon-btn" title="Accueil" onclick="nav('home')">${homeIcon()}</button>
     </div>
   </div>`;
@@ -1622,7 +1623,6 @@ function saveGitHubSetup(){
   if(typeof gitHubSyncAll === 'function') gitHubSyncAll();
 }
 
-/* GitHub API Functions with Vercel Proxy */
 async function gitHubFetch(path){
   if(!isGitHubConfigured()) return null;
   const vercelUrl = 'https://appli-test-camera.vercel.app/api/sync';
@@ -1749,23 +1749,23 @@ async function gitHubFetchAllOnLoad(){
 </script>
 <!-- GitHub Setup Modal -->
 <div id="gh-setup-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:10000;align-items:center;justify-content:center;flex-direction:column;">
-  <div style="background:#1a1a2e;padding:30px;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.3);max-width:400px;width:90%;color:#f0f0f0;">
+  <div style="background:var(--card);padding:30px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.2);max-width:400px;width:90%;color:var(--ink);">
     <h2 style="margin:0 0 20px 0;font-size:18px;">⚙️ Configuration GitHub</h2>
     
     <div style="margin-bottom:15px;">
       <label style="display:block;font-weight:600;margin-bottom:5px;font-size:13px;">GitHub Username</label>
-      <input type="text" id="gh-username-input" style="width:100%;padding:10px;border:1px solid #333;border-radius:5px;font-size:13px;font-family:monospace;background:#0d0d1f;color:#f0f0f0;" placeholder="ex: killthisumut">
+      <input type="text" id="gh-username-input" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:13px;font-family:monospace;background:white;color:var(--ink);" placeholder="ex: killthisumut">
     </div>
     
     <div style="margin-bottom:20px;">
       <label style="display:block;font-weight:600;margin-bottom:5px;font-size:13px;">Personal Access Token</label>
-      <input type="password" id="gh-token-input" style="width:100%;padding:10px;border:1px solid #333;border-radius:5px;font-size:13px;font-family:monospace;background:#0d0d1f;color:#f0f0f0;" placeholder="ghp_...">
-      <p style="margin:8px 0 0 0;font-size:11px;color:#888;">⚠️ Settings → Developer settings → Personal access tokens → "repo" scope</p>
+      <input type="password" id="gh-token-input" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:13px;font-family:monospace;background:white;color:var(--ink);" placeholder="ghp_...">
+      <p style="margin:8px 0 0 0;font-size:11px;color:var(--ink-soft);">⚠️ Settings → Developer settings → Personal access tokens → "repo"</p>
     </div>
     
     <div style="display:flex;gap:10px;">
-      <button onclick="saveGitHubSetup()" style="flex:1;padding:10px;background:#C98A3E;color:#fff;border:none;border-radius:5px;font-weight:600;cursor:pointer;">Sauvegarder</button>
-      <button onclick="closeGitHubSetupModal()" style="flex:1;padding:10px;background:#333;color:#f0f0f0;border:none;border-radius:5px;font-weight:600;cursor:pointer;">Annuler</button>
+      <button onclick="saveGitHubSetup()" style="flex:1;padding:10px;background:var(--rope);color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;">Sauvegarder</button>
+      <button onclick="closeGitHubSetupModal()" style="flex:1;padding:10px;background:var(--bg-alt);color:var(--ink);border:none;border-radius:8px;font-weight:600;cursor:pointer;">Annuler</button>
     </div>
   </div>
 </div>
