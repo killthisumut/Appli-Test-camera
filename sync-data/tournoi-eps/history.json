@@ -1,6 +1,2726 @@
 {
   "history": [
     {
+      "id": "1790084230173_w9d1i",
+      "type": "atp",
+      "className": "3e2",
+      "date": "2026-09-22T13:37:10.173Z",
+      "label": "ATP 3e2 (2) (2)",
+      "state": {
+        "className": "3e2",
+        "sport": "🏸 Badminton",
+        "ptsWin": 5,
+        "ptsLoss": 2,
+        "ptsRef": 1,
+        "rankGap": 5,
+        "students": [
+          {
+            "id": 104,
+            "name": "Souleymane",
+            "rank": 1,
+            "totalPts": 102,
+            "seancePts": 49,
+            "wins": 8,
+            "losses": 4,
+            "refs": 1,
+            "history": [
+              {
+                "type": "loss",
+                "oppId": 95,
+                "oppName": "Mohamed",
+                "refName": "Hamza-Bouaziz",
+                "pts": 2,
+                "date": "14:29"
+              },
+              {
+                "type": "win",
+                "oppId": 99,
+                "oppName": "Meryem",
+                "refName": "Rodaina",
+                "pts": 5,
+                "date": "14:34"
+              },
+              {
+                "type": "win",
+                "oppId": 110,
+                "oppName": "Zakaria",
+                "refName": null,
+                "pts": 5,
+                "date": "14:39"
+              },
+              {
+                "type": "loss",
+                "oppId": 103,
+                "oppName": "idriss",
+                "refName": "Mohamed-Amine",
+                "pts": 2,
+                "date": "14:43"
+              },
+              {
+                "type": "loss",
+                "oppId": 103,
+                "oppName": "idriss",
+                "refName": "Abdourahmane",
+                "pts": 2,
+                "date": "14:46"
+              },
+              {
+                "type": "win",
+                "oppId": 95,
+                "oppName": "Mohamed",
+                "refName": null,
+                "pts": 5,
+                "date": "14:57"
+              },
+              {
+                "type": "win",
+                "oppId": 98,
+                "oppName": "Riles",
+                "refName": null,
+                "pts": 5,
+                "date": "15:04"
+              },
+              {
+                "type": "win",
+                "oppId": 110,
+                "oppName": "Zakaria",
+                "refName": "Rodaina",
+                "pts": 5,
+                "date": "15:09"
+              },
+              {
+                "type": "win",
+                "oppId": 103,
+                "oppName": "idriss",
+                "refName": null,
+                "pts": 5,
+                "date": "15:12"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Mohamed-Amine vs Mohamed",
+                "refName": null,
+                "pts": 1,
+                "date": "15:15"
+              },
+              {
+                "type": "win",
+                "oppId": 110,
+                "oppName": "Zakaria",
+                "refName": null,
+                "pts": 5,
+                "date": "15:17"
+              },
+              {
+                "type": "win",
+                "oppId": 98,
+                "oppName": "Riles",
+                "refName": null,
+                "pts": 5,
+                "date": "15:24"
+              },
+              {
+                "type": "loss",
+                "oppId": 110,
+                "oppName": "Zakaria",
+                "refName": null,
+                "pts": 2,
+                "date": "15:35"
+              }
+            ]
+          },
+          {
+            "id": 98,
+            "name": "Riles",
+            "rank": 2,
+            "totalPts": 82,
+            "seancePts": 29,
+            "wins": 4,
+            "losses": 4,
+            "refs": 1,
+            "history": [
+              {
+                "type": "win",
+                "oppId": 100,
+                "oppName": "Djibril",
+                "refName": "Abdourahmane",
+                "pts": 5,
+                "date": "14:37"
+              },
+              {
+                "type": "win",
+                "oppId": 100,
+                "oppName": "Djibril",
+                "refName": "Zakaria",
+                "pts": 5,
+                "date": "14:45"
+              },
+              {
+                "type": "loss",
+                "oppId": 110,
+                "oppName": "Zakaria",
+                "refName": null,
+                "pts": 2,
+                "date": "14:52"
+              },
+              {
+                "type": "loss",
+                "oppId": 104,
+                "oppName": "Souleymane",
+                "refName": null,
+                "pts": 2,
+                "date": "15:04"
+              },
+              {
+                "type": "loss",
+                "oppId": 103,
+                "oppName": "idriss",
+                "refName": null,
+                "pts": 2,
+                "date": "15:08"
+              },
+              {
+                "type": "win",
+                "oppId": 100,
+                "oppName": "Djibril",
+                "refName": null,
+                "pts": 5,
+                "date": "15:19"
+              },
+              {
+                "type": "loss",
+                "oppId": 104,
+                "oppName": "Souleymane",
+                "refName": null,
+                "pts": 2,
+                "date": "15:24"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Anais vs Fenda",
+                "refName": null,
+                "pts": 1,
+                "date": "15:29"
+              },
+              {
+                "type": "win",
+                "oppId": 110,
+                "oppName": "Zakaria",
+                "refName": null,
+                "pts": 5,
+                "date": "15:29"
+              }
+            ]
+          },
+          {
+            "id": 99,
+            "name": "Meryem",
+            "rank": 3,
+            "totalPts": 61,
+            "seancePts": 24,
+            "wins": 3,
+            "losses": 4,
+            "refs": 1,
+            "history": [
+              {
+                "type": "loss",
+                "oppId": 104,
+                "oppName": "Souleymane",
+                "refName": "Rodaina",
+                "pts": 2,
+                "date": "14:34"
+              },
+              {
+                "type": "loss",
+                "oppId": 95,
+                "oppName": "Mohamed",
+                "refName": "Abdourahmane",
+                "pts": 2,
+                "date": "14:43"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Mohamed-Amine vs Keyron",
+                "refName": null,
+                "pts": 1,
+                "date": "14:53"
+              },
+              {
+                "type": "loss",
+                "oppId": 109,
+                "oppName": "Mohamed-Amine",
+                "refName": "Anais",
+                "pts": 2,
+                "date": "15:02"
+              },
+              {
+                "type": "loss",
+                "oppId": 100,
+                "oppName": "Djibril",
+                "refName": null,
+                "pts": 2,
+                "date": "15:07"
+              },
+              {
+                "type": "win",
+                "oppId": 106,
+                "oppName": "Keyron",
+                "refName": "Nour",
+                "pts": 5,
+                "date": "15:20"
+              },
+              {
+                "type": "win",
+                "oppId": 109,
+                "oppName": "Mohamed-Amine",
+                "refName": "Djibril",
+                "pts": 5,
+                "date": "15:29"
+              },
+              {
+                "type": "win",
+                "oppId": 107,
+                "oppName": "Cyiane",
+                "refName": "Anais",
+                "pts": 5,
+                "date": "15:35"
+              }
+            ]
+          },
+          {
+            "id": 107,
+            "name": "Cyiane",
+            "rank": 4,
+            "totalPts": 50,
+            "seancePts": 16,
+            "wins": 2,
+            "losses": 2,
+            "refs": 2,
+            "history": [
+              {
+                "type": "win",
+                "oppId": 101,
+                "oppName": "Youhaidini",
+                "refName": "Mouni",
+                "pts": 5,
+                "date": "14:46"
+              },
+              {
+                "type": "loss",
+                "oppId": 95,
+                "oppName": "Mohamed",
+                "refName": null,
+                "pts": 2,
+                "date": "15:03"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "insaf vs Zhihan",
+                "refName": null,
+                "pts": 1,
+                "date": "15:22"
+              },
+              {
+                "type": "win",
+                "oppId": 112,
+                "oppName": "Zhihan",
+                "refName": null,
+                "pts": 5,
+                "date": "15:25"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Mouni vs Nour",
+                "refName": null,
+                "pts": 1,
+                "date": "15:27"
+              },
+              {
+                "type": "loss",
+                "oppId": 99,
+                "oppName": "Meryem",
+                "refName": "Anais",
+                "pts": 2,
+                "date": "15:35"
+              }
+            ]
+          },
+          {
+            "id": 103,
+            "name": "idriss",
+            "rank": 5,
+            "totalPts": 86,
+            "seancePts": 29,
+            "wins": 5,
+            "losses": 2,
+            "refs": 0,
+            "history": [
+              {
+                "type": "win",
+                "oppId": 109,
+                "oppName": "Mohamed-Amine",
+                "refName": null,
+                "pts": 5,
+                "date": "14:40"
+              },
+              {
+                "type": "win",
+                "oppId": 104,
+                "oppName": "Souleymane",
+                "refName": "Mohamed-Amine",
+                "pts": 5,
+                "date": "14:43"
+              },
+              {
+                "type": "win",
+                "oppId": 104,
+                "oppName": "Souleymane",
+                "refName": "Abdourahmane",
+                "pts": 5,
+                "date": "14:46"
+              },
+              {
+                "type": "win",
+                "oppId": 100,
+                "oppName": "Djibril",
+                "refName": null,
+                "pts": 5,
+                "date": "14:57"
+              },
+              {
+                "type": "loss",
+                "oppId": 100,
+                "oppName": "Djibril",
+                "refName": null,
+                "pts": 2,
+                "date": "15:01"
+              },
+              {
+                "type": "win",
+                "oppId": 98,
+                "oppName": "Riles",
+                "refName": null,
+                "pts": 5,
+                "date": "15:08"
+              },
+              {
+                "type": "loss",
+                "oppId": 104,
+                "oppName": "Souleymane",
+                "refName": null,
+                "pts": 2,
+                "date": "15:12"
+              }
+            ]
+          },
+          {
+            "id": 110,
+            "name": "Zakaria",
+            "rank": 6,
+            "totalPts": 86,
+            "seancePts": 29,
+            "wins": 4,
+            "losses": 4,
+            "refs": 1,
+            "history": [
+              {
+                "type": "loss",
+                "oppId": 104,
+                "oppName": "Souleymane",
+                "refName": null,
+                "pts": 2,
+                "date": "14:39"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Riles vs Djibril",
+                "refName": null,
+                "pts": 1,
+                "date": "14:45"
+              },
+              {
+                "type": "win",
+                "oppId": 98,
+                "oppName": "Riles",
+                "refName": null,
+                "pts": 5,
+                "date": "14:52"
+              },
+              {
+                "type": "win",
+                "oppId": 101,
+                "oppName": "Youhaidini",
+                "refName": null,
+                "pts": 5,
+                "date": "14:59"
+              },
+              {
+                "type": "loss",
+                "oppId": 104,
+                "oppName": "Souleymane",
+                "refName": "Rodaina",
+                "pts": 2,
+                "date": "15:09"
+              },
+              {
+                "type": "loss",
+                "oppId": 104,
+                "oppName": "Souleymane",
+                "refName": null,
+                "pts": 2,
+                "date": "15:17"
+              },
+              {
+                "type": "win",
+                "oppId": 95,
+                "oppName": "Mohamed",
+                "refName": null,
+                "pts": 5,
+                "date": "15:22"
+              },
+              {
+                "type": "loss",
+                "oppId": 98,
+                "oppName": "Riles",
+                "refName": null,
+                "pts": 2,
+                "date": "15:29"
+              },
+              {
+                "type": "win",
+                "oppId": 104,
+                "oppName": "Souleymane",
+                "refName": null,
+                "pts": 5,
+                "date": "15:35"
+              }
+            ]
+          },
+          {
+            "id": 100,
+            "name": "Djibril",
+            "rank": 7,
+            "totalPts": 82,
+            "seancePts": 31,
+            "wins": 4,
+            "losses": 5,
+            "refs": 1,
+            "history": [
+              {
+                "type": "loss",
+                "oppId": 98,
+                "oppName": "Riles",
+                "refName": "Abdourahmane",
+                "pts": 2,
+                "date": "14:37"
+              },
+              {
+                "type": "loss",
+                "oppId": 98,
+                "oppName": "Riles",
+                "refName": "Zakaria",
+                "pts": 2,
+                "date": "14:45"
+              },
+              {
+                "type": "loss",
+                "oppId": 95,
+                "oppName": "Mohamed",
+                "refName": null,
+                "pts": 2,
+                "date": "14:51"
+              },
+              {
+                "type": "loss",
+                "oppId": 103,
+                "oppName": "idriss",
+                "refName": null,
+                "pts": 2,
+                "date": "14:57"
+              },
+              {
+                "type": "win",
+                "oppId": 103,
+                "oppName": "idriss",
+                "refName": null,
+                "pts": 5,
+                "date": "15:01"
+              },
+              {
+                "type": "win",
+                "oppId": 99,
+                "oppName": "Meryem",
+                "refName": null,
+                "pts": 5,
+                "date": "15:07"
+              },
+              {
+                "type": "loss",
+                "oppId": 98,
+                "oppName": "Riles",
+                "refName": null,
+                "pts": 2,
+                "date": "15:19"
+              },
+              {
+                "type": "win",
+                "oppId": 109,
+                "oppName": "Mohamed-Amine",
+                "refName": null,
+                "pts": 5,
+                "date": "15:23"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Meryem vs Mohamed-Amine",
+                "refName": null,
+                "pts": 1,
+                "date": "15:29"
+              },
+              {
+                "type": "win",
+                "oppId": 109,
+                "oppName": "Mohamed-Amine",
+                "refName": null,
+                "pts": 5,
+                "date": "15:34"
+              }
+            ]
+          },
+          {
+            "id": 109,
+            "name": "Mohamed-Amine",
+            "rank": 8,
+            "totalPts": 71,
+            "seancePts": 28,
+            "wins": 3,
+            "losses": 6,
+            "refs": 1,
+            "history": [
+              {
+                "type": "loss",
+                "oppId": 95,
+                "oppName": "Mohamed",
+                "refName": "Hamza-Bouaziz",
+                "pts": 2,
+                "date": "14:34"
+              },
+              {
+                "type": "loss",
+                "oppId": 103,
+                "oppName": "idriss",
+                "refName": null,
+                "pts": 2,
+                "date": "14:40"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "idriss vs Souleymane",
+                "refName": null,
+                "pts": 1,
+                "date": "14:43"
+              },
+              {
+                "type": "win",
+                "oppId": 106,
+                "oppName": "Keyron",
+                "refName": "Meryem",
+                "pts": 5,
+                "date": "14:53"
+              },
+              {
+                "type": "win",
+                "oppId": 99,
+                "oppName": "Meryem",
+                "refName": "Anais",
+                "pts": 5,
+                "date": "15:02"
+              },
+              {
+                "type": "loss",
+                "oppId": 113,
+                "oppName": "Koussay",
+                "refName": "insaf",
+                "pts": 2,
+                "date": "15:12"
+              },
+              {
+                "type": "win",
+                "oppId": 95,
+                "oppName": "Mohamed",
+                "refName": "Souleymane",
+                "pts": 5,
+                "date": "15:15"
+              },
+              {
+                "type": "loss",
+                "oppId": 100,
+                "oppName": "Djibril",
+                "refName": null,
+                "pts": 2,
+                "date": "15:23"
+              },
+              {
+                "type": "loss",
+                "oppId": 99,
+                "oppName": "Meryem",
+                "refName": "Djibril",
+                "pts": 2,
+                "date": "15:29"
+              },
+              {
+                "type": "loss",
+                "oppId": 100,
+                "oppName": "Djibril",
+                "refName": null,
+                "pts": 2,
+                "date": "15:34"
+              }
+            ]
+          },
+          {
+            "id": 113,
+            "name": "Koussay",
+            "rank": 9,
+            "totalPts": 39,
+            "seancePts": 14,
+            "wins": 2,
+            "losses": 2,
+            "refs": 0,
+            "history": [
+              {
+                "type": "win",
+                "oppId": 106,
+                "oppName": "Keyron",
+                "refName": "Hamza-Benkou",
+                "pts": 5,
+                "date": "14:38"
+              },
+              {
+                "type": "loss",
+                "oppId": 106,
+                "oppName": "Keyron",
+                "refName": null,
+                "pts": 2,
+                "date": "15:03"
+              },
+              {
+                "type": "win",
+                "oppId": 109,
+                "oppName": "Mohamed-Amine",
+                "refName": "insaf",
+                "pts": 5,
+                "date": "15:12"
+              },
+              {
+                "type": "loss",
+                "oppId": 106,
+                "oppName": "Keyron",
+                "refName": null,
+                "pts": 2,
+                "date": "15:27"
+              }
+            ]
+          },
+          {
+            "id": 106,
+            "name": "Keyron",
+            "rank": 10,
+            "totalPts": 53,
+            "seancePts": 18,
+            "wins": 2,
+            "losses": 4,
+            "refs": 0,
+            "history": [
+              {
+                "type": "loss",
+                "oppId": 113,
+                "oppName": "Koussay",
+                "refName": "Hamza-Benkou",
+                "pts": 2,
+                "date": "14:38"
+              },
+              {
+                "type": "loss",
+                "oppId": 109,
+                "oppName": "Mohamed-Amine",
+                "refName": "Meryem",
+                "pts": 2,
+                "date": "14:53"
+              },
+              {
+                "type": "win",
+                "oppId": 113,
+                "oppName": "Koussay",
+                "refName": null,
+                "pts": 5,
+                "date": "15:03"
+              },
+              {
+                "type": "loss",
+                "oppId": 99,
+                "oppName": "Meryem",
+                "refName": "Nour",
+                "pts": 2,
+                "date": "15:20"
+              },
+              {
+                "type": "loss",
+                "oppId": 101,
+                "oppName": "Youhaidini",
+                "refName": null,
+                "pts": 2,
+                "date": "15:21"
+              },
+              {
+                "type": "win",
+                "oppId": 113,
+                "oppName": "Koussay",
+                "refName": null,
+                "pts": 5,
+                "date": "15:27"
+              }
+            ]
+          },
+          {
+            "id": 97,
+            "name": "Abdourahmane",
+            "rank": 11,
+            "totalPts": 51,
+            "seancePts": 22,
+            "wins": 3,
+            "losses": 1,
+            "refs": 5,
+            "history": [
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Riles vs Djibril",
+                "refName": null,
+                "pts": 1,
+                "date": "14:37"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Mohamed vs Meryem",
+                "refName": null,
+                "pts": 1,
+                "date": "14:43"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "idriss vs Souleymane",
+                "refName": null,
+                "pts": 1,
+                "date": "14:46"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Hamza-Benkou vs Hamza-Bouaziz",
+                "refName": null,
+                "pts": 1,
+                "date": "14:49"
+              },
+              {
+                "type": "loss",
+                "oppId": 115,
+                "oppName": "Emma",
+                "refName": "Hamza-Bouaziz",
+                "pts": 2,
+                "date": "15:02"
+              },
+              {
+                "type": "win",
+                "oppId": 115,
+                "oppName": "Emma",
+                "refName": "Hamza-Bouaziz",
+                "pts": 5,
+                "date": "15:06"
+              },
+              {
+                "type": "win",
+                "oppId": 116,
+                "oppName": "Hamza-Benkou",
+                "refName": "Emma",
+                "pts": 5,
+                "date": "15:11"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "ilef vs Rodaina",
+                "refName": null,
+                "pts": 1,
+                "date": "15:20"
+              },
+              {
+                "type": "win",
+                "oppId": 93,
+                "oppName": "Rodaina",
+                "refName": "insaf",
+                "pts": 5,
+                "date": "15:26"
+              }
+            ]
+          },
+          {
+            "id": 93,
+            "name": "Rodaina",
+            "rank": 12,
+            "totalPts": 50,
+            "seancePts": 25,
+            "wins": 3,
+            "losses": 3,
+            "refs": 4,
+            "history": [
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Souleymane vs Meryem",
+                "refName": null,
+                "pts": 1,
+                "date": "14:34"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Fenda vs Nour",
+                "refName": null,
+                "pts": 1,
+                "date": "14:47"
+              },
+              {
+                "type": "win",
+                "oppId": 114,
+                "oppName": "insaf",
+                "refName": "Anais",
+                "pts": 5,
+                "date": "14:54"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "ilef vs insaf",
+                "refName": null,
+                "pts": 1,
+                "date": "15:04"
+              },
+              {
+                "type": "win",
+                "oppId": 112,
+                "oppName": "Zhihan",
+                "refName": "Hamza-Benkou",
+                "pts": 5,
+                "date": "15:05"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Souleymane vs Zakaria",
+                "refName": null,
+                "pts": 1,
+                "date": "15:09"
+              },
+              {
+                "type": "loss",
+                "oppId": 94,
+                "oppName": "ilef",
+                "refName": "Abdourahmane",
+                "pts": 2,
+                "date": "15:20"
+              },
+              {
+                "type": "loss",
+                "oppId": 97,
+                "oppName": "Abdourahmane",
+                "refName": "insaf",
+                "pts": 2,
+                "date": "15:26"
+              },
+              {
+                "type": "loss",
+                "oppId": 112,
+                "oppName": "Zhihan",
+                "refName": "insaf",
+                "pts": 2,
+                "date": "15:32"
+              },
+              {
+                "type": "win",
+                "oppId": 114,
+                "oppName": "insaf",
+                "refName": null,
+                "pts": 5,
+                "date": "15:34"
+              }
+            ]
+          },
+          {
+            "id": 115,
+            "name": "Emma",
+            "rank": 13,
+            "totalPts": 48,
+            "seancePts": 23,
+            "wins": 3,
+            "losses": 3,
+            "refs": 2,
+            "history": [
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Anais vs Zhihan",
+                "refName": null,
+                "pts": 1,
+                "date": "14:33"
+              },
+              {
+                "type": "win",
+                "oppId": 112,
+                "oppName": "Zhihan",
+                "refName": "Hamza-Benkou",
+                "pts": 5,
+                "date": "14:44"
+              },
+              {
+                "type": "loss",
+                "oppId": 94,
+                "oppName": "ilef",
+                "refName": null,
+                "pts": 2,
+                "date": "14:53"
+              },
+              {
+                "type": "win",
+                "oppId": 97,
+                "oppName": "Abdourahmane",
+                "refName": "Hamza-Bouaziz",
+                "pts": 5,
+                "date": "15:02"
+              },
+              {
+                "type": "loss",
+                "oppId": 97,
+                "oppName": "Abdourahmane",
+                "refName": "Hamza-Bouaziz",
+                "pts": 2,
+                "date": "15:06"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Abdourahmane vs Hamza-Benkou",
+                "refName": null,
+                "pts": 1,
+                "date": "15:11"
+              },
+              {
+                "type": "win",
+                "oppId": 116,
+                "oppName": "Hamza-Benkou",
+                "refName": null,
+                "pts": 5,
+                "date": "15:20"
+              },
+              {
+                "type": "loss",
+                "oppId": 94,
+                "oppName": "ilef",
+                "refName": "insaf",
+                "pts": 2,
+                "date": "15:29"
+              }
+            ]
+          },
+          {
+            "id": 105,
+            "name": "Fenda",
+            "rank": 14,
+            "totalPts": 23,
+            "seancePts": 12,
+            "wins": 1,
+            "losses": 3,
+            "refs": 1,
+            "history": [
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Anais vs Nour",
+                "refName": null,
+                "pts": 1,
+                "date": "14:38"
+              },
+              {
+                "type": "win",
+                "oppId": 108,
+                "oppName": "Nour",
+                "refName": "Rodaina",
+                "pts": 5,
+                "date": "14:47"
+              },
+              {
+                "type": "loss",
+                "oppId": 102,
+                "oppName": "Anais",
+                "refName": "Mouni",
+                "pts": 2,
+                "date": "14:55"
+              },
+              {
+                "type": "loss",
+                "oppId": 102,
+                "oppName": "Anais",
+                "refName": "Riles",
+                "pts": 2,
+                "date": "15:29"
+              },
+              {
+                "type": "loss",
+                "oppId": 94,
+                "oppName": "ilef",
+                "refName": null,
+                "pts": 2,
+                "date": "15:34"
+              }
+            ]
+          },
+          {
+            "id": 111,
+            "name": "Mouni",
+            "rank": 15,
+            "totalPts": 23,
+            "seancePts": 7,
+            "wins": 1,
+            "losses": 0,
+            "refs": 2,
+            "history": [
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Cyiane vs Youhaidini",
+                "refName": null,
+                "pts": 1,
+                "date": "14:46"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Anais vs Fenda",
+                "refName": null,
+                "pts": 1,
+                "date": "14:55"
+              },
+              {
+                "type": "win",
+                "oppId": 108,
+                "oppName": "Nour",
+                "refName": "Cyiane",
+                "pts": 5,
+                "date": "15:27"
+              }
+            ]
+          },
+          {
+            "id": 112,
+            "name": "Zhihan",
+            "rank": 16,
+            "totalPts": 35,
+            "seancePts": 20,
+            "wins": 2,
+            "losses": 5,
+            "refs": 0,
+            "history": [
+              {
+                "type": "loss",
+                "oppId": 102,
+                "oppName": "Anais",
+                "refName": "Emma",
+                "pts": 2,
+                "date": "14:33"
+              },
+              {
+                "type": "loss",
+                "oppId": 115,
+                "oppName": "Emma",
+                "refName": "Hamza-Benkou",
+                "pts": 2,
+                "date": "14:44"
+              },
+              {
+                "type": "win",
+                "oppId": 116,
+                "oppName": "Hamza-Benkou",
+                "refName": "Hamza-Bouaziz",
+                "pts": 5,
+                "date": "14:55"
+              },
+              {
+                "type": "loss",
+                "oppId": 93,
+                "oppName": "Rodaina",
+                "refName": "Hamza-Benkou",
+                "pts": 2,
+                "date": "15:05"
+              },
+              {
+                "type": "loss",
+                "oppId": 114,
+                "oppName": "insaf",
+                "refName": "Cyiane",
+                "pts": 2,
+                "date": "15:22"
+              },
+              {
+                "type": "loss",
+                "oppId": 107,
+                "oppName": "Cyiane",
+                "refName": null,
+                "pts": 2,
+                "date": "15:25"
+              },
+              {
+                "type": "win",
+                "oppId": 93,
+                "oppName": "Rodaina",
+                "refName": "insaf",
+                "pts": 5,
+                "date": "15:32"
+              }
+            ]
+          },
+          {
+            "id": 114,
+            "name": "insaf",
+            "rank": 17,
+            "totalPts": 33,
+            "seancePts": 15,
+            "wins": 1,
+            "losses": 3,
+            "refs": 4,
+            "history": [
+              {
+                "type": "loss",
+                "oppId": 93,
+                "oppName": "Rodaina",
+                "refName": "Anais",
+                "pts": 2,
+                "date": "14:54"
+              },
+              {
+                "type": "loss",
+                "oppId": 94,
+                "oppName": "ilef",
+                "refName": "Rodaina",
+                "pts": 2,
+                "date": "15:04"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Koussay vs Mohamed-Amine",
+                "refName": null,
+                "pts": 1,
+                "date": "15:12"
+              },
+              {
+                "type": "win",
+                "oppId": 112,
+                "oppName": "Zhihan",
+                "refName": "Cyiane",
+                "pts": 5,
+                "date": "15:22"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Abdourahmane vs Rodaina",
+                "refName": null,
+                "pts": 1,
+                "date": "15:26"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "ilef vs Emma",
+                "refName": null,
+                "pts": 1,
+                "date": "15:29"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Zhihan vs Rodaina",
+                "refName": null,
+                "pts": 1,
+                "date": "15:32"
+              },
+              {
+                "type": "loss",
+                "oppId": 93,
+                "oppName": "Rodaina",
+                "refName": null,
+                "pts": 2,
+                "date": "15:34"
+              }
+            ]
+          },
+          {
+            "id": 101,
+            "name": "Youhaidini",
+            "rank": 18,
+            "totalPts": 63,
+            "seancePts": 23,
+            "wins": 3,
+            "losses": 4,
+            "refs": 0,
+            "history": [
+              {
+                "type": "loss",
+                "oppId": 107,
+                "oppName": "Cyiane",
+                "refName": "Mouni",
+                "pts": 2,
+                "date": "14:46"
+              },
+              {
+                "type": "loss",
+                "oppId": 110,
+                "oppName": "Zakaria",
+                "refName": null,
+                "pts": 2,
+                "date": "14:59"
+              },
+              {
+                "type": "win",
+                "oppId": 95,
+                "oppName": "Mohamed",
+                "refName": "Hamza-Bouaziz",
+                "pts": 5,
+                "date": "15:12"
+              },
+              {
+                "type": "win",
+                "oppId": 106,
+                "oppName": "Keyron",
+                "refName": null,
+                "pts": 5,
+                "date": "15:21"
+              },
+              {
+                "type": "win",
+                "oppId": 95,
+                "oppName": "Mohamed",
+                "refName": "Hamza-Bouaziz",
+                "pts": 5,
+                "date": "15:25"
+              },
+              {
+                "type": "loss",
+                "oppId": 95,
+                "oppName": "Mohamed",
+                "refName": "Hamza-Bouaziz",
+                "pts": 2,
+                "date": "15:28"
+              },
+              {
+                "type": "loss",
+                "oppId": 95,
+                "oppName": "Mohamed",
+                "refName": null,
+                "pts": 2,
+                "date": "15:33"
+              }
+            ]
+          },
+          {
+            "id": 94,
+            "name": "ilef",
+            "rank": 19,
+            "totalPts": 51,
+            "seancePts": 25,
+            "wins": 5,
+            "losses": 0,
+            "refs": 0,
+            "history": [
+              {
+                "type": "win",
+                "oppId": 115,
+                "oppName": "Emma",
+                "refName": null,
+                "pts": 5,
+                "date": "14:53"
+              },
+              {
+                "type": "win",
+                "oppId": 114,
+                "oppName": "insaf",
+                "refName": "Rodaina",
+                "pts": 5,
+                "date": "15:04"
+              },
+              {
+                "type": "win",
+                "oppId": 93,
+                "oppName": "Rodaina",
+                "refName": "Abdourahmane",
+                "pts": 5,
+                "date": "15:20"
+              },
+              {
+                "type": "win",
+                "oppId": 115,
+                "oppName": "Emma",
+                "refName": "insaf",
+                "pts": 5,
+                "date": "15:29"
+              },
+              {
+                "type": "win",
+                "oppId": 105,
+                "oppName": "Fenda",
+                "refName": null,
+                "pts": 5,
+                "date": "15:34"
+              }
+            ]
+          },
+          {
+            "id": 96,
+            "name": "Hamza-Bouaziz",
+            "rank": 20,
+            "totalPts": 23,
+            "seancePts": 10,
+            "wins": 0,
+            "losses": 1,
+            "refs": 8,
+            "history": [
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Mohamed vs Souleymane",
+                "refName": null,
+                "pts": 1,
+                "date": "14:29"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Mohamed vs Mohamed-Amine",
+                "refName": null,
+                "pts": 1,
+                "date": "14:34"
+              },
+              {
+                "type": "loss",
+                "oppId": 116,
+                "oppName": "Hamza-Benkou",
+                "refName": "Abdourahmane",
+                "pts": 2,
+                "date": "14:49"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Zhihan vs Hamza-Benkou",
+                "refName": null,
+                "pts": 1,
+                "date": "14:55"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Emma vs Abdourahmane",
+                "refName": null,
+                "pts": 1,
+                "date": "15:02"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Abdourahmane vs Emma",
+                "refName": null,
+                "pts": 1,
+                "date": "15:06"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Youhaidini vs Mohamed",
+                "refName": null,
+                "pts": 1,
+                "date": "15:12"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Youhaidini vs Mohamed",
+                "refName": null,
+                "pts": 1,
+                "date": "15:25"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Mohamed vs Youhaidini",
+                "refName": null,
+                "pts": 1,
+                "date": "15:28"
+              }
+            ]
+          },
+          {
+            "id": 108,
+            "name": "Nour",
+            "rank": 21,
+            "totalPts": 14,
+            "seancePts": 7,
+            "wins": 0,
+            "losses": 3,
+            "refs": 1,
+            "history": [
+              {
+                "type": "loss",
+                "oppId": 102,
+                "oppName": "Anais",
+                "refName": "Fenda",
+                "pts": 2,
+                "date": "14:38"
+              },
+              {
+                "type": "loss",
+                "oppId": 105,
+                "oppName": "Fenda",
+                "refName": "Rodaina",
+                "pts": 2,
+                "date": "14:47"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Meryem vs Keyron",
+                "refName": null,
+                "pts": 1,
+                "date": "15:20"
+              },
+              {
+                "type": "loss",
+                "oppId": 111,
+                "oppName": "Mouni",
+                "refName": "Cyiane",
+                "pts": 2,
+                "date": "15:27"
+              }
+            ]
+          },
+          {
+            "id": 95,
+            "name": "Mohamed",
+            "rank": 22,
+            "totalPts": 85,
+            "seancePts": 45,
+            "wins": 7,
+            "losses": 5,
+            "refs": 0,
+            "history": [
+              {
+                "type": "win",
+                "oppId": 104,
+                "oppName": "Souleymane",
+                "refName": "Hamza-Bouaziz",
+                "pts": 5,
+                "date": "14:29"
+              },
+              {
+                "type": "win",
+                "oppId": 109,
+                "oppName": "Mohamed-Amine",
+                "refName": "Hamza-Bouaziz",
+                "pts": 5,
+                "date": "14:34"
+              },
+              {
+                "type": "win",
+                "oppId": 99,
+                "oppName": "Meryem",
+                "refName": "Abdourahmane",
+                "pts": 5,
+                "date": "14:43"
+              },
+              {
+                "type": "win",
+                "oppId": 100,
+                "oppName": "Djibril",
+                "refName": null,
+                "pts": 5,
+                "date": "14:51"
+              },
+              {
+                "type": "loss",
+                "oppId": 104,
+                "oppName": "Souleymane",
+                "refName": null,
+                "pts": 2,
+                "date": "14:57"
+              },
+              {
+                "type": "win",
+                "oppId": 107,
+                "oppName": "Cyiane",
+                "refName": null,
+                "pts": 5,
+                "date": "15:03"
+              },
+              {
+                "type": "loss",
+                "oppId": 101,
+                "oppName": "Youhaidini",
+                "refName": "Hamza-Bouaziz",
+                "pts": 2,
+                "date": "15:12"
+              },
+              {
+                "type": "loss",
+                "oppId": 109,
+                "oppName": "Mohamed-Amine",
+                "refName": "Souleymane",
+                "pts": 2,
+                "date": "15:15"
+              },
+              {
+                "type": "loss",
+                "oppId": 110,
+                "oppName": "Zakaria",
+                "refName": null,
+                "pts": 2,
+                "date": "15:22"
+              },
+              {
+                "type": "loss",
+                "oppId": 101,
+                "oppName": "Youhaidini",
+                "refName": "Hamza-Bouaziz",
+                "pts": 2,
+                "date": "15:25"
+              },
+              {
+                "type": "win",
+                "oppId": 101,
+                "oppName": "Youhaidini",
+                "refName": "Hamza-Bouaziz",
+                "pts": 5,
+                "date": "15:28"
+              },
+              {
+                "type": "win",
+                "oppId": 101,
+                "oppName": "Youhaidini",
+                "refName": null,
+                "pts": 5,
+                "date": "15:33"
+              }
+            ]
+          },
+          {
+            "id": 102,
+            "name": "Anais",
+            "rank": 23,
+            "totalPts": 32,
+            "seancePts": 23,
+            "wins": 4,
+            "losses": 0,
+            "refs": 3,
+            "history": [
+              {
+                "type": "win",
+                "oppId": 112,
+                "oppName": "Zhihan",
+                "refName": "Emma",
+                "pts": 5,
+                "date": "14:33"
+              },
+              {
+                "type": "win",
+                "oppId": 108,
+                "oppName": "Nour",
+                "refName": "Fenda",
+                "pts": 5,
+                "date": "14:38"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Rodaina vs insaf",
+                "refName": null,
+                "pts": 1,
+                "date": "14:54"
+              },
+              {
+                "type": "win",
+                "oppId": 105,
+                "oppName": "Fenda",
+                "refName": "Mouni",
+                "pts": 5,
+                "date": "14:55"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Mohamed-Amine vs Meryem",
+                "refName": null,
+                "pts": 1,
+                "date": "15:02"
+              },
+              {
+                "type": "win",
+                "oppId": 105,
+                "oppName": "Fenda",
+                "refName": "Riles",
+                "pts": 5,
+                "date": "15:29"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Meryem vs Cyiane",
+                "refName": null,
+                "pts": 1,
+                "date": "15:35"
+              }
+            ]
+          },
+          {
+            "id": 116,
+            "name": "Hamza-Benkou",
+            "rank": 24,
+            "totalPts": 33,
+            "seancePts": 14,
+            "wins": 1,
+            "losses": 3,
+            "refs": 3,
+            "history": [
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Koussay vs Keyron",
+                "refName": null,
+                "pts": 1,
+                "date": "14:38"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Emma vs Zhihan",
+                "refName": null,
+                "pts": 1,
+                "date": "14:44"
+              },
+              {
+                "type": "win",
+                "oppId": 96,
+                "oppName": "Hamza-Bouaziz",
+                "refName": "Abdourahmane",
+                "pts": 5,
+                "date": "14:49"
+              },
+              {
+                "type": "loss",
+                "oppId": 112,
+                "oppName": "Zhihan",
+                "refName": "Hamza-Bouaziz",
+                "pts": 2,
+                "date": "14:55"
+              },
+              {
+                "type": "ref",
+                "oppId": null,
+                "oppName": "Rodaina vs Zhihan",
+                "refName": null,
+                "pts": 1,
+                "date": "15:05"
+              },
+              {
+                "type": "loss",
+                "oppId": 97,
+                "oppName": "Abdourahmane",
+                "refName": "Emma",
+                "pts": 2,
+                "date": "15:11"
+              },
+              {
+                "type": "loss",
+                "oppId": 115,
+                "oppName": "Emma",
+                "refName": null,
+                "pts": 2,
+                "date": "15:20"
+              }
+            ]
+          }
+        ],
+        "matches": [
+          {
+            "wId": 110,
+            "lId": 104,
+            "rId": null,
+            "wName": "Zakaria",
+            "lName": "Souleymane",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:35",
+            "matchId": "match-1790084144412-mdz6qs4cz"
+          },
+          {
+            "wId": 99,
+            "lId": 107,
+            "rId": 102,
+            "wName": "Meryem",
+            "lName": "Cyiane",
+            "rName": "Anais",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:35",
+            "matchId": "match-1790084117778-exk2b6o78"
+          },
+          {
+            "wId": 93,
+            "lId": 114,
+            "rId": null,
+            "wName": "Rodaina",
+            "lName": "insaf",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:34",
+            "matchId": "match-1790084098769-swdpvwum5"
+          },
+          {
+            "wId": 94,
+            "lId": 105,
+            "rId": null,
+            "wName": "ilef",
+            "lName": "Fenda",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:34",
+            "matchId": "match-1790084071354-aijy9tacc"
+          },
+          {
+            "wId": 100,
+            "lId": 109,
+            "rId": null,
+            "wName": "Djibril",
+            "lName": "Mohamed-Amine",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:34",
+            "matchId": "match-1790084056398-v73kw0i2d"
+          },
+          {
+            "wId": 95,
+            "lId": 101,
+            "rId": null,
+            "wName": "Mohamed",
+            "lName": "Youhaidini",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:33",
+            "matchId": "match-1790083987343-8qvedkcgb"
+          },
+          {
+            "wId": 112,
+            "lId": 93,
+            "rId": 114,
+            "wName": "Zhihan",
+            "lName": "Rodaina",
+            "rName": "insaf",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:32",
+            "matchId": "match-1790083978977-pv8287u2d"
+          },
+          {
+            "wId": 94,
+            "lId": 115,
+            "rId": 114,
+            "wName": "ilef",
+            "lName": "Emma",
+            "rName": "insaf",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:29",
+            "matchId": "match-1790083799625-oowql9dow"
+          },
+          {
+            "wId": 98,
+            "lId": 110,
+            "rId": null,
+            "wName": "Riles",
+            "lName": "Zakaria",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:29",
+            "matchId": "match-1790083777753-kuocex69w"
+          },
+          {
+            "wId": 102,
+            "lId": 105,
+            "rId": 98,
+            "wName": "Anais",
+            "lName": "Fenda",
+            "rName": "Riles",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:29",
+            "matchId": "match-1790083770259-fb3q9smwk"
+          },
+          {
+            "wId": 99,
+            "lId": 109,
+            "rId": 100,
+            "wName": "Meryem",
+            "lName": "Mohamed-Amine",
+            "rName": "Djibril",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:29",
+            "matchId": "match-1790083752280-pjag6ca34"
+          },
+          {
+            "wId": 95,
+            "lId": 101,
+            "rId": 96,
+            "wName": "Mohamed",
+            "lName": "Youhaidini",
+            "rName": "Hamza-Bouaziz",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:28",
+            "matchId": "match-1790083724015-1zc8ookkf"
+          },
+          {
+            "wId": 111,
+            "lId": 108,
+            "rId": 107,
+            "wName": "Mouni",
+            "lName": "Nour",
+            "rName": "Cyiane",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:27",
+            "matchId": "match-1790083672022-j9uv0oyjg"
+          },
+          {
+            "wId": 106,
+            "lId": 113,
+            "rId": null,
+            "wName": "Keyron",
+            "lName": "Koussay",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:27",
+            "matchId": "match-1790083636690-83cxthgjx"
+          },
+          {
+            "wId": 97,
+            "lId": 93,
+            "rId": 114,
+            "wName": "Abdourahmane",
+            "lName": "Rodaina",
+            "rName": "insaf",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:26",
+            "matchId": "match-1790083570639-ee9gixnqk"
+          },
+          {
+            "wId": 101,
+            "lId": 95,
+            "rId": 96,
+            "wName": "Youhaidini",
+            "lName": "Mohamed",
+            "rName": "Hamza-Bouaziz",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:25",
+            "matchId": "match-1790083550492-frx3wk9vt"
+          },
+          {
+            "wId": 107,
+            "lId": 112,
+            "rId": null,
+            "wName": "Cyiane",
+            "lName": "Zhihan",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:25",
+            "matchId": "match-1790083517462-ae3c667fa"
+          },
+          {
+            "wId": 104,
+            "lId": 98,
+            "rId": null,
+            "wName": "Souleymane",
+            "lName": "Riles",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:24",
+            "matchId": "match-1790083457526-oizfm5cn9"
+          },
+          {
+            "wId": 100,
+            "lId": 109,
+            "rId": null,
+            "wName": "Djibril",
+            "lName": "Mohamed-Amine",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:23",
+            "matchId": "match-1790083389827-sr9lk3xhi"
+          },
+          {
+            "wId": 110,
+            "lId": 95,
+            "rId": null,
+            "wName": "Zakaria",
+            "lName": "Mohamed",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:22",
+            "matchId": "match-1790083345879-1kspcst2i"
+          },
+          {
+            "wId": 114,
+            "lId": 112,
+            "rId": 107,
+            "wName": "insaf",
+            "lName": "Zhihan",
+            "rName": "Cyiane",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:22",
+            "matchId": "match-1790083335973-djt881vak"
+          },
+          {
+            "wId": 101,
+            "lId": 106,
+            "rId": null,
+            "wName": "Youhaidini",
+            "lName": "Keyron",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:21",
+            "matchId": "match-1790083283156-q5j1j6x7m"
+          },
+          {
+            "wId": 115,
+            "lId": 116,
+            "rId": null,
+            "wName": "Emma",
+            "lName": "Hamza-Benkou",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:20",
+            "matchId": "match-1790083254413-7njhpg6dl"
+          },
+          {
+            "wId": 94,
+            "lId": 93,
+            "rId": 97,
+            "wName": "ilef",
+            "lName": "Rodaina",
+            "rName": "Abdourahmane",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:20",
+            "matchId": "match-1790083227899-cov1btgfy"
+          },
+          {
+            "wId": 99,
+            "lId": 106,
+            "rId": 108,
+            "wName": "Meryem",
+            "lName": "Keyron",
+            "rName": "Nour",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:20",
+            "matchId": "match-1790083212611-mjppsnyjz"
+          },
+          {
+            "wId": 98,
+            "lId": 100,
+            "rId": null,
+            "wName": "Riles",
+            "lName": "Djibril",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:19",
+            "matchId": "match-1790083168017-lihkh7pfm"
+          },
+          {
+            "wId": 104,
+            "lId": 110,
+            "rId": null,
+            "wName": "Souleymane",
+            "lName": "Zakaria",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:17",
+            "matchId": "match-1790083041389-povpdi38j"
+          },
+          {
+            "wId": 109,
+            "lId": 95,
+            "rId": 104,
+            "wName": "Mohamed-Amine",
+            "lName": "Mohamed",
+            "rName": "Souleymane",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:15",
+            "matchId": "match-1790082943236-t24j0gnpn"
+          },
+          {
+            "wId": 113,
+            "lId": 109,
+            "rId": 114,
+            "wName": "Koussay",
+            "lName": "Mohamed-Amine",
+            "rName": "insaf",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:12",
+            "matchId": "match-1790082768148-5x7lmpxs0"
+          },
+          {
+            "wId": 104,
+            "lId": 103,
+            "rId": null,
+            "wName": "Souleymane",
+            "lName": "idriss",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:12",
+            "matchId": "match-1790082754878-3qpcyefgr"
+          },
+          {
+            "wId": 101,
+            "lId": 95,
+            "rId": 96,
+            "wName": "Youhaidini",
+            "lName": "Mohamed",
+            "rName": "Hamza-Bouaziz",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:12",
+            "matchId": "match-1790082724493-erw0dc8g2"
+          },
+          {
+            "wId": 97,
+            "lId": 116,
+            "rId": 115,
+            "wName": "Abdourahmane",
+            "lName": "Hamza-Benkou",
+            "rName": "Emma",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:11",
+            "matchId": "match-1790082706772-7dc4ffhbi"
+          },
+          {
+            "wId": 104,
+            "lId": 110,
+            "rId": 93,
+            "wName": "Souleymane",
+            "lName": "Zakaria",
+            "rName": "Rodaina",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:09",
+            "matchId": "match-1790082554615-o90hknmmo"
+          },
+          {
+            "wId": 103,
+            "lId": 98,
+            "rId": null,
+            "wName": "idriss",
+            "lName": "Riles",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:08",
+            "matchId": "match-1790082531816-o2ndf1wj2"
+          },
+          {
+            "wId": 100,
+            "lId": 99,
+            "rId": null,
+            "wName": "Djibril",
+            "lName": "Meryem",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:07",
+            "matchId": "match-1790082452698-633pwj8fn"
+          },
+          {
+            "wId": 97,
+            "lId": 115,
+            "rId": 96,
+            "wName": "Abdourahmane",
+            "lName": "Emma",
+            "rName": "Hamza-Bouaziz",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:06",
+            "matchId": "match-1790082381545-ayq3uej30"
+          },
+          {
+            "wId": 93,
+            "lId": 112,
+            "rId": 116,
+            "wName": "Rodaina",
+            "lName": "Zhihan",
+            "rName": "Hamza-Benkou",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:05",
+            "matchId": "match-1790082310160-n687pnwgc"
+          },
+          {
+            "wId": 94,
+            "lId": 114,
+            "rId": 93,
+            "wName": "ilef",
+            "lName": "insaf",
+            "rName": "Rodaina",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:04",
+            "matchId": "match-1790082293649-pscauwun1"
+          },
+          {
+            "wId": 104,
+            "lId": 98,
+            "rId": null,
+            "wName": "Souleymane",
+            "lName": "Riles",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:04",
+            "matchId": "match-1790082245398-rn4vlm9hy"
+          },
+          {
+            "wId": 95,
+            "lId": 107,
+            "rId": null,
+            "wName": "Mohamed",
+            "lName": "Cyiane",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:03",
+            "matchId": "match-1790082239569-qwpljk7qr"
+          },
+          {
+            "wId": 106,
+            "lId": 113,
+            "rId": null,
+            "wName": "Keyron",
+            "lName": "Koussay",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:03",
+            "matchId": "match-1790082230462-z62n946di"
+          },
+          {
+            "wId": 109,
+            "lId": 99,
+            "rId": 102,
+            "wName": "Mohamed-Amine",
+            "lName": "Meryem",
+            "rName": "Anais",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:02",
+            "matchId": "match-1790082149868-7gx0w4w78"
+          },
+          {
+            "wId": 115,
+            "lId": 97,
+            "rId": 96,
+            "wName": "Emma",
+            "lName": "Abdourahmane",
+            "rName": "Hamza-Bouaziz",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:02",
+            "matchId": "match-1790082122162-axz7vvsf7"
+          },
+          {
+            "wId": 100,
+            "lId": 103,
+            "rId": null,
+            "wName": "Djibril",
+            "lName": "idriss",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "15:01",
+            "matchId": "match-1790082090936-fw2ghlorn"
+          },
+          {
+            "wId": 110,
+            "lId": 101,
+            "rId": null,
+            "wName": "Zakaria",
+            "lName": "Youhaidini",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "14:59",
+            "matchId": "match-1790081979910-fpsmwuqns"
+          },
+          {
+            "wId": 104,
+            "lId": 95,
+            "rId": null,
+            "wName": "Souleymane",
+            "lName": "Mohamed",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "14:57",
+            "matchId": "match-1790081877774-v2g2lqils"
+          },
+          {
+            "wId": 103,
+            "lId": 100,
+            "rId": null,
+            "wName": "idriss",
+            "lName": "Djibril",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "14:57",
+            "matchId": "match-1790081844524-x1v7k9ks9"
+          },
+          {
+            "wId": 102,
+            "lId": 105,
+            "rId": 111,
+            "wName": "Anais",
+            "lName": "Fenda",
+            "rName": "Mouni",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "14:55",
+            "matchId": "match-1790081723918-bwf0lh1bk"
+          },
+          {
+            "wId": 112,
+            "lId": 116,
+            "rId": 96,
+            "wName": "Zhihan",
+            "lName": "Hamza-Benkou",
+            "rName": "Hamza-Bouaziz",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "14:55",
+            "matchId": "match-1790081701613-vo6zknoof"
+          },
+          {
+            "wId": 93,
+            "lId": 114,
+            "rId": 102,
+            "wName": "Rodaina",
+            "lName": "insaf",
+            "rName": "Anais",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "14:54",
+            "matchId": "match-1790081690445-mvknrss4j"
+          },
+          {
+            "wId": 109,
+            "lId": 106,
+            "rId": 99,
+            "wName": "Mohamed-Amine",
+            "lName": "Keyron",
+            "rName": "Meryem",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "14:53",
+            "matchId": "match-1790081634497-wn0a5qdb1"
+          },
+          {
+            "wId": 94,
+            "lId": 115,
+            "rId": null,
+            "wName": "ilef",
+            "lName": "Emma",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "14:53",
+            "matchId": "match-1790081580935-kesitjp78"
+          },
+          {
+            "wId": 110,
+            "lId": 98,
+            "rId": null,
+            "wName": "Zakaria",
+            "lName": "Riles",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "14:52",
+            "matchId": "match-1790081523952-6ig2ewnbe"
+          },
+          {
+            "wId": 95,
+            "lId": 100,
+            "rId": null,
+            "wName": "Mohamed",
+            "lName": "Djibril",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "14:51",
+            "matchId": "match-1790081494379-l0jcghnr6"
+          },
+          {
+            "wId": 116,
+            "lId": 96,
+            "rId": 97,
+            "wName": "Hamza-Benkou",
+            "lName": "Hamza-Bouaziz",
+            "rName": "Abdourahmane",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "14:49",
+            "matchId": "match-1790081347054-6i2nerqjj"
+          },
+          {
+            "wId": 105,
+            "lId": 108,
+            "rId": 93,
+            "wName": "Fenda",
+            "lName": "Nour",
+            "rName": "Rodaina",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "14:47",
+            "matchId": "match-1790081239588-68wuug66o"
+          },
+          {
+            "wId": 103,
+            "lId": 104,
+            "rId": 97,
+            "wName": "idriss",
+            "lName": "Souleymane",
+            "rName": "Abdourahmane",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "14:46",
+            "matchId": "match-1790081193086-x930eakx5"
+          },
+          {
+            "wId": 107,
+            "lId": 101,
+            "rId": 111,
+            "wName": "Cyiane",
+            "lName": "Youhaidini",
+            "rName": "Mouni",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "14:46",
+            "matchId": "match-1790081181667-1wucjjdy9"
+          },
+          {
+            "wId": 98,
+            "lId": 100,
+            "rId": 110,
+            "wName": "Riles",
+            "lName": "Djibril",
+            "rName": "Zakaria",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "14:45",
+            "matchId": "match-1790081115641-o8u56280a"
+          },
+          {
+            "wId": 115,
+            "lId": 112,
+            "rId": 116,
+            "wName": "Emma",
+            "lName": "Zhihan",
+            "rName": "Hamza-Benkou",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "14:44",
+            "matchId": "match-1790081077435-a081x260l"
+          },
+          {
+            "wId": 95,
+            "lId": 99,
+            "rId": 97,
+            "wName": "Mohamed",
+            "lName": "Meryem",
+            "rName": "Abdourahmane",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "14:43",
+            "matchId": "match-1790081030048-1pbaqfuci"
+          },
+          {
+            "wId": 103,
+            "lId": 104,
+            "rId": 109,
+            "wName": "idriss",
+            "lName": "Souleymane",
+            "rName": "Mohamed-Amine",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "14:43",
+            "matchId": "match-1790080989311-qm0gjvp9k"
+          },
+          {
+            "wId": 103,
+            "lId": 109,
+            "rId": null,
+            "wName": "idriss",
+            "lName": "Mohamed-Amine",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "14:40",
+            "matchId": "match-1790080805349-5q7e4g3c1"
+          },
+          {
+            "wId": 104,
+            "lId": 110,
+            "rId": null,
+            "wName": "Souleymane",
+            "lName": "Zakaria",
+            "rName": null,
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "14:39",
+            "matchId": "match-1790080748435-cmp313xud"
+          },
+          {
+            "wId": 102,
+            "lId": 108,
+            "rId": 105,
+            "wName": "Anais",
+            "lName": "Nour",
+            "rName": "Fenda",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "14:38",
+            "matchId": "match-1790080739774-cts53tqi1"
+          },
+          {
+            "wId": 113,
+            "lId": 106,
+            "rId": 116,
+            "wName": "Koussay",
+            "lName": "Keyron",
+            "rName": "Hamza-Benkou",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "14:38",
+            "matchId": "match-1790080731019-h6zyi32xq"
+          },
+          {
+            "wId": 98,
+            "lId": 100,
+            "rId": 97,
+            "wName": "Riles",
+            "lName": "Djibril",
+            "rName": "Abdourahmane",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "14:37",
+            "matchId": "match-1790080633795-oauh2me5e"
+          },
+          {
+            "wId": 95,
+            "lId": 109,
+            "rId": 96,
+            "wName": "Mohamed",
+            "lName": "Mohamed-Amine",
+            "rName": "Hamza-Bouaziz",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "14:34",
+            "matchId": "match-1790080469897-tk8dzth9g"
+          },
+          {
+            "wId": 104,
+            "lId": 99,
+            "rId": 93,
+            "wName": "Souleymane",
+            "lName": "Meryem",
+            "rName": "Rodaina",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "14:34",
+            "matchId": "match-1790080451492-bndcjmn7n"
+          },
+          {
+            "wId": 102,
+            "lId": 112,
+            "rId": 115,
+            "wName": "Anais",
+            "lName": "Zhihan",
+            "rName": "Emma",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "14:33",
+            "matchId": "match-1790080402794-ol5qlkrn3"
+          },
+          {
+            "wId": 95,
+            "lId": 104,
+            "rId": 96,
+            "wName": "Mohamed",
+            "lName": "Souleymane",
+            "rName": "Hamza-Bouaziz",
+            "ptsW": 5,
+            "ptsL": 2,
+            "ptsR": 1,
+            "date": "14:29",
+            "matchId": "match-1790080154055-anjw1ckkt"
+          }
+        ],
+        "seanceStart": {
+          "93": 0,
+          "94": 0,
+          "95": 0,
+          "96": 0,
+          "97": 0,
+          "98": 0,
+          "99": 0,
+          "100": 0,
+          "101": 0,
+          "102": 0,
+          "103": 0,
+          "104": 0,
+          "105": 0,
+          "106": 0,
+          "107": 0,
+          "108": 0,
+          "109": 0,
+          "110": 0,
+          "111": 0,
+          "112": 0,
+          "113": 0,
+          "114": 0,
+          "115": 0,
+          "116": 0
+        }
+      }
+    },
+    {
       "id": "1790065613208_h9l6h",
       "type": "swiss",
       "className": "6e2",
@@ -6453,5 +9173,5 @@
       }
     }
   ],
-  "synced": "2026-09-22T08:27:27.836Z"
+  "synced": "2026-09-22T13:37:46.141Z"
 }
