@@ -1563,7 +1563,212 @@ function routeIcon(){ return `<svg viewBox="0 0 24 24" fill="none" stroke="curre
 function phoneIcon(){ return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></svg>`; }
 
 /* ---------- init ---------- */
+loadGitHubConfig();
 render();
+gitHubFetchAllOnLoad();
+
+/* ═══════════════════════════════════════════════
+   GITHUB SYNC - VARIABLES & CONSTANTES
+═══════════════════════════════════════════════ */
+const GITHUB_SYNC_KEY = 'eps_github_config_v1';
+let gitHubConfig = {username: null, token: null};
+let gitHubSyncTimer = null;
+
+function tryParse(str){try{return JSON.parse(str||'null');}catch{return null;}}
+
+function loadGitHubConfig(){
+  const saved = localStorage.getItem(GITHUB_SYNC_KEY);
+  if(saved){
+    try{
+      gitHubConfig = JSON.parse(saved);
+    }catch(e){ console.error('GitHub config load failed:', e); }
+  }
+}
+
+function saveGitHubConfig(){
+  localStorage.setItem(GITHUB_SYNC_KEY, JSON.stringify(gitHubConfig));
+}
+
+function isGitHubConfigured(){
+  return gitHubConfig.username && gitHubConfig.token;
+}
+
+function openGitHubSetupModal(){
+  const modal = document.getElementById('gh-setup-modal');
+  if(!modal) return;
+  document.getElementById('gh-username-input').value = gitHubConfig.username || '';
+  document.getElementById('gh-token-input').value = gitHubConfig.token || '';
+  modal.style.display = 'flex';
+}
+
+function closeGitHubSetupModal(){
+  const modal = document.getElementById('gh-setup-modal');
+  if(modal) modal.style.display = 'none';
+}
+
+function saveGitHubSetup(){
+  const username = document.getElementById('gh-username-input').value.trim();
+  const token = document.getElementById('gh-token-input').value.trim();
+  
+  if(!username || !token){
+    alert('⚠️ Veuillez remplir username et token');
+    return;
+  }
+  
+  gitHubConfig = {username, token};
+  saveGitHubConfig();
+  closeGitHubSetupModal();
+  if(typeof toast === 'function') toast('✅ Configuration GitHub sauvegardée');
+  if(typeof gitHubSyncAll === 'function') gitHubSyncAll();
+}
+
+/* GitHub API Functions with Vercel Proxy */
+async function gitHubFetch(path){
+  if(!isGitHubConfigured()) return null;
+  const vercelUrl = 'https://appli-test-camera.vercel.app/api/sync';
+  try{
+    const res = await fetch(vercelUrl, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        action: 'read',
+        path: path,
+        username: gitHubConfig.username,
+        token: gitHubConfig.token
+      })
+    });
+    if(res.status === 404) return null;
+    if(!res.ok) throw new Error(`Fetch failed: ${res.status}`);
+    const data = await res.json();
+    return data.data;
+  }catch(e){
+    console.error('Fetch error:', e);
+    return null;
+  }
+}
+
+async function gitHubCommit(path, content, message){
+  if(!isGitHubConfigured()) return false;
+  const vercelUrl = 'https://appli-test-camera.vercel.app/api/sync';
+  try{
+    const res = await fetch(vercelUrl, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        action: 'write',
+        path: path,
+        content: content,
+        message: message || `Update ${path}`,
+        username: gitHubConfig.username,
+        token: gitHubConfig.token
+      })
+    });
+    if(!res.ok) throw new Error(`Commit failed: ${res.status}`);
+    return true;
+  }catch(e){
+    console.error('Commit error:', e);
+    return false;
+  }
+}
+
+async function gitHubSyncClasses(){
+  const classes = tryParse(localStorage.getItem('eps_classes_v1')) || [];
+  const infos = tryParse(localStorage.getItem('trn_class_infos_v1')) || {};
+  const payload = {classes, infos, synced: new Date().toISOString()};
+  await gitHubCommit('sync-data/tournoi-eps/classes.json', JSON.stringify(payload, null, 2), 'Sync classes');
+}
+
+async function gitHubSyncHistory(){
+  const history = tryParse(localStorage.getItem('trn_history_v1')) || [];
+  const payload = {history, synced: new Date().toISOString()};
+  await gitHubCommit('sync-data/tournoi-eps/history.json', JSON.stringify(payload, null, 2), 'Sync history');
+}
+
+async function gitHubFetchClasses(){
+  const raw = await gitHubFetch('sync-data/tournoi-eps/classes.json');
+  if(!raw) return;
+  try{
+    const data = JSON.parse(raw);
+    const localClasses = tryParse(localStorage.getItem('eps_classes_v1')) || [];
+    const remoteClasses = Array.isArray(data.classes) ? data.classes : [];
+    
+    const merged = [];
+    const seenIds = new Set();
+    
+    localClasses.forEach(cls => {
+      if(cls && cls.id){
+        merged.push({...cls});
+        seenIds.add(cls.id);
+      }
+    });
+    
+    remoteClasses.forEach(cls => {
+      if(cls && cls.id && !seenIds.has(cls.id)){
+        merged.push({...cls});
+        seenIds.add(cls.id);
+      }
+    });
+    
+    localStorage.setItem('eps_classes_v1', JSON.stringify(merged));
+    localStorage.setItem('trn_class_infos_v1', JSON.stringify(data.infos || {}));
+  }catch(e){ console.error('GitHub fetch classes error:', e); }
+}
+
+async function gitHubFetchHistory(){
+  const raw = await gitHubFetch('sync-data/tournoi-eps/history.json');
+  if(!raw) return;
+  try{
+    const data = JSON.parse(raw);
+    const remoteHistory = Array.isArray(data.history) ? data.history : [];
+    const localHistory = tryParse(localStorage.getItem('trn_history_v1')) || [];
+    const merged = {};
+    [...localHistory, ...remoteHistory].forEach(h => {if(h && h.id) merged[h.id] = h;});
+    const deduped = Object.values(merged).slice(0, 500);
+    localStorage.setItem('trn_history_v1', JSON.stringify(deduped));
+  }catch(e){ console.error('GitHub fetch history error:', e); }
+}
+
+async function gitHubSyncAll(){
+  if(!isGitHubConfigured()) return;
+  await gitHubSyncClasses();
+  await gitHubSyncHistory();
+}
+
+function queueGitHubSync(){
+  if(!isGitHubConfigured()) return;
+  if(gitHubSyncTimer) clearTimeout(gitHubSyncTimer);
+  gitHubSyncTimer = setTimeout(gitHubSyncAll, 30000);
+}
+
+async function gitHubFetchAllOnLoad(){
+  if(!isGitHubConfigured()) return;
+  await gitHubFetchClasses();
+  await gitHubFetchHistory();
+}
+
 </script>
+<!-- GitHub Setup Modal -->
+<div id="gh-setup-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:10000;align-items:center;justify-content:center;flex-direction:column;">
+  <div style="background:#1a1a2e;padding:30px;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.3);max-width:400px;width:90%;color:#f0f0f0;">
+    <h2 style="margin:0 0 20px 0;font-size:18px;">⚙️ Configuration GitHub</h2>
+    
+    <div style="margin-bottom:15px;">
+      <label style="display:block;font-weight:600;margin-bottom:5px;font-size:13px;">GitHub Username</label>
+      <input type="text" id="gh-username-input" style="width:100%;padding:10px;border:1px solid #333;border-radius:5px;font-size:13px;font-family:monospace;background:#0d0d1f;color:#f0f0f0;" placeholder="ex: killthisumut">
+    </div>
+    
+    <div style="margin-bottom:20px;">
+      <label style="display:block;font-weight:600;margin-bottom:5px;font-size:13px;">Personal Access Token</label>
+      <input type="password" id="gh-token-input" style="width:100%;padding:10px;border:1px solid #333;border-radius:5px;font-size:13px;font-family:monospace;background:#0d0d1f;color:#f0f0f0;" placeholder="ghp_...">
+      <p style="margin:8px 0 0 0;font-size:11px;color:#888;">⚠️ Settings → Developer settings → Personal access tokens → "repo" scope</p>
+    </div>
+    
+    <div style="display:flex;gap:10px;">
+      <button onclick="saveGitHubSetup()" style="flex:1;padding:10px;background:#C98A3E;color:#fff;border:none;border-radius:5px;font-weight:600;cursor:pointer;">Sauvegarder</button>
+      <button onclick="closeGitHubSetupModal()" style="flex:1;padding:10px;background:#333;color:#f0f0f0;border:none;border-radius:5px;font-weight:600;cursor:pointer;">Annuler</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
