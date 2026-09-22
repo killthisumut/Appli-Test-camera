@@ -1092,6 +1092,7 @@ label.s-lbl{display:block;margin-bottom:6px;font-weight:600;color:#495057;font-s
 <div id="homeScreen" class="screen active">
   <div class="home-card" style="position:relative">
     <button id="themeToggle">☀️ Mode clair</button>
+    <button id="githubSyncBtn" onclick="openGitHubSetupModal()" style="padding:6px 12px;background:var(--accent);color:#000;border:none;border-radius:8px;font-weight:700;cursor:pointer;">☁️ Sync</button>
     <div>
       <div class="home-title">EPS – Compteur & Calculateur</div>
       <div class="home-subtitle">Choisissez un mode</div>
@@ -5146,7 +5147,6 @@ function saveGitHubSetup(){
   if(typeof gitHubSyncAll === 'function') gitHubSyncAll();
 }
 
-/* GitHub API Functions with Vercel Proxy */
 async function gitHubFetch(path){
   if(!isGitHubConfigured()) return null;
   const vercelUrl = 'https://appli-test-camera.vercel.app/api/sync';
@@ -5284,7 +5284,7 @@ async function gitHubFetchAllOnLoad(){
     <div style="margin-bottom:20px;">
       <label style="display:block;font-weight:600;margin-bottom:5px;font-size:13px;">Personal Access Token</label>
       <input type="password" id="gh-token-input" style="width:100%;padding:10px;border:1px solid var(--surface2);border-radius:5px;font-size:13px;font-family:monospace;background:var(--surface2);color:var(--text);" placeholder="ghp_...">
-      <p style="margin:8px 0 0 0;font-size:11px;color:var(--muted);">⚠️ Settings → Developer settings → Personal access tokens → "repo" scope</p>
+      <p style="margin:8px 0 0 0;font-size:11px;color:var(--muted);">⚠️ Settings → Developer settings → Personal access tokens → "repo"</p>
     </div>
     
     <div style="display:flex;gap:10px;">
