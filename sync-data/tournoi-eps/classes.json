@@ -28,7 +28,8 @@
         "Koussay",
         "Insaf",
         "Emma"
-      ]
+      ],
+      "members": []
     },
     {
       "id": 1789108718191,
@@ -59,7 +60,8 @@
         "Loyiel",
         "Jennah",
         "Rayane-Foudi"
-      ]
+      ],
+      "members": []
     },
     {
       "id": 1789108718192,
@@ -87,7 +89,8 @@
         "Jamil",
         "Émilie",
         "Adam"
-      ]
+      ],
+      "members": []
     },
     {
       "id": 1789133991848.2056,
@@ -103,7 +106,8 @@
         "Elève-9",
         "Elève-10",
         "Elève-11"
-      ]
+      ],
+      "members": []
     },
     {
       "id": 1789297882238.069,
@@ -136,7 +140,8 @@
         "Bob-18",
         "Bob-19",
         "Bob-20"
-      ]
+      ],
+      "members": []
     },
     {
       "id": 1789458784342.253,
@@ -165,7 +170,8 @@
         "Siraje",
         "Mariama-Ledy",
         "Farouk"
-      ]
+      ],
+      "members": []
     },
     {
       "id": 1789109249143,
@@ -195,7 +201,8 @@
         "Koussay",
         "insaf",
         "Emma"
-      ]
+      ],
+      "members": []
     },
     {
       "id": 1789109249144,
@@ -226,7 +233,8 @@
         "Loyiel",
         "Jennah",
         "Rayane-Foudi"
-      ]
+      ],
+      "members": []
     },
     {
       "id": 1790062354088.1438,
@@ -234,210 +242,12 @@
       "students": [
         "test",
         "TESTO"
-      ]
+      ],
+      "members": []
     }
   ],
   "infos": {
-    "5e2": {
-      "Louay": {
-        "genre": "garcon",
-        "nomFamille": "ABED"
-      },
-      "Steve-Akins": {
-        "genre": "garcon",
-        "nomFamille": "ALEXANDRINE"
-      },
-      "Younes": {
-        "genre": "garcon",
-        "nomFamille": "ALI"
-      },
-      "Trecy": {
-        "genre": "fille",
-        "nomFamille": "ASSOMBALONGA"
-      },
-      "Lynna": {
-        "genre": "fille",
-        "nomFamille": "BARRY"
-      },
-      "Camilia": {
-        "genre": "fille",
-        "nomFamille": "BELKACEM"
-      },
-      "Yassir": {
-        "genre": "garcon",
-        "nomFamille": "BENOUDA"
-      },
-      "Rayane": {
-        "genre": "garcon",
-        "nomFamille": "CHAACHOUE"
-      },
-      "Jùlio": {
-        "genre": "garcon",
-        "nomFamille": "EDUARDO KISOTOKA"
-      },
-      "Wassim": {
-        "genre": "garcon",
-        "nomFamille": "EL BOAZZATI"
-      },
-      "Rimes": {
-        "genre": "garcon",
-        "nomFamille": "GUESSAB"
-      },
-      "Nibras": {
-        "genre": "",
-        "nomFamille": "HELLAL"
-      },
-      "Fatumata": {
-        "genre": "fille",
-        "nomFamille": "KAMARA"
-      },
-      "Hiba": {
-        "genre": "fille",
-        "nomFamille": "KARRAD"
-      },
-      "Lina": {
-        "genre": "fille",
-        "nomFamille": "LECHEKHAB"
-      },
-      "Farah": {
-        "genre": "fille",
-        "nomFamille": "MZOUGHI"
-      },
-      "Ortencia": {
-        "genre": "fille",
-        "nomFamille": "NZONGO RAIMUNDO MARQUES"
-      },
-      "Limi": {
-        "genre": "garcon",
-        "nomFamille": "ODOGBO"
-      },
-      "Layana": {
-        "genre": "fille",
-        "nomFamille": "OMAIMEN"
-      },
-      "Saadia": {
-        "genre": "fille",
-        "nomFamille": "RQIBATE"
-      },
-      "Dyvane": {
-        "genre": "garcon",
-        "nomFamille": "TCHUIMEGNI"
-      },
-      "Eden": {
-        "genre": "garcon",
-        "nomFamille": "TEBBAKH"
-      },
-      "Loyiel": {
-        "genre": "garcon",
-        "nomFamille": "TIRANDAZ"
-      },
-      "Jennah": {
-        "genre": "fille",
-        "nomFamille": "ZEMMA"
-      },
-      "Rayane-Foudi": {
-        "genre": "garcon",
-        "nomFamille": "FOUDI"
-      }
-    },
-    "3e2": {
-      "Rodaina": {
-        "genre": "fille",
-        "nomFamille": "ASSILA"
-      },
-      "Ilef": {
-        "genre": "fille",
-        "nomFamille": "BEN FRAJ"
-      },
-      "Mohamed": {
-        "genre": "garcon",
-        "nomFamille": "BEN MESSAOUD"
-      },
-      "Hamza": {
-        "genre": "garcon",
-        "nomFamille": "BENKOU"
-      },
-      "Abdourahmane": {
-        "genre": "garcon",
-        "nomFamille": "BIRO"
-      },
-      "Lassana": {
-        "genre": "garcon",
-        "nomFamille": "BIRO"
-      },
-      "Riles": {
-        "genre": "garcon",
-        "nomFamille": "FILAL"
-      },
-      "Meryem": {
-        "genre": "fille",
-        "nomFamille": "GANA"
-      },
-      "Djibril": {
-        "genre": "garcon",
-        "nomFamille": "HASSEINE"
-      },
-      "Youhaidini": {
-        "genre": "garcon",
-        "nomFamille": "IBRAHIM"
-      },
-      "Anais": {
-        "genre": "fille",
-        "nomFamille": "KASSOURI"
-      },
-      "Idriss": {
-        "genre": "garcon",
-        "nomFamille": "LABADI PISANO"
-      },
-      "Souleymane": {
-        "genre": "garcon",
-        "nomFamille": "MARA"
-      },
-      "Fenda": {
-        "genre": "fille",
-        "nomFamille": "MOUSSA N'DIAYE"
-      },
-      "Keyron": {
-        "genre": "garcon",
-        "nomFamille": "PAGONET-DEYRIS"
-      },
-      "Cyiane": {
-        "genre": "garcon",
-        "nomFamille": "ROBERT BACAR"
-      },
-      "Nour": {
-        "genre": "fille",
-        "nomFamille": "SADEQ"
-      },
-      "Mohamed-Amine": {
-        "genre": "garcon",
-        "nomFamille": "SYLLA"
-      },
-      "Zakaria": {
-        "genre": "garcon",
-        "nomFamille": "TATAH"
-      },
-      "Mouni": {
-        "genre": "",
-        "nomFamille": "TEBBAKH"
-      },
-      "Zhihan": {
-        "genre": "fille",
-        "nomFamille": "XIAO"
-      },
-      "Koussay": {
-        "genre": "garcon",
-        "nomFamille": " YOUSSEF"
-      },
-      "Emma": {
-        "genre": "fille",
-        "nomFamille": "SUTHAKARAN"
-      },
-      "Insaf": {
-        "genre": "fille",
-        "nomFamille": "NEZAR"
-      }
-    }
+    "escalade": true
   },
-  "synced": "2026-09-23T04:20:14.053Z"
+  "synced": "2026-09-23T04:32:48.610Z"
 }
