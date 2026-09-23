@@ -347,7 +347,7 @@ function migrateStudents(db){
     }
   });
 }
-function saveDB(){ localStorage.setItem(DB_KEY, JSON.stringify(DB)); }
+function saveDB(){ localStorage.setItem(DB_KEY, JSON.stringify(DB)); syncClassesToGitHub(); }
 
 /* ---------- Élèves : helpers ---------- */
 function studentsOfClass(classId){
@@ -1656,9 +1656,54 @@ function queueGitHubSync(){
   gitHubSyncTimer = setTimeout(gitHubSyncAll, 30000);
 }
 
+
+function syncClassesToGitHub(){
+  if(!isGitHubConfigured()) return;
+  
+  // Extraire les classes du DB d'Escalade
+  const classes = (DB.classes || []).map(c => ({
+    id: c.id,
+    name: c.name,
+    students: c.students || [],
+    members: c.members || []
+  }));
+  
+  // Sauvegarder dans les clés GitHub
+  localStorage.setItem('eps_classes_v1', JSON.stringify(classes));
+  localStorage.setItem('trn_class_infos_v1', JSON.stringify({escalade: true}));
+  
+  // Déclencher la synchro
+  queueGitHubSync();
+}
+
+async function fetchClassesFromGitHub(){
+  if(!isGitHubConfigured()) return;
+  
+  // Récupérer les classes depuis GitHub
+  const raw = await gitHubFetch('sync-data/tournoi-eps/classes.json');
+  if(!raw) return;
+  
+  try{
+    const data = JSON.parse(raw);
+    const remoteClasses = Array.isArray(data.classes) ? data.classes : [];
+    
+    // Fusionner avec les classes locales d'Escalade
+    remoteClasses.forEach(remoteClass => {
+      const exists = DB.classes.find(c => c.id === remoteClass.id);
+      if(!exists){
+        DB.classes.push(remoteClass);
+      }
+    });
+    
+    saveDB();
+  }catch(e){ console.error('Error fetching GitHub classes:', e); }
+}
+
+
 async function gitHubFetchAllOnLoad(){
   if(!isGitHubConfigured()) return;
   await gitHubFetchClasses();
+  await fetchClassesFromGitHub();
   await gitHubFetchHistory();
 }
 
