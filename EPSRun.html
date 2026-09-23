@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>EPS – Compteur & Calculateur</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<!-- jsQR (disabled) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&display=swap');
 /* =====================================================
@@ -1093,7 +1093,7 @@ label.s-lbl{display:block;margin-bottom:6px;font-weight:600;color:#495057;font-s
   <div class="home-card" style="position:relative">
     <button id="themeToggle">☀️ Mode clair</button>
     <div>
-      <div class="home-title">EPS – Compteur & Calculateur <button onclick="openGitHubSetupModal()" style="float:right;padding:8px 12px;background:var(--accent);color:#000;border:none;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;">☁️ Sync</button></div>
+      <div class="home-title">EPS – Compteur & Calculateur</div>
       <div class="home-subtitle">Choisissez un mode</div>
     </div>
     <div class="home-grid">
@@ -1844,8 +1844,8 @@ function buildNomogramme(totalMinutes){const container=document.getElementById('
 // ============================================================
 function getAllSaves(){return JSON.parse(localStorage.getItem('eps_saves')||'[]');}
 function writeSaves(s){localStorage.setItem('eps_saves',JSON.stringify(s));}
-function getClasses(){return JSON.parse(localStorage.getItem('eps_classes')||'[]');}
-function saveClasses(c){localStorage.setItem('eps_classes',JSON.stringify(c));}
+function getClasses(){return JSON.parse(localStorage.getItem('eps_classes_v1')||'[]');}
+function saveClasses(c){localStorage.setItem('eps_classes_v1',JSON.stringify(c));}
 function downloadJSON(obj, filename){
   const blob = new Blob([JSON.stringify(obj, null, 2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
@@ -2751,8 +2751,8 @@ document.getElementById('cancelBaremesDemiFond').onclick=()=>closeModal('modalBa
 // ============================================================
 // GESTION — onglet INFOS (genre + vitesse cible)
 // ============================================================
-function getClassInfos(){return JSON.parse(localStorage.getItem('eps_class_infos')||'{}');}
-function saveClassInfos(d){localStorage.setItem('eps_class_infos',JSON.stringify(d));}
+function getClassInfos(){return JSON.parse(localStorage.getItem('trn_class_infos_v1')||'{}');}
+function saveClassInfos(d){localStorage.setItem('trn_class_infos_v1',JSON.stringify(d));}
 function getStudentInfo(classId,name){const d=getClassInfos();return(d[classId]&&d[classId][name])||{genre:'',vitesse:''};}
 function setStudentInfo(classId,name,field,val){const d=getClassInfos();if(!d[classId])d[classId]={};if(!d[classId][name])d[classId][name]={genre:'',vitesse:''};d[classId][name][field]=val;saveClassInfos(d);}
 
@@ -2793,18 +2793,18 @@ document.getElementById('btnGestionBack').onclick=()=>showScreen('homeScreen');
 document.getElementById('btnNewClass').onclick=()=>{document.getElementById('newClassTitle').textContent='Nouvelle classe';document.getElementById('newClassNameInput').value='';document.getElementById('confirmNewClass').dataset.mode='create';openModal('modalNewClass');setTimeout(()=>document.getElementById('newClassNameInput').focus(),100);};
 document.getElementById('cancelNewClass').onclick=()=>closeModal('modalNewClass');
 document.getElementById('newClassNameInput').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('confirmNewClass').click();});
-document.getElementById('confirmNewClass').onclick=()=>{const name=document.getElementById('newClassNameInput').value.trim();if(!name)return;const classes=getClasses();const mode=document.getElementById('confirmNewClass').dataset.mode;if(mode==='rename'&&currentClassId!==null){const cls=classes.find(c=>c.id===currentClassId);if(cls)cls.name=name;}else classes.push({id:Date.now(),name,students:[]});saveClasses(classes);closeModal('modalNewClass');renderGestion();};
+document.getElementById('confirmNewClass').onclick=()=>{const name=document.getElementById('newClassNameInput').value.trim();if(!name)return;const classes=getClasses();const mode=document.getElementById('confirmNewClass').dataset.mode;if(mode==='rename'&&currentClassId!==null){const cls=classes.find(c=>c.id===currentClassId);if(cls)cls.name=name;}else classes.push({id:Date.now(),name,students:[]});saveClasses(classes);queueGitHubSync();closeModal('modalNewClass');renderGestion();};
 document.getElementById('btnGestionRenameClass').onclick=()=>{const classes=getClasses();const cls=classes.find(c=>c.id===currentClassId);if(!cls)return;document.getElementById('newClassTitle').textContent='Renommer la classe';document.getElementById('newClassNameInput').value=cls.name;document.getElementById('confirmNewClass').dataset.mode='rename';openModal('modalNewClass');setTimeout(()=>document.getElementById('newClassNameInput').focus(),100);};
 document.getElementById('btnGestionAddList').onclick=()=>{document.getElementById('gestionListInput').value='';openModal('modalGestionList');setTimeout(()=>document.getElementById('gestionListInput').focus(),100);};
 document.getElementById('cancelGestionList').onclick=()=>closeModal('modalGestionList');
-document.getElementById('confirmGestionList').onclick=()=>{const raw=document.getElementById('gestionListInput').value.trim();if(!raw||currentClassId===null)return;const names=raw.replace(/[,;\/\s]+/g,'\n').split('\n').map(n=>n.trim()).filter(n=>n.length>0);if(!names.length)return;const classes=getClasses();const cls=classes.find(c=>c.id===currentClassId);if(!cls)return;names.forEach(n=>cls.students.push(n));saveClasses(classes);closeModal('modalGestionList');renderGestion();showToast(`${names.length} élève(s) ajouté(s)`);};
-function renderGestion(){const classes=getClasses();const listEl=document.getElementById('classList');listEl.innerHTML='';classes.forEach(cls=>{const item=document.createElement('div');item.className='class-item'+(cls.id===currentClassId?' active-class':'');item.innerHTML=`<div style="flex:1"><div class="class-name">${cls.name}</div><div class="class-count">${cls.students.length} élève${cls.students.length!==1?'s':''}</div></div><button class="class-delete">🗑</button>`;item.querySelector('.class-delete').onclick=e=>{e.stopPropagation();document.getElementById('deleteSessionMsg').textContent=`Supprimer la classe "${cls.name}" ?`;_deleteConfirmCallback=()=>{const classes2=getClasses().filter(c=>c.id!==cls.id);saveClasses(classes2);if(currentClassId===cls.id)currentClassId=null;renderGestion();showToast(`Classe supprimée`);};openModal('modalDeleteSession');};item.addEventListener('click',()=>{currentClassId=cls.id;currentGestionTab='eleves';renderGestion();});listEl.appendChild(item);});if(!classes.length)listEl.innerHTML='<div class="gestion-empty" style="padding:16px;font-size:.82rem">Aucune classe.</div>';
+document.getElementById('confirmGestionList').onclick=()=>{const raw=document.getElementById('gestionListInput').value.trim();if(!raw||currentClassId===null)return;const names=raw.replace(/[,;\/\s]+/g,'\n').split('\n').map(n=>n.trim()).filter(n=>n.length>0);if(!names.length)return;const classes=getClasses();const cls=classes.find(c=>c.id===currentClassId);if(!cls)return;names.forEach(n=>cls.students.push(n));saveClasses(classes);queueGitHubSync();closeModal('modalGestionList');renderGestion();showToast(`${names.length} élève(s) ajouté(s)`);};
+function renderGestion(){const classes=getClasses();const listEl=document.getElementById('classList');listEl.innerHTML='';classes.forEach(cls=>{const item=document.createElement('div');item.className='class-item'+(cls.id===currentClassId?' active-class':'');item.innerHTML=`<div style="flex:1"><div class="class-name">${cls.name}</div><div class="class-count">${cls.students.length} élève${cls.students.length!==1?'s':''}</div></div><button class="class-delete">🗑</button>`;item.querySelector('.class-delete').onclick=e=>{e.stopPropagation();document.getElementById('deleteSessionMsg').textContent=`Supprimer la classe "${cls.name}" ?`;_deleteConfirmCallback=()=>{const classes2=getClasses().filter(c=>c.id!==cls.id);saveClasses(classes2);queueGitHubSync();if(currentClassId===cls.id)currentClassId=null;renderGestion();showToast(`Classe supprimée`);};openModal('modalDeleteSession');};item.addEventListener('click',()=>{currentClassId=cls.id;currentGestionTab='eleves';renderGestion();});listEl.appendChild(item);});if(!classes.length)listEl.innerHTML='<div class="gestion-empty" style="padding:16px;font-size:.82rem">Aucune classe.</div>';
 const nameEl2=document.getElementById('gestionClassName'),addBtn2=document.getElementById('btnGestionAddList'),renameBtn=document.getElementById('btnGestionRenameClass'),tabsEl=document.getElementById('gestionTabs'),tabEleves=document.getElementById('tabEleves'),tabInfos=document.getElementById('tabInfos'),tabHisto=document.getElementById('tabHistorique');
 if(currentClassId===null){nameEl2.textContent='Sélectionnez une classe';addBtn2.style.display=renameBtn.style.display='none';tabsEl.style.display='none';tabEleves.style.display='';tabEleves.innerHTML='<div class="gestion-empty">👆 Créez ou sélectionnez une classe</div>';tabInfos.style.display='none';tabHisto.style.display='none';return;}
 const cls=classes.find(c=>c.id===currentClassId);if(!cls){currentClassId=null;renderGestion();return;}
 nameEl2.textContent=cls.name;addBtn2.style.display=renameBtn.style.display='';tabsEl.style.display='flex';
 tabsEl.querySelectorAll('.gtab').forEach(btn=>{btn.onclick=()=>{currentGestionTab=btn.dataset.tab;renderGestion();};btn.classList.toggle('active',btn.dataset.tab===currentGestionTab);btn.style.color=btn.dataset.tab===currentGestionTab?'var(--accent)':'var(--muted)';btn.style.borderBottomColor=btn.dataset.tab===currentGestionTab?'var(--accent)':'transparent';});
-if(currentGestionTab==='eleves'){tabEleves.style.display='';tabInfos.style.display='none';tabHisto.style.display='none';tabEleves.innerHTML='';if(!cls.students.length){tabEleves.innerHTML='<div class="gestion-empty">Aucun élève.</div>';}else{cls.students.forEach((name,idx)=>{const chip=document.createElement('div');chip.className='student-chip';chip.innerHTML=`<span>${name}</span><button class="chip-del">✕</button>`;chip.querySelector('.chip-del').onclick=()=>{const classes2=getClasses();const cls2=classes2.find(c=>c.id===currentClassId);if(!cls2)return;cls2.students.splice(idx,1);saveClasses(classes2);renderGestion();};tabEleves.appendChild(chip);});}}
+if(currentGestionTab==='eleves'){tabEleves.style.display='';tabInfos.style.display='none';tabHisto.style.display='none';tabEleves.innerHTML='';if(!cls.students.length){tabEleves.innerHTML='<div class="gestion-empty">Aucun élève.</div>';}else{cls.students.forEach((name,idx)=>{const chip=document.createElement('div');chip.className='student-chip';chip.innerHTML=`<span>${name}</span><button class="chip-del">✕</button>`;chip.querySelector('.chip-del').onclick=()=>{const classes2=getClasses();const cls2=classes2.find(c=>c.id===currentClassId);if(!cls2)return;cls2.students.splice(idx,1);saveClasses(classes2);queueGitHubSync();renderGestion();};tabEleves.appendChild(chip);});}}
 else if(currentGestionTab==='infos'){tabEleves.style.display='none';tabInfos.style.display='';tabHisto.style.display='none';renderTabInfos(cls);}
 else{tabEleves.style.display='none';tabInfos.style.display='none';tabHisto.style.display='';renderClassHistorique(cls.name);}
 }
@@ -4595,7 +4595,7 @@ const ACTIVE_BAREME_KEY = 'eps_active_eval';
     el('cfgPenaltyType').onchange = function(){ el('cfgPenaltyValueRow').style.display=this.value==='none'?'none':''; el('cfgPenaltyUnit').textContent=this.value==='time'?'sec':'tour(s)'; };
     el('cfgClasseSelect').onchange = function(){
       if (!this.value) return;
-      try { const cl=JSON.parse(localStorage.getItem('eps_classes')||'[]')[parseInt(this.value)]; const list=cl?.students||cl?.members||[]; if(list.length) el('cfgElevesManuel').value=list.join('\n'); } catch(e){}
+      try { const cl=JSON.parse(localStorage.getItem('eps_classes_v1')||'[]')[parseInt(this.value)]; const list=cl?.students||cl?.members||[]; if(list.length) el('cfgElevesManuel').value=list.join('\n'); } catch(e){}
     };
     el('btnChronoCfgCancel').onclick = () => closeModal('modalChronoConfig');
     el('btnChronoCfgOk').onclick = handleCfgOk;
@@ -4616,7 +4616,7 @@ const ACTIVE_BAREME_KEY = 'eps_active_eval';
     // Pré-remplir classes
     const sel = el('cfgClasseSelect');
     sel.innerHTML = '<option value="">— Aucune (noms manuels) —</option>';
-    try { JSON.parse(localStorage.getItem('eps_classes')||'[]').forEach((c,i)=>{ const o=document.createElement('option');o.value=i;o.textContent=c.name+' ('+(c.students||c.members||[]).length+' élèves)';sel.appendChild(o); }); } catch(e){}
+    try { JSON.parse(localStorage.getItem('eps_classes_v1')||'[]').forEach((c,i)=>{ const o=document.createElement('option');o.value=i;o.textContent=c.name+' ('+(c.students||c.members||[]).length+' élèves)';sel.appendChild(o); }); } catch(e){}
     el('cfgBiathlonSection').style.display = mode==='biat'?'':'none';
     el('chronoCfgTitle').textContent = mode==='biat'?'⚙️ Config — CCM Biathlon':'⚙️ Config — CCM Demi-fond';
     updateCfgCalc();
@@ -5088,198 +5088,6 @@ const ACTIVE_BAREME_KEY = 'eps_active_eval';
 // ============================================================
 initState(numTeams);
 updateSessionButtons();
-
-const GITHUB_SYNC_KEY = 'eps_github_config_v1';
-let gitHubConfig = {username: null, token: null};
-let gitHubSyncTimer = null;
-
-function tryParse(str){try{return JSON.parse(str||'null');}catch{return null;}}
-
-function loadGitHubConfig(){
-  const saved = localStorage.getItem(GITHUB_SYNC_KEY);
-  if(saved){
-    try{
-      gitHubConfig = JSON.parse(saved);
-    }catch(e){ console.error('GitHub config load failed:', e); }
-  }
-}
-
-function saveGitHubConfig(){
-  localStorage.setItem(GITHUB_SYNC_KEY, JSON.stringify(gitHubConfig));
-}
-
-function isGitHubConfigured(){
-  return gitHubConfig.username && gitHubConfig.token;
-}
-
-function openGitHubSetupModal(){
-  const modal = document.getElementById('gh-setup-modal');
-  if(!modal) return;
-  document.getElementById('gh-username-input').value = gitHubConfig.username || '';
-  document.getElementById('gh-token-input').value = gitHubConfig.token || '';
-  modal.style.display = 'flex';
-}
-
-function closeGitHubSetupModal(){
-  const modal = document.getElementById('gh-setup-modal');
-  if(modal) modal.style.display = 'none';
-}
-
-function saveGitHubSetup(){
-  const username = document.getElementById('gh-username-input').value.trim();
-  const token = document.getElementById('gh-token-input').value.trim();
-  
-  if(!username || !token){
-    alert('username et token requis');
-    return;
-  }
-  
-  gitHubConfig = {username, token};
-  saveGitHubConfig();
-  closeGitHubSetupModal();
-  alert('GitHub config saved!');
-}
-
-async function gitHubFetch(path){
-  if(!isGitHubConfigured()) return null;
-  const vercelUrl = 'https://appli-test-camera.vercel.app/api/sync';
-  try{
-    const res = await fetch(vercelUrl, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        action: 'read',
-        path: path,
-        username: gitHubConfig.username,
-        token: gitHubConfig.token
-      })
-    });
-    if(res.status === 404) return null;
-    if(!res.ok) throw new Error(`Fetch failed: ${res.status}`);
-    const data = await res.json();
-    return data.data;
-  }catch(e){
-    console.error('Fetch error:', e);
-    return null;
-  }
-}
-
-async function gitHubCommit(path, content, message){
-  if(!isGitHubConfigured()) return false;
-  const vercelUrl = 'https://appli-test-camera.vercel.app/api/sync';
-  try{
-    const res = await fetch(vercelUrl, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        action: 'write',
-        path: path,
-        content: content,
-        message: message || `Update ${path}`,
-        username: gitHubConfig.username,
-        token: gitHubConfig.token
-      })
-    });
-    if(!res.ok) throw new Error(`Commit failed: ${res.status}`);
-    return true;
-  }catch(e){
-    console.error('Commit error:', e);
-    return false;
-  }
-}
-
-async function gitHubSyncClasses(){
-  const classes = tryParse(localStorage.getItem('eps_classes_v1')) || [];
-  const infos = tryParse(localStorage.getItem('trn_class_infos_v1')) || {};
-  const payload = {classes, infos, synced: new Date().toISOString()};
-  await gitHubCommit('sync-data/tournoi-eps/classes.json', JSON.stringify(payload, null, 2), 'Sync classes');
-}
-
-async function gitHubSyncHistory(){
-  const history = tryParse(localStorage.getItem('trn_history_v1')) || [];
-  const payload = {history, synced: new Date().toISOString()};
-  await gitHubCommit('sync-data/tournoi-eps/history.json', JSON.stringify(payload, null, 2), 'Sync history');
-}
-
-async function gitHubFetchClasses(){
-  const raw = await gitHubFetch('sync-data/tournoi-eps/classes.json');
-  if(!raw) return;
-  try{
-    const data = JSON.parse(raw);
-    const localClasses = tryParse(localStorage.getItem('eps_classes_v1')) || [];
-    const remoteClasses = Array.isArray(data.classes) ? data.classes : [];
-    const merged = [];
-    const seenIds = new Set();
-    localClasses.forEach(cls => {
-      if(cls && cls.id){
-        merged.push({...cls});
-        seenIds.add(cls.id);
-      }
-    });
-    remoteClasses.forEach(cls => {
-      if(cls && cls.id && !seenIds.has(cls.id)){
-        merged.push({...cls});
-        seenIds.add(cls.id);
-      }
-    });
-    localStorage.setItem('eps_classes_v1', JSON.stringify(merged));
-    localStorage.setItem('trn_class_infos_v1', JSON.stringify(data.infos || {}));
-  }catch(e){ console.error('GitHub fetch classes error:', e); }
-}
-
-async function gitHubFetchHistory(){
-  const raw = await gitHubFetch('sync-data/tournoi-eps/history.json');
-  if(!raw) return;
-  try{
-    const data = JSON.parse(raw);
-    const remoteHistory = Array.isArray(data.history) ? data.history : [];
-    const localHistory = tryParse(localStorage.getItem('trn_history_v1')) || [];
-    const merged = {};
-    [...localHistory, ...remoteHistory].forEach(h => {if(h && h.id) merged[h.id] = h;});
-    const deduped = Object.values(merged).slice(0, 500);
-    localStorage.setItem('trn_history_v1', JSON.stringify(deduped));
-  }catch(e){ console.error('GitHub fetch history error:', e); }
-}
-
-async function gitHubSyncAll(){
-  if(!isGitHubConfigured()) return;
-  await gitHubSyncClasses();
-  await gitHubSyncHistory();
-}
-
-function queueGitHubSync(){
-  if(!isGitHubConfigured()) return;
-  if(gitHubSyncTimer) clearTimeout(gitHubSyncTimer);
-  gitHubSyncTimer = setTimeout(gitHubSyncAll, 30000);
-}
-
-async function gitHubFetchAllOnLoad(){
-  if(!isGitHubConfigured()) return;
-  await gitHubFetchClasses();
-  await gitHubFetchHistory();
-}
-
-
-loadGitHubConfig();
-gitHubFetchAllOnLoad();
 </script>
-<div id="gh-setup-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:10000;align-items:center;justify-content:center;flex-direction:column;">
-  <div style="background:var(--surface);padding:30px;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.3);max-width:400px;width:90%;color:var(--text);">
-    <h2 style="margin:0 0 20px 0;font-size:18px;">GitHub Configuration</h2>
-    <div style="margin-bottom:15px;">
-      <label style="display:block;font-weight:600;margin-bottom:5px;font-size:13px;">GitHub Username</label>
-      <input type="text" id="gh-username-input" style="width:100%;padding:10px;border:1px solid var(--surface2);border-radius:5px;font-size:13px;font-family:monospace;background:var(--surface2);color:var(--text);" placeholder="killthisumut">
-    </div>
-    <div style="margin-bottom:20px;">
-      <label style="display:block;font-weight:600;margin-bottom:5px;font-size:13px;">Personal Access Token</label>
-      <input type="password" id="gh-token-input" style="width:100%;padding:10px;border:1px solid var(--surface2);border-radius:5px;font-size:13px;font-family:monospace;background:var(--surface2);color:var(--text);" placeholder="ghp_...">
-      <p style="margin:8px 0 0 0;font-size:11px;color:var(--muted);">Settings → Developer settings → Personal access tokens</p>
-    </div>
-    <div style="display:flex;gap:10px;">
-      <button onclick="saveGitHubSetup()" style="flex:1;padding:10px;background:var(--accent);color:#000;border:none;border-radius:5px;font-weight:600;cursor:pointer;">Save</button>
-      <button onclick="closeGitHubSetupModal()" style="flex:1;padding:10px;background:var(--surface2);color:var(--text);border:none;border-radius:5px;font-weight:600;cursor:pointer;">Cancel</button>
-    </div>
-  </div>
-</div>
 </body>
 </html>
