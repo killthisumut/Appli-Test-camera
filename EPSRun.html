@@ -4,8 +4,420 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>EPS – Compteur & Calculateur</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
+// ========== GITHUB SYNCHRO EPSRUN-ONLY ==========
+function isGitHubConfigured_epsrun() {
+  try {
+    const cfg = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+    return cfg.token && cfg.repo && cfg.proxyUrl;
+  } catch {
+    return false;
+  }
+}
+
+async function gitHubSyncEPSRun() {
+  if(!isGitHubConfigured_epsrun()) return;
+  
+  try {
+    const cfg = JSON.parse(localStorage.getItem('gitHubConfig'));
+    const classes = JSON.parse(localStorage.getItem('eps_classes')) || [];
+    const infos = JSON.parse(localStorage.getItem('eps_class_infos')) || {};
+    
+    const payload = {
+      app: 'epsrun',
+      classes: classes,
+      infos: infos,
+      synced: new Date().toISOString()
+    };
+    
+    const response = await fetch(cfg.proxyUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `token ${cfg.token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        path: 'sync-data/epsrun/classes.json',
+        content: JSON.stringify(payload, null, 2),
+        message: 'Sync EPSRun'
+      })
+    });
+    
+    if(response.ok) {
+      console.log('✅ EPSRun synced to GitHub');
+    }
+  } catch(e) {
+    console.error('EPSRun sync error:', e);
+  }
+}
+
+async function gitHubFetchEPSRun() {
+  if(!isGitHubConfigured_epsrun()) return;
+  
+  try {
+    const cfg = JSON.parse(localStorage.getItem('gitHubConfig'));
+    const url = `https://api.github.com/repos/${cfg.repo}/contents/sync-data/epsrun/classes.json`;
+    
+    const response = await fetch(url, {
+      headers: {'Authorization': `token ${cfg.token}`}
+    });
+    
+    if(!response.ok) return;
+    
+    const data = await response.json();
+    const content = atob(data.content);
+    const remote = JSON.parse(content);
+    
+    if(remote.app !== 'epsrun') return; // Ignorer si pas epsrun
+    
+    const localClasses = JSON.parse(localStorage.getItem('eps_classes')) || [];
+    const remoteClasses = remote.classes || [];
+    
+    let changed = false;
+    
+    // Merge: si local est vide, prendre remote
+    remoteClasses.forEach(remoteClass => {
+      const local = localClasses.find(c => c.id === remoteClass.id);
+      if(local && (!local.students || local.students.length === 0) && remoteClass.students && remoteClass.students.length > 0) {
+        local.students = remoteClass.students;
+        changed = true;
+      } else if(!local) {
+        localClasses.push(remoteClass);
+        changed = true;
+      }
+    });
+    
+    if(changed) {
+      localStorage.setItem('eps_classes', JSON.stringify(localClasses));
+      localStorage.setItem('eps_class_infos', JSON.stringify(remote.infos || {}));
+      console.log('✅ EPSRun fetched from GitHub');
+    }
+  } catch(e) {
+    console.error('EPSRun fetch error:', e);
+  }
+}
+
+
+// ========== EXPORT/IMPORT CLASSES INTER-APPS ==========
+function exportClassesJSON_epsrun() {
+  const classes = JSON.parse(localStorage.getItem('eps_classes') || '[]');
+  const exported = classes.map(c => ({
+    name: c.name,
+    students: (c.students || []).map(s => ({
+      prenom: s.prenom || '',
+      nom: s.nom || '',
+      genre: s.genre || ''
+    }))
+  }));
+  
+  const blob = new Blob([JSON.stringify(exported, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `epsrun-export-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  alert('✅ Classes exportées');
+}
+
+function importClassesJSON_epsrun() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = (e) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const imported = JSON.parse(event.target.result);
+        const classes = JSON.parse(localStorage.getItem('eps_classes') || '[]');
+        let added = 0;
+        
+        imported.forEach(imp => {
+          if(!classes.find(c => c.name === imp.name)) {
+            classes.push({
+              id: Date.now() + Math.random(),
+              name: imp.name,
+              students: imp.students || []
+            });
+            added++;
+          }
+        });
+        
+        if(added > 0) {
+          localStorage.setItem('eps_classes', JSON.stringify(classes));
+          alert(`✅ ${added} classe(s) importée(s)`);
+          location.reload();
+        }
+      } catch(err) {
+        alert('❌ Fichier invalide');
+      }
+    };
+    reader.readAsText(e.target.files[0]);
+  };
+  input.click();
+}
+
+function exportClassesQR_epsrun() {
+  const classes = JSON.parse(localStorage.getItem('eps_classes') || '[]');
+  const exported = classes.map(c => ({
+    n: c.name,
+    s: (c.students || []).map(s => ({p: s.prenom || '', n: s.nom || '', g: s.genre || ''}))
+  }));
+  const json = JSON.stringify(exported);
+  
+  if(json.length > 4000) { alert('❌ Trop de données'); return; }
+  
+  const qrDiv = document.createElement('div');
+  qrDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:white;display:flex;align-items:center;justify-content:center;z-index:99999;';
+  const qr = document.createElement('div');
+  qrDiv.appendChild(qr);
+  const btn = document.createElement('button');
+  btn.textContent = 'Fermer';
+  btn.onclick = () => qrDiv.remove();
+  btn.style.cssText = 'position:absolute;bottom:20px;padding:10px 20px;';
+  qrDiv.appendChild(btn);
+  document.body.appendChild(qrDiv);
+  
+  if(typeof QRCode !== 'undefined') new QRCode(qr, {text: json, width: 300, height: 300});
+}
+
+function importClassesQR_epsrun() {
+  const text = prompt('Colle le texte du QR code:');
+  if(!text) return;
+  try {
+    const imported = JSON.parse(text);
+    const classes = JSON.parse(localStorage.getItem('eps_classes') || '[]');
+    let added = 0;
+    
+    imported.forEach(imp => {
+      if(!classes.find(c => c.name === imp.n)) {
+        classes.push({
+          id: Date.now() + Math.random(),
+          name: imp.n,
+          students: imp.s.map(s => ({prenom: s.p, nom: s.n, genre: s.g}))
+        });
+        added++;
+      }
+    });
+    
+    if(added > 0) {
+      localStorage.setItem('eps_classes', JSON.stringify(classes));
+      alert(`✅ ${added} classe(s)`);
+      location.reload();
+    }
+  } catch(err) {
+    alert('❌ QR invalide');
+  }
+}
+
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js">
+// ========== GITHUB SYNCHRO EPSRUN-ONLY ==========
+function isGitHubConfigured_epsrun() {
+  try {
+    const cfg = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+    return cfg.token && cfg.repo && cfg.proxyUrl;
+  } catch {
+    return false;
+  }
+}
+
+async function gitHubSyncEPSRun() {
+  if(!isGitHubConfigured_epsrun()) return;
+  
+  try {
+    const cfg = JSON.parse(localStorage.getItem('gitHubConfig'));
+    const classes = JSON.parse(localStorage.getItem('eps_classes')) || [];
+    const infos = JSON.parse(localStorage.getItem('eps_class_infos')) || {};
+    
+    const payload = {
+      app: 'epsrun',
+      classes: classes,
+      infos: infos,
+      synced: new Date().toISOString()
+    };
+    
+    const response = await fetch(cfg.proxyUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `token ${cfg.token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        path: 'sync-data/epsrun/classes.json',
+        content: JSON.stringify(payload, null, 2),
+        message: 'Sync EPSRun'
+      })
+    });
+    
+    if(response.ok) {
+      console.log('✅ EPSRun synced to GitHub');
+    }
+  } catch(e) {
+    console.error('EPSRun sync error:', e);
+  }
+}
+
+async function gitHubFetchEPSRun() {
+  if(!isGitHubConfigured_epsrun()) return;
+  
+  try {
+    const cfg = JSON.parse(localStorage.getItem('gitHubConfig'));
+    const url = `https://api.github.com/repos/${cfg.repo}/contents/sync-data/epsrun/classes.json`;
+    
+    const response = await fetch(url, {
+      headers: {'Authorization': `token ${cfg.token}`}
+    });
+    
+    if(!response.ok) return;
+    
+    const data = await response.json();
+    const content = atob(data.content);
+    const remote = JSON.parse(content);
+    
+    if(remote.app !== 'epsrun') return; // Ignorer si pas epsrun
+    
+    const localClasses = JSON.parse(localStorage.getItem('eps_classes')) || [];
+    const remoteClasses = remote.classes || [];
+    
+    let changed = false;
+    
+    // Merge: si local est vide, prendre remote
+    remoteClasses.forEach(remoteClass => {
+      const local = localClasses.find(c => c.id === remoteClass.id);
+      if(local && (!local.students || local.students.length === 0) && remoteClass.students && remoteClass.students.length > 0) {
+        local.students = remoteClass.students;
+        changed = true;
+      } else if(!local) {
+        localClasses.push(remoteClass);
+        changed = true;
+      }
+    });
+    
+    if(changed) {
+      localStorage.setItem('eps_classes', JSON.stringify(localClasses));
+      localStorage.setItem('eps_class_infos', JSON.stringify(remote.infos || {}));
+      console.log('✅ EPSRun fetched from GitHub');
+    }
+  } catch(e) {
+    console.error('EPSRun fetch error:', e);
+  }
+}
+
+
+// ========== EXPORT/IMPORT CLASSES INTER-APPS ==========
+function exportClassesJSON_epsrun() {
+  const classes = JSON.parse(localStorage.getItem('eps_classes') || '[]');
+  const exported = classes.map(c => ({
+    name: c.name,
+    students: (c.students || []).map(s => ({
+      prenom: s.prenom || '',
+      nom: s.nom || '',
+      genre: s.genre || ''
+    }))
+  }));
+  
+  const blob = new Blob([JSON.stringify(exported, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `epsrun-export-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  alert('✅ Classes exportées');
+}
+
+function importClassesJSON_epsrun() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = (e) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const imported = JSON.parse(event.target.result);
+        const classes = JSON.parse(localStorage.getItem('eps_classes') || '[]');
+        let added = 0;
+        
+        imported.forEach(imp => {
+          if(!classes.find(c => c.name === imp.name)) {
+            classes.push({
+              id: Date.now() + Math.random(),
+              name: imp.name,
+              students: imp.students || []
+            });
+            added++;
+          }
+        });
+        
+        if(added > 0) {
+          localStorage.setItem('eps_classes', JSON.stringify(classes));
+          alert(`✅ ${added} classe(s) importée(s)`);
+          location.reload();
+        }
+      } catch(err) {
+        alert('❌ Fichier invalide');
+      }
+    };
+    reader.readAsText(e.target.files[0]);
+  };
+  input.click();
+}
+
+function exportClassesQR_epsrun() {
+  const classes = JSON.parse(localStorage.getItem('eps_classes') || '[]');
+  const exported = classes.map(c => ({
+    n: c.name,
+    s: (c.students || []).map(s => ({p: s.prenom || '', n: s.nom || '', g: s.genre || ''}))
+  }));
+  const json = JSON.stringify(exported);
+  
+  if(json.length > 4000) { alert('❌ Trop de données'); return; }
+  
+  const qrDiv = document.createElement('div');
+  qrDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:white;display:flex;align-items:center;justify-content:center;z-index:99999;';
+  const qr = document.createElement('div');
+  qrDiv.appendChild(qr);
+  const btn = document.createElement('button');
+  btn.textContent = 'Fermer';
+  btn.onclick = () => qrDiv.remove();
+  btn.style.cssText = 'position:absolute;bottom:20px;padding:10px 20px;';
+  qrDiv.appendChild(btn);
+  document.body.appendChild(qrDiv);
+  
+  if(typeof QRCode !== 'undefined') new QRCode(qr, {text: json, width: 300, height: 300});
+}
+
+function importClassesQR_epsrun() {
+  const text = prompt('Colle le texte du QR code:');
+  if(!text) return;
+  try {
+    const imported = JSON.parse(text);
+    const classes = JSON.parse(localStorage.getItem('eps_classes') || '[]');
+    let added = 0;
+    
+    imported.forEach(imp => {
+      if(!classes.find(c => c.name === imp.n)) {
+        classes.push({
+          id: Date.now() + Math.random(),
+          name: imp.n,
+          students: imp.s.map(s => ({prenom: s.p, nom: s.n, genre: s.g}))
+        });
+        added++;
+      }
+    });
+    
+    if(added > 0) {
+      localStorage.setItem('eps_classes', JSON.stringify(classes));
+      alert(`✅ ${added} classe(s)`);
+      location.reload();
+    }
+  } catch(err) {
+    alert('❌ QR invalide');
+  }
+}
+
+</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&display=swap');
 /* =====================================================
@@ -1845,7 +2257,8 @@ function buildNomogramme(totalMinutes){const container=document.getElementById('
 function getAllSaves(){return JSON.parse(localStorage.getItem('eps_saves')||'[]');}
 function writeSaves(s){localStorage.setItem('eps_saves',JSON.stringify(s));}
 function getClasses(){return JSON.parse(localStorage.getItem('eps_classes')||'[]');}
-function saveClasses(c){localStorage.setItem('eps_classes',JSON.stringify(c));}
+function saveClasses(c){if(isGitHubConfigured_epsrun()) gitHubSyncEPSRun();
+  localStorage.setItem('eps_classes',JSON.stringify(c));}
 function downloadJSON(obj, filename){
   const blob = new Blob([JSON.stringify(obj, null, 2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
@@ -5089,7 +5502,100 @@ const ACTIVE_BAREME_KEY = 'eps_active_eval';
 initState(numTeams);
 updateSessionButtons();
 
-// ========== EXPORT/IMPORT CLASSES ENTRE APPS ==========
+// ========== GITHUB SYNCHRO EPSRUN-ONLY ==========
+function isGitHubConfigured_epsrun() {
+  try {
+    const cfg = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+    return cfg.token && cfg.repo && cfg.proxyUrl;
+  } catch {
+    return false;
+  }
+}
+
+async function gitHubSyncEPSRun() {
+  if(!isGitHubConfigured_epsrun()) return;
+  
+  try {
+    const cfg = JSON.parse(localStorage.getItem('gitHubConfig'));
+    const classes = JSON.parse(localStorage.getItem('eps_classes')) || [];
+    const infos = JSON.parse(localStorage.getItem('eps_class_infos')) || {};
+    
+    const payload = {
+      app: 'epsrun',
+      classes: classes,
+      infos: infos,
+      synced: new Date().toISOString()
+    };
+    
+    const response = await fetch(cfg.proxyUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `token ${cfg.token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        path: 'sync-data/epsrun/classes.json',
+        content: JSON.stringify(payload, null, 2),
+        message: 'Sync EPSRun'
+      })
+    });
+    
+    if(response.ok) {
+      console.log('✅ EPSRun synced to GitHub');
+    }
+  } catch(e) {
+    console.error('EPSRun sync error:', e);
+  }
+}
+
+async function gitHubFetchEPSRun() {
+  if(!isGitHubConfigured_epsrun()) return;
+  
+  try {
+    const cfg = JSON.parse(localStorage.getItem('gitHubConfig'));
+    const url = `https://api.github.com/repos/${cfg.repo}/contents/sync-data/epsrun/classes.json`;
+    
+    const response = await fetch(url, {
+      headers: {'Authorization': `token ${cfg.token}`}
+    });
+    
+    if(!response.ok) return;
+    
+    const data = await response.json();
+    const content = atob(data.content);
+    const remote = JSON.parse(content);
+    
+    if(remote.app !== 'epsrun') return; // Ignorer si pas epsrun
+    
+    const localClasses = JSON.parse(localStorage.getItem('eps_classes')) || [];
+    const remoteClasses = remote.classes || [];
+    
+    let changed = false;
+    
+    // Merge: si local est vide, prendre remote
+    remoteClasses.forEach(remoteClass => {
+      const local = localClasses.find(c => c.id === remoteClass.id);
+      if(local && (!local.students || local.students.length === 0) && remoteClass.students && remoteClass.students.length > 0) {
+        local.students = remoteClass.students;
+        changed = true;
+      } else if(!local) {
+        localClasses.push(remoteClass);
+        changed = true;
+      }
+    });
+    
+    if(changed) {
+      localStorage.setItem('eps_classes', JSON.stringify(localClasses));
+      localStorage.setItem('eps_class_infos', JSON.stringify(remote.infos || {}));
+      console.log('✅ EPSRun fetched from GitHub');
+    }
+  } catch(e) {
+    console.error('EPSRun fetch error:', e);
+  }
+}
+
+
+// ========== EXPORT/IMPORT CLASSES INTER-APPS ==========
 function exportClassesJSON_epsrun() {
   const classes = JSON.parse(localStorage.getItem('eps_classes') || '[]');
   const exported = classes.map(c => ({
@@ -5125,7 +5631,11 @@ function importClassesJSON_epsrun() {
         
         imported.forEach(imp => {
           if(!classes.find(c => c.name === imp.name)) {
-            classes.push({id: Date.now() + Math.random(), name: imp.name, students: imp.students || []});
+            classes.push({
+              id: Date.now() + Math.random(),
+              name: imp.name,
+              students: imp.students || []
+            });
             added++;
           }
         });
@@ -5161,7 +5671,7 @@ function exportClassesQR_epsrun() {
   const btn = document.createElement('button');
   btn.textContent = 'Fermer';
   btn.onclick = () => qrDiv.remove();
-  btn.style.cssText = 'position:absolute;bottom:20px;';
+  btn.style.cssText = 'position:absolute;bottom:20px;padding:10px 20px;';
   qrDiv.appendChild(btn);
   document.body.appendChild(qrDiv);
   
@@ -5178,7 +5688,11 @@ function importClassesQR_epsrun() {
     
     imported.forEach(imp => {
       if(!classes.find(c => c.name === imp.n)) {
-        classes.push({id: Date.now() + Math.random(), name: imp.n, students: imp.s.map(s => ({prenom: s.p, nom: s.n, genre: s.g}))});
+        classes.push({
+          id: Date.now() + Math.random(),
+          name: imp.n,
+          students: imp.s.map(s => ({prenom: s.p, nom: s.n, genre: s.g}))
+        });
         added++;
       }
     });
