@@ -1817,52 +1817,30 @@ async function gitHubFetchClasses(){
   try{
     const data = JSON.parse(raw);
     const localClasses = tryParse(localStorage.getItem('eps_classes_v1')) || [];
-    const localInfos = tryParse(localStorage.getItem('trn_class_infos_v1')) || {};
     const remoteClasses = Array.isArray(data.classes) ? data.classes : [];
     
-    // MERGE ULTRA-STRICT: protéger les données existantes
+    // Merge intelligent par ID (préserve les noms)
     const merged = [];
     const seenIds = new Set();
     
+    // Garder toutes les classes locales
     localClasses.forEach(cls => {
       if(cls && cls.id){
-        const localStudents = cls.students || cls.members || [];
-        const remote = remoteClasses.find(r => r.id === cls.id);
-        
-        if(remote){
-          // RÈGLE ABSOLUE: si local a des élèves, NE JAMAIS les remplacer
-          if(localStudents.length > 0){
-            merged.push({...cls});
-          } else {
-            const remoteStudents = remote.students || remote.members || [];
-            merged.push({...cls, students: remoteStudents});
-          }
-        } else {
-          merged.push({...cls});
-        }
+        merged.push({...cls});
         seenIds.add(cls.id);
       }
     });
     
-    // Ajouter UNIQUEMENT les nouvelles classes du remote qui ont des élèves
+    // Ajouter les nouvelles classes du remote
     remoteClasses.forEach(cls => {
       if(cls && cls.id && !seenIds.has(cls.id)){
-        const remoteStudents = cls.students || cls.members || [];
-        if(remoteStudents.length > 0){
-          merged.push({...cls});
-          seenIds.add(cls.id);
-        }
+        merged.push({...cls});
+        seenIds.add(cls.id);
       }
     });
     
     localStorage.setItem('eps_classes_v1', JSON.stringify(merged));
-    
-    // Merge infos intelligemment
-    const mergedInfos = {};
-    Object.keys({...localInfos, ...(data.infos || {})}).forEach(key => {
-      mergedInfos[key] = localInfos[key] || (data.infos || {})[key];
-    });
-    localStorage.setItem('trn_class_infos_v1', JSON.stringify(mergedInfos));
+    localStorage.setItem('trn_class_infos_v1', JSON.stringify(data.infos || {}));
   }catch(e){ console.error('GitHub fetch classes error:', e); }
 }
 
@@ -5455,52 +5433,134 @@ window.addEventListener('load',()=>{
   document.querySelectorAll('.overlay').forEach(ov=>ov.addEventListener('click',e=>{if(e.target===ov)ov.classList.remove('show');}));
 });
 
-
-// ========== RECOVERY: Restaurer les élèves depuis l'historique ==========
-function recoverClassesFromHistory(){
-  const history = tryParse(localStorage.getItem('trn_history_v1')) || [];
+// ========== EXPORT/IMPORT CLASSES ENTRE APPS ==========
+function exportClassesToJSON_tournoi() {
   const classes = tryParse(localStorage.getItem('eps_classes_v1')) || [];
   
-  if(history.length === 0) return false;
+  // Export UNIQUEMENT: prenom, nom, classe, genre
+  const exported = classes.map(c => ({
+    name: c.name,
+    students: (c.students || []).map(s => ({
+      prenom: s.prenom || '',
+      nom: s.nom || '',
+      genre: s.genre || ''
+    }))
+  }));
   
-  // Extraire tous les élèves uniques de l'historique
-  const studentMap = {};
-  history.forEach(entry => {
-    if(entry.eleves && Array.isArray(entry.eleves)){
-      entry.eleves.forEach(e => {
-        if(e.id && !studentMap[e.id]){
-          studentMap[e.id] = {id: e.id, prenom: e.prenom, nom: e.nom, genre: e.genre, classId: entry.classId};
-        }
-      });
-    }
-  });
-  
-  // Restaurer les élèves dans les classes
-  let recovered = 0;
-  classes.forEach(cls => {
-    const classStudents = Object.values(studentMap).filter(s => s.classId === cls.id);
-    if(classStudents.length > 0){
-      cls.students = classStudents;
-      recovered += classStudents.length;
-    }
-  });
-  
-  if(recovered > 0){
-    localStorage.setItem('eps_classes_v1', JSON.stringify(classes));
-    console.log(`✅ Recovery: Récupérés ${recovered} élève(s) depuis l'historique`);
-    return true;
-  }
-  return false;
+  const json = JSON.stringify(exported, null, 2);
+  const blob = new Blob([json], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `tournoi-eps-export-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  alert('✅ Classes exportées en JSON');
 }
 
-// Vérifier si les classes sont vides et essayer la récupération
-setTimeout(() => {
+function importClassesFromJSON_tournoi() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const imported = JSON.parse(event.target.result);
+        const classes = tryParse(localStorage.getItem('eps_classes_v1')) || [];
+        
+        let added = 0;
+        imported.forEach(impClass => {
+          const exists = classes.find(c => c.name === impClass.name);
+          if(!exists) {
+            classes.push({
+              id: Date.now() + Math.random(),
+              name: impClass.name,
+              students: impClass.students || []
+            });
+            added++;
+          }
+        });
+        
+        if(added > 0) {
+          localStorage.setItem('eps_classes_v1', JSON.stringify(classes));
+          alert(`✅ ${added} classe(s) importée(s)`);
+          location.reload();
+        } else {
+          alert('⚠️ Classes déjà existantes');
+        }
+      } catch(err) {
+        alert('❌ Erreur: fichier JSON invalide');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+function exportClassesToQR_tournoi() {
   const classes = tryParse(localStorage.getItem('eps_classes_v1')) || [];
-  const allEmpty = classes.every(c => !c.students || c.students.length === 0);
-  if(allEmpty && recoverClassesFromHistory()){
-    location.reload();
+  const exported = classes.map(c => ({
+    n: c.name,
+    s: (c.students || []).map(s => ({p: s.prenom || '', n: s.nom || '', g: s.genre || ''}))
+  }));
+  
+  const json = JSON.stringify(exported);
+  if(json.length > 4000) {
+    alert('❌ Trop de données pour QR code');
+    return;
   }
-}, 1000);
+  
+  const qrDiv = document.createElement('div');
+  qrDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:white;display:flex;align-items:center;justify-content:center;z-index:99999;flex-direction:column;';
+  
+  const qrCanvas = document.createElement('div');
+  qrDiv.appendChild(qrCanvas);
+  
+  const closeBtn = document.createElement('button');
+  closeBtn.textContent = 'Fermer';
+  closeBtn.style.cssText = 'margin-top:20px;padding:10px 20px;';
+  closeBtn.onclick = () => qrDiv.remove();
+  qrDiv.appendChild(closeBtn);
+  
+  document.body.appendChild(qrDiv);
+  
+  if(typeof QRCode !== 'undefined') {
+    new QRCode(qrCanvas, {text: json, width: 300, height: 300});
+  }
+}
+
+function importClassesFromQR_tournoi() {
+  const text = prompt('Colle le texte du QR code:');
+  if(!text) return;
+  
+  try {
+    const imported = JSON.parse(text);
+    const classes = tryParse(localStorage.getItem('eps_classes_v1')) || [];
+    
+    let added = 0;
+    imported.forEach(impClass => {
+      const exists = classes.find(c => c.name === impClass.n);
+      if(!exists) {
+        classes.push({
+          id: Date.now() + Math.random(),
+          name: impClass.n,
+          students: impClass.s.map(s => ({prenom: s.p, nom: s.n, genre: s.g}))
+        });
+        added++;
+      }
+    });
+    
+    if(added > 0) {
+      localStorage.setItem('eps_classes_v1', JSON.stringify(classes));
+      alert(`✅ ${added} classe(s) importée(s)`);
+      location.reload();
+    }
+  } catch(err) {
+    alert('❌ QR code invalide');
+  }
+}
 
 </script>
 <!-- GitHub Setup Modal -->

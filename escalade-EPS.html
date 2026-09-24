@@ -4,8 +4,440 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Escalade EPS</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">async function gitHubSyncEscalade(){
+  if(!gitHubConfig.token) return;
+  
+  try {
+    // Export UNIQUEMENT escalade_db_v1
+    const payload = {
+      app: 'escalade',
+      classes: DB.classes || [],
+      students: DB.students || [],
+      synced: new Date().toISOString()
+    };
+    
+    const url = `${gitHubConfig.proxyUrl}`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': `token ${gitHubConfig.token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        path: 'sync-data/escalade/classes.json',
+        content: JSON.stringify(payload, null, 2),
+        message: 'Sync Escalade EPS'
+      })
+    });
+    
+    if(response.ok) {
+      console.log('✅ Escalade synced to GitHub');
+    }
+  } catch(e) {
+    console.error('Escalade sync error:', e);
+  }
+}
+
+async function gitHubFetchEscalade(){
+  if(!gitHubConfig.token) return;
+  
+  try {
+    const url = `https://api.github.com/repos/${gitHubConfig.repo}/contents/sync-data/escalade/classes.json`;
+    const response = await fetch(url, {
+      headers: {'Authorization': `token ${gitHubConfig.token}`}
+    });
+    
+    if(!response.ok) return;
+    
+    const data = await response.json();
+    const content = atob(data.content);
+    const remote = JSON.parse(content);
+    
+    if(remote.app !== 'escalade') return; // Ignorer données d'autres apps
+    
+    // Merge intelligent: garder local si plus complet
+    const remoteClasses = remote.classes || [];
+    const remoteStudents = remote.students || [];
+    
+    let changed = false;
+    
+    // Ajouter classes manquantes du remote
+    remoteClasses.forEach(remoteClass => {
+      if(!DB.classes.find(c => c.id === remoteClass.id)) {
+        DB.classes.push(remoteClass);
+        changed = true;
+      }
+    });
+    
+    // Ajouter students manquants du remote
+    remoteStudents.forEach(remoteStudent => {
+      if(!DB.students.find(s => s.id === remoteStudent.id)) {
+        DB.students.push(remoteStudent);
+        changed = true;
+      }
+    });
+    
+    if(changed) {
+      validateGestionClassId();
+      saveDB();
+      console.log('✅ Escalade fetched from GitHub');
+    }
+  } catch(e) {
+    console.error('Escalade fetch error:', e);
+  }
+}
+
+
+
+// ========== EXPORT/IMPORT CLASSES INTER-APPS ESCALADE ==========
+function exportClassesJSON_escalade() {
+  // IMPORTANT: Escalade stocke élèves dans DB.students séparé, pas dans c.students
+  const exported = DB.classes.map(c => {
+    const classStudents = DB.students.filter(s => s.classId === c.id);
+    return {
+      name: c.name,
+      students: classStudents.map(s => ({
+        prenom: s.prenom || '',
+        nom: s.nom || '',
+        genre: s.genre || ''
+      }))
+    };
+  });
+  
+  const blob = new Blob([JSON.stringify(exported, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `escalade-export-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  alert('✅ Classes exportées');
+}
+
+function importClassesJSON_escalade() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = (e) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const imported = JSON.parse(event.target.result);
+        let added = 0;
+        
+        imported.forEach(impClass => {
+          if(!DB.classes.find(c => c.name === impClass.name)) {
+            const newClassId = Date.now() + Math.random();
+            DB.classes.push({id: newClassId, name: impClass.name});
+            
+            (impClass.students || []).forEach(s => {
+              DB.students.push({
+                id: Date.now() + Math.random(),
+                classId: newClassId,
+                prenom: s.prenom,
+                nom: s.nom,
+                genre: s.genre
+              });
+            });
+            
+            added++;
+          }
+        });
+        
+        if(added > 0) {
+          saveDB();
+          alert(`✅ ${added} classe(s) importée(s)`);
+          location.reload();
+        }
+      } catch(err) {
+        alert('❌ Fichier invalide');
+      }
+    };
+    reader.readAsText(e.target.files[0]);
+  };
+  input.click();
+}
+
+function exportClassesQR_escalade() {
+  const exported = DB.classes.map(c => {
+    const classStudents = DB.students.filter(s => s.classId === c.id);
+    return {
+      n: c.name,
+      s: classStudents.map(s => ({p: s.prenom || '', n: s.nom || '', g: s.genre || ''}))
+    };
+  });
+  
+  const json = JSON.stringify(exported);
+  if(json.length > 4000) { alert('❌ Trop de données'); return; }
+  
+  const qrDiv = document.createElement('div');
+  qrDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:white;display:flex;align-items:center;justify-content:center;z-index:99999;';
+  const qr = document.createElement('div');
+  qrDiv.appendChild(qr);
+  const btn = document.createElement('button');
+  btn.textContent = 'Fermer';
+  btn.onclick = () => qrDiv.remove();
+  btn.style.cssText = 'position:absolute;bottom:20px;';
+  qrDiv.appendChild(btn);
+  document.body.appendChild(qrDiv);
+  
+  if(typeof QRCode !== 'undefined') new QRCode(qr, {text: json, width: 300, height: 300});
+}
+
+function importClassesQR_escalade() {
+  const text = prompt('Colle le texte du QR code:');
+  if(!text) return;
+  try {
+    const imported = JSON.parse(text);
+    let added = 0;
+    
+    imported.forEach(imp => {
+      if(!DB.classes.find(c => c.name === imp.n)) {
+        const newClassId = Date.now() + Math.random();
+        DB.classes.push({id: newClassId, name: imp.n});
+        
+        imp.s.forEach(s => {
+          DB.students.push({
+            id: Date.now() + Math.random(),
+            classId: newClassId,
+            prenom: s.p,
+            nom: s.n,
+            genre: s.g
+          });
+        });
+        
+        added++;
+      }
+    });
+    
+    if(added > 0) {
+      saveDB();
+      alert(`✅ ${added} classe(s)`);
+      location.reload();
+    }
+  } catch(err) {
+    alert('❌ QR invalide');
+  }
+}
+
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js">async function gitHubSyncEscalade(){
+  if(!gitHubConfig.token) return;
+  
+  try {
+    // Export UNIQUEMENT escalade_db_v1
+    const payload = {
+      app: 'escalade',
+      classes: DB.classes || [],
+      students: DB.students || [],
+      synced: new Date().toISOString()
+    };
+    
+    const url = `${gitHubConfig.proxyUrl}`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': `token ${gitHubConfig.token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        path: 'sync-data/escalade/classes.json',
+        content: JSON.stringify(payload, null, 2),
+        message: 'Sync Escalade EPS'
+      })
+    });
+    
+    if(response.ok) {
+      console.log('✅ Escalade synced to GitHub');
+    }
+  } catch(e) {
+    console.error('Escalade sync error:', e);
+  }
+}
+
+async function gitHubFetchEscalade(){
+  if(!gitHubConfig.token) return;
+  
+  try {
+    const url = `https://api.github.com/repos/${gitHubConfig.repo}/contents/sync-data/escalade/classes.json`;
+    const response = await fetch(url, {
+      headers: {'Authorization': `token ${gitHubConfig.token}`}
+    });
+    
+    if(!response.ok) return;
+    
+    const data = await response.json();
+    const content = atob(data.content);
+    const remote = JSON.parse(content);
+    
+    if(remote.app !== 'escalade') return; // Ignorer données d'autres apps
+    
+    // Merge intelligent: garder local si plus complet
+    const remoteClasses = remote.classes || [];
+    const remoteStudents = remote.students || [];
+    
+    let changed = false;
+    
+    // Ajouter classes manquantes du remote
+    remoteClasses.forEach(remoteClass => {
+      if(!DB.classes.find(c => c.id === remoteClass.id)) {
+        DB.classes.push(remoteClass);
+        changed = true;
+      }
+    });
+    
+    // Ajouter students manquants du remote
+    remoteStudents.forEach(remoteStudent => {
+      if(!DB.students.find(s => s.id === remoteStudent.id)) {
+        DB.students.push(remoteStudent);
+        changed = true;
+      }
+    });
+    
+    if(changed) {
+      validateGestionClassId();
+      saveDB();
+      console.log('✅ Escalade fetched from GitHub');
+    }
+  } catch(e) {
+    console.error('Escalade fetch error:', e);
+  }
+}
+
+
+
+// ========== EXPORT/IMPORT CLASSES INTER-APPS ESCALADE ==========
+function exportClassesJSON_escalade() {
+  // IMPORTANT: Escalade stocke élèves dans DB.students séparé, pas dans c.students
+  const exported = DB.classes.map(c => {
+    const classStudents = DB.students.filter(s => s.classId === c.id);
+    return {
+      name: c.name,
+      students: classStudents.map(s => ({
+        prenom: s.prenom || '',
+        nom: s.nom || '',
+        genre: s.genre || ''
+      }))
+    };
+  });
+  
+  const blob = new Blob([JSON.stringify(exported, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `escalade-export-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  alert('✅ Classes exportées');
+}
+
+function importClassesJSON_escalade() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = (e) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const imported = JSON.parse(event.target.result);
+        let added = 0;
+        
+        imported.forEach(impClass => {
+          if(!DB.classes.find(c => c.name === impClass.name)) {
+            const newClassId = Date.now() + Math.random();
+            DB.classes.push({id: newClassId, name: impClass.name});
+            
+            (impClass.students || []).forEach(s => {
+              DB.students.push({
+                id: Date.now() + Math.random(),
+                classId: newClassId,
+                prenom: s.prenom,
+                nom: s.nom,
+                genre: s.genre
+              });
+            });
+            
+            added++;
+          }
+        });
+        
+        if(added > 0) {
+          saveDB();
+          alert(`✅ ${added} classe(s) importée(s)`);
+          location.reload();
+        }
+      } catch(err) {
+        alert('❌ Fichier invalide');
+      }
+    };
+    reader.readAsText(e.target.files[0]);
+  };
+  input.click();
+}
+
+function exportClassesQR_escalade() {
+  const exported = DB.classes.map(c => {
+    const classStudents = DB.students.filter(s => s.classId === c.id);
+    return {
+      n: c.name,
+      s: classStudents.map(s => ({p: s.prenom || '', n: s.nom || '', g: s.genre || ''}))
+    };
+  });
+  
+  const json = JSON.stringify(exported);
+  if(json.length > 4000) { alert('❌ Trop de données'); return; }
+  
+  const qrDiv = document.createElement('div');
+  qrDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:white;display:flex;align-items:center;justify-content:center;z-index:99999;';
+  const qr = document.createElement('div');
+  qrDiv.appendChild(qr);
+  const btn = document.createElement('button');
+  btn.textContent = 'Fermer';
+  btn.onclick = () => qrDiv.remove();
+  btn.style.cssText = 'position:absolute;bottom:20px;';
+  qrDiv.appendChild(btn);
+  document.body.appendChild(qrDiv);
+  
+  if(typeof QRCode !== 'undefined') new QRCode(qr, {text: json, width: 300, height: 300});
+}
+
+function importClassesQR_escalade() {
+  const text = prompt('Colle le texte du QR code:');
+  if(!text) return;
+  try {
+    const imported = JSON.parse(text);
+    let added = 0;
+    
+    imported.forEach(imp => {
+      if(!DB.classes.find(c => c.name === imp.n)) {
+        const newClassId = Date.now() + Math.random();
+        DB.classes.push({id: newClassId, name: imp.n});
+        
+        imp.s.forEach(s => {
+          DB.students.push({
+            id: Date.now() + Math.random(),
+            classId: newClassId,
+            prenom: s.p,
+            nom: s.n,
+            genre: s.g
+          });
+        });
+        
+        added++;
+      }
+    });
+    
+    if(added > 0) {
+      saveDB();
+      alert(`✅ ${added} classe(s)`);
+      location.reload();
+    }
+  } catch(err) {
+    alert('❌ QR invalide');
+  }
+}
+
+</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
 
@@ -325,7 +757,8 @@ function defaultDB(){
   };
 }
 let DB = loadDB();
-function loadDB(){
+function loadDB() {
+  validateGestionClassId();{
   try{
     const raw = localStorage.getItem(DB_KEY);
     if(!raw) return defaultDB();
@@ -347,7 +780,29 @@ function migrateStudents(db){
     }
   });
 }
-function saveDB(){ localStorage.setItem(DB_KEY, JSON.stringify(DB)); syncClassesToGitHub(); }
+
+function validateGestionClassId() {
+  if(!DB.classes || DB.classes.length === 0) {
+    UI.gestionClassId = null;
+    return;
+  }
+  
+  // Si l'ID actuel existe, OK
+  if(DB.classes.find(c => c.id === UI.gestionClassId)) return;
+  
+  // Sinon, prendre la première classe valide
+  console.warn('❌ gestionClassId invalide, réinitialisant...');
+  UI.gestionClassId = DB.classes[0].id;
+  saveDB();
+}
+
+// À appeler après tout changement de classe
+function syncGestionClassId() {
+  validateGestionClassId();
+}
+
+
+function saveDB(){ localStorage.setItem(DB_KEY, JSON.stringify(DB)); }
 
 /* ---------- Élèves : helpers ---------- */
 function studentsOfClass(classId){
@@ -610,7 +1065,6 @@ function topbar(){
     </div>
     <div class="topbar-actions">
       ${s? `<span class="badge-pill st-vert" style="margin-right:4px;"><span class="live-dot" style="width:7px;height:7px;background:var(--green);border-radius:50%;display:inline-block;"></span>Séance en cours</span>`:''}
-      <button class="icon-btn" title="GitHub Sync" onclick="openGitHubSetupModal()" style="background:var(--rope);">☁️</button>
       <button class="icon-btn" title="Accueil" onclick="nav('home')">${homeIcon()}</button>
     </div>
   </div>`;
@@ -1491,266 +1945,222 @@ function phoneIcon(){ return `<svg viewBox="0 0 24 24" fill="none" stroke="curre
 
 /* ---------- init ---------- */
 render();
-
-const GITHUB_SYNC_KEY = 'eps_github_config_v1';
-let gitHubConfig = {username: null, token: null};
-let gitHubSyncTimer = null;
-
-function tryParse(str){try{return JSON.parse(str||'null');}catch{return null;}}
-
-function loadGitHubConfig(){
-  const saved = localStorage.getItem(GITHUB_SYNC_KEY);
-  if(saved){
-    try{
-      gitHubConfig = JSON.parse(saved);
-    }catch(e){ console.error('GitHub config load failed:', e); }
-  }
-}
-
-function saveGitHubConfig(){
-  localStorage.setItem(GITHUB_SYNC_KEY, JSON.stringify(gitHubConfig));
-}
-
-function isGitHubConfigured(){
-  return gitHubConfig.username && gitHubConfig.token;
-}
-
-function openGitHubSetupModal(){
-  const modal = document.getElementById('gh-setup-modal');
-  if(!modal) return;
-  document.getElementById('gh-username-input').value = gitHubConfig.username || '';
-  document.getElementById('gh-token-input').value = gitHubConfig.token || '';
-  modal.style.display = 'flex';
-}
-
-function closeGitHubSetupModal(){
-  const modal = document.getElementById('gh-setup-modal');
-  if(modal) modal.style.display = 'none';
-}
-
-function saveGitHubSetup(){
-  const username = document.getElementById('gh-username-input').value.trim();
-  const token = document.getElementById('gh-token-input').value.trim();
+async function gitHubSyncEscalade(){
+  if(!gitHubConfig.token) return;
   
-  if(!username || !token){
-    alert('username et token requis');
-    return;
-  }
-  
-  gitHubConfig = {username, token};
-  saveGitHubConfig();
-  closeGitHubSetupModal();
-  alert('GitHub config saved!');
-}
-
-async function gitHubFetch(path){
-  if(!isGitHubConfigured()) return null;
-  const vercelUrl = 'https://appli-test-camera.vercel.app/api/sync';
-  try{
-    const res = await fetch(vercelUrl, {
+  try {
+    // Export UNIQUEMENT escalade_db_v1
+    const payload = {
+      app: 'escalade',
+      classes: DB.classes || [],
+      students: DB.students || [],
+      synced: new Date().toISOString()
+    };
+    
+    const url = `${gitHubConfig.proxyUrl}`;
+    const response = await fetch(url, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Authorization': `token ${gitHubConfig.token}`,
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({
-        action: 'read',
-        path: path,
-        username: gitHubConfig.username,
-        token: gitHubConfig.token
+        path: 'sync-data/escalade/classes.json',
+        content: JSON.stringify(payload, null, 2),
+        message: 'Sync Escalade EPS'
       })
     });
-    if(res.status === 404) return null;
-    if(!res.ok) throw new Error(`Fetch failed: ${res.status}`);
-    const data = await res.json();
-    return data.data;
-  }catch(e){
-    console.error('Fetch error:', e);
-    return null;
+    
+    if(response.ok) {
+      console.log('✅ Escalade synced to GitHub');
+    }
+  } catch(e) {
+    console.error('Escalade sync error:', e);
   }
 }
 
-async function gitHubCommit(path, content, message){
-  if(!isGitHubConfigured()) return false;
-  const vercelUrl = 'https://appli-test-camera.vercel.app/api/sync';
-  try{
-    const res = await fetch(vercelUrl, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        action: 'write',
-        path: path,
-        content: content,
-        message: message || `Update ${path}`,
-        username: gitHubConfig.username,
-        token: gitHubConfig.token
-      })
-    });
-    if(!res.ok) throw new Error(`Commit failed: ${res.status}`);
-    return true;
-  }catch(e){
-    console.error('Commit error:', e);
-    return false;
-  }
-}
-
-async function gitHubSyncClasses(){
-  const classes = tryParse(localStorage.getItem('eps_classes_v1')) || [];
-  const infos = tryParse(localStorage.getItem('trn_class_infos_v1')) || {};
-  const payload = {classes, infos, synced: new Date().toISOString()};
-  await gitHubCommit('sync-data/tournoi-eps/classes.json', JSON.stringify(payload, null, 2), 'Sync classes');
-}
-
-async function gitHubSyncHistory(){
-  const history = tryParse(localStorage.getItem('trn_history_v1')) || [];
-  const payload = {history, synced: new Date().toISOString()};
-  await gitHubCommit('sync-data/tournoi-eps/history.json', JSON.stringify(payload, null, 2), 'Sync history');
-}
-
-async function gitHubFetchClasses(){
-  const raw = await gitHubFetch('sync-data/tournoi-eps/classes.json');
-  if(!raw) return;
-  try{
-    const data = JSON.parse(raw);
-    const localClasses = tryParse(localStorage.getItem('eps_classes_v1')) || [];
-    const remoteClasses = Array.isArray(data.classes) ? data.classes : [];
-    const merged = [];
-    const seenIds = new Set();
-    localClasses.forEach(cls => {
-      if(cls && cls.id){
-        merged.push({...cls});
-        seenIds.add(cls.id);
-      }
-    });
-    remoteClasses.forEach(cls => {
-      if(cls && cls.id && !seenIds.has(cls.id)){
-        merged.push({...cls});
-        seenIds.add(cls.id);
-      }
-    });
-    localStorage.setItem('eps_classes_v1', JSON.stringify(merged));
-    localStorage.setItem('trn_class_infos_v1', JSON.stringify(data.infos || {}));
-  }catch(e){ console.error('GitHub fetch classes error:', e); }
-}
-
-async function gitHubFetchHistory(){
-  const raw = await gitHubFetch('sync-data/tournoi-eps/history.json');
-  if(!raw) return;
-  try{
-    const data = JSON.parse(raw);
-    const remoteHistory = Array.isArray(data.history) ? data.history : [];
-    const localHistory = tryParse(localStorage.getItem('trn_history_v1')) || [];
-    const merged = {};
-    [...localHistory, ...remoteHistory].forEach(h => {if(h && h.id) merged[h.id] = h;});
-    const deduped = Object.values(merged).slice(0, 500);
-    localStorage.setItem('trn_history_v1', JSON.stringify(deduped));
-  }catch(e){ console.error('GitHub fetch history error:', e); }
-}
-
-async function gitHubSyncAll(){
-  if(!isGitHubConfigured()) return;
-  await gitHubSyncClasses();
-  await gitHubSyncHistory();
-}
-
-function queueGitHubSync(){
-  if(!isGitHubConfigured()) return;
-  if(gitHubSyncTimer) clearTimeout(gitHubSyncTimer);
-  gitHubSyncTimer = setTimeout(gitHubSyncAll, 30000);
-}
-
-
-function syncClassesToGitHub(){
-  if(!isGitHubConfigured()) return;
+async function gitHubFetchEscalade(){
+  if(!gitHubConfig.token) return;
   
-  // Escalade stocke les élèves dans DB.students (pas dans classes)
-  // Ne synchro que si les classes ont des élèves
-  const classes = (DB.classes || [])
-    .filter(c => {
-      const hasStudents = (DB.students || []).some(s => s.classId === c.id);
-      return hasStudents;
-    })
-    .map(c => ({
-      id: c.id,
+  try {
+    const url = `https://api.github.com/repos/${gitHubConfig.repo}/contents/sync-data/escalade/classes.json`;
+    const response = await fetch(url, {
+      headers: {'Authorization': `token ${gitHubConfig.token}`}
+    });
+    
+    if(!response.ok) return;
+    
+    const data = await response.json();
+    const content = atob(data.content);
+    const remote = JSON.parse(content);
+    
+    if(remote.app !== 'escalade') return; // Ignorer données d'autres apps
+    
+    // Merge intelligent: garder local si plus complet
+    const remoteClasses = remote.classes || [];
+    const remoteStudents = remote.students || [];
+    
+    let changed = false;
+    
+    // Ajouter classes manquantes du remote
+    remoteClasses.forEach(remoteClass => {
+      if(!DB.classes.find(c => c.id === remoteClass.id)) {
+        DB.classes.push(remoteClass);
+        changed = true;
+      }
+    });
+    
+    // Ajouter students manquants du remote
+    remoteStudents.forEach(remoteStudent => {
+      if(!DB.students.find(s => s.id === remoteStudent.id)) {
+        DB.students.push(remoteStudent);
+        changed = true;
+      }
+    });
+    
+    if(changed) {
+      validateGestionClassId();
+      saveDB();
+      console.log('✅ Escalade fetched from GitHub');
+    }
+  } catch(e) {
+    console.error('Escalade fetch error:', e);
+  }
+}
+
+
+
+// ========== EXPORT/IMPORT CLASSES INTER-APPS ESCALADE ==========
+function exportClassesJSON_escalade() {
+  // IMPORTANT: Escalade stocke élèves dans DB.students séparé, pas dans c.students
+  const exported = DB.classes.map(c => {
+    const classStudents = DB.students.filter(s => s.classId === c.id);
+    return {
       name: c.name,
-      students: (DB.students || []).filter(s => s.classId === c.id).map(s => ({
-        id: s.id,
+      students: classStudents.map(s => ({
         prenom: s.prenom || '',
         nom: s.nom || '',
         genre: s.genre || ''
-      })) || []
-    }));
+      }))
+    };
+  });
   
-  if(classes.length === 0) return; // Ne synchro rien si aucune classe n'a d'élèves
-  
-  // Sauvegarder dans les clés GitHub
-  localStorage.setItem('eps_classes_v1', JSON.stringify(classes));
-  localStorage.setItem('trn_class_infos_v1', JSON.stringify({escalade: true}));
-  
-  // Déclencher la synchro
-  queueGitHubSync();
+  const blob = new Blob([JSON.stringify(exported, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `escalade-export-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  alert('✅ Classes exportées');
 }
 
-async function fetchClassesFromGitHub(){
-  if(!isGitHubConfigured()) return;
-  
-  const raw = await gitHubFetch('sync-data/tournoi-eps/classes.json');
-  if(!raw) return;
-  
-  try{
-    const data = JSON.parse(raw);
-    const remoteClasses = Array.isArray(data.classes) ? data.classes : [];
-    
-    // Fusionner les classes ET les élèves (respectant l'architecture Escalade)
-    remoteClasses.forEach(remoteClass => {
-      const exists = DB.classes.find(c => c.id === remoteClass.id);
-      if(!exists && remoteClass.students && remoteClass.students.length > 0){
-        // Ajouter classe + élèves
-        DB.classes.push({id: remoteClass.id, name: remoteClass.name});
-        (remoteClass.students || []).forEach(s => {
-          if(!DB.students.find(st => st.id === s.id)){
-            DB.students.push({
-              id: s.id,
-              prenom: s.prenom || '',
-              nom: s.nom || '',
-              genre: s.genre || '',
-              classId: remoteClass.id
+function importClassesJSON_escalade() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = (e) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const imported = JSON.parse(event.target.result);
+        let added = 0;
+        
+        imported.forEach(impClass => {
+          if(!DB.classes.find(c => c.name === impClass.name)) {
+            const newClassId = Date.now() + Math.random();
+            DB.classes.push({id: newClassId, name: impClass.name});
+            
+            (impClass.students || []).forEach(s => {
+              DB.students.push({
+                id: Date.now() + Math.random(),
+                classId: newClassId,
+                prenom: s.prenom,
+                nom: s.nom,
+                genre: s.genre
+              });
             });
+            
+            added++;
           }
         });
+        
+        if(added > 0) {
+          saveDB();
+          alert(`✅ ${added} classe(s) importée(s)`);
+          location.reload();
+        }
+      } catch(err) {
+        alert('❌ Fichier invalide');
+      }
+    };
+    reader.readAsText(e.target.files[0]);
+  };
+  input.click();
+}
+
+function exportClassesQR_escalade() {
+  const exported = DB.classes.map(c => {
+    const classStudents = DB.students.filter(s => s.classId === c.id);
+    return {
+      n: c.name,
+      s: classStudents.map(s => ({p: s.prenom || '', n: s.nom || '', g: s.genre || ''}))
+    };
+  });
+  
+  const json = JSON.stringify(exported);
+  if(json.length > 4000) { alert('❌ Trop de données'); return; }
+  
+  const qrDiv = document.createElement('div');
+  qrDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:white;display:flex;align-items:center;justify-content:center;z-index:99999;';
+  const qr = document.createElement('div');
+  qrDiv.appendChild(qr);
+  const btn = document.createElement('button');
+  btn.textContent = 'Fermer';
+  btn.onclick = () => qrDiv.remove();
+  btn.style.cssText = 'position:absolute;bottom:20px;';
+  qrDiv.appendChild(btn);
+  document.body.appendChild(qrDiv);
+  
+  if(typeof QRCode !== 'undefined') new QRCode(qr, {text: json, width: 300, height: 300});
+}
+
+function importClassesQR_escalade() {
+  const text = prompt('Colle le texte du QR code:');
+  if(!text) return;
+  try {
+    const imported = JSON.parse(text);
+    let added = 0;
+    
+    imported.forEach(imp => {
+      if(!DB.classes.find(c => c.name === imp.n)) {
+        const newClassId = Date.now() + Math.random();
+        DB.classes.push({id: newClassId, name: imp.n});
+        
+        imp.s.forEach(s => {
+          DB.students.push({
+            id: Date.now() + Math.random(),
+            classId: newClassId,
+            prenom: s.p,
+            nom: s.n,
+            genre: s.g
+          });
+        });
+        
+        added++;
       }
     });
     
-    saveDB();
-  }catch(e){ console.error('Error fetching GitHub classes:', e); }
+    if(added > 0) {
+      saveDB();
+      alert(`✅ ${added} classe(s)`);
+      location.reload();
+    }
+  } catch(err) {
+    alert('❌ QR invalide');
+  }
 }
 
-
-async function gitHubFetchAllOnLoad(){
-  if(!isGitHubConfigured()) return;
-  await gitHubFetchClasses();
-  await fetchClassesFromGitHub();
-  await gitHubFetchHistory();
-}
-
-
-loadGitHubConfig();
-gitHubFetchAllOnLoad();
 </script>
-<div id="gh-setup-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:10000;align-items:center;justify-content:center;flex-direction:column;">
-  <div style="background:var(--card);padding:30px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.2);max-width:400px;width:90%;color:var(--ink);">
-    <h2 style="margin:0 0 20px 0;font-size:18px;">GitHub Configuration</h2>
-    <div style="margin-bottom:15px;">
-      <label style="display:block;font-weight:600;margin-bottom:5px;font-size:13px;">GitHub Username</label>
-      <input type="text" id="gh-username-input" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:13px;font-family:monospace;background:white;color:var(--ink);" placeholder="killthisumut">
-    </div>
-    <div style="margin-bottom:20px;">
-      <label style="display:block;font-weight:600;margin-bottom:5px;font-size:13px;">Personal Access Token</label>
-      <input type="password" id="gh-token-input" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:13px;font-family:monospace;background:white;color:var(--ink);" placeholder="ghp_...">
-      <p style="margin:8px 0 0 0;font-size:11px;color:var(--ink-soft);">Settings → Developer settings → Personal access tokens</p>
-    </div>
-    <div style="display:flex;gap:10px;">
-      <button onclick="saveGitHubSetup()" style="flex:1;padding:10px;background:var(--rope);color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;">Save</button>
-      <button onclick="closeGitHubSetupModal()" style="flex:1;padding:10px;background:var(--bg-alt);color:var(--ink);border:none;border-radius:8px;font-weight:600;cursor:pointer;">Cancel</button>
-    </div>
-  </div>
-</div>
 </body>
 </html>

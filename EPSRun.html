@@ -1093,7 +1093,7 @@ label.s-lbl{display:block;margin-bottom:6px;font-weight:600;color:#495057;font-s
   <div class="home-card" style="position:relative">
     <button id="themeToggle">☀️ Mode clair</button>
     <div>
-      <div class="home-title">EPS – Compteur & Calculateur <button onclick="openGitHubSetupModal()" style="float:right;padding:8px 12px;background:var(--accent);color:#000;border:none;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;">☁️ Sync</button></div>
+      <div class="home-title">EPS – Compteur & Calculateur</div>
       <div class="home-subtitle">Choisissez un mode</div>
     </div>
     <div class="home-grid">
@@ -2793,11 +2793,11 @@ document.getElementById('btnGestionBack').onclick=()=>showScreen('homeScreen');
 document.getElementById('btnNewClass').onclick=()=>{document.getElementById('newClassTitle').textContent='Nouvelle classe';document.getElementById('newClassNameInput').value='';document.getElementById('confirmNewClass').dataset.mode='create';openModal('modalNewClass');setTimeout(()=>document.getElementById('newClassNameInput').focus(),100);};
 document.getElementById('cancelNewClass').onclick=()=>closeModal('modalNewClass');
 document.getElementById('newClassNameInput').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('confirmNewClass').click();});
-document.getElementById('confirmNewClass').onclick=()=>{const name=document.getElementById('newClassNameInput').value.trim();if(!name)return;const classes=getClasses();const mode=document.getElementById('confirmNewClass').dataset.mode;if(mode==='rename'&&currentClassId!==null){const cls=classes.find(c=>c.id===currentClassId);if(cls)cls.name=name;}else classes.push({id:Date.now(),name,students:[]});saveClasses(classes);queueGitHubSync();closeModal('modalNewClass');renderGestion();};
+document.getElementById('confirmNewClass').onclick=()=>{const name=document.getElementById('newClassNameInput').value.trim();if(!name)return;const classes=getClasses();const mode=document.getElementById('confirmNewClass').dataset.mode;if(mode==='rename'&&currentClassId!==null){const cls=classes.find(c=>c.id===currentClassId);if(cls)cls.name=name;}else classes.push({id:Date.now(),name,students:[]});saveClasses(classes);closeModal('modalNewClass');renderGestion();};
 document.getElementById('btnGestionRenameClass').onclick=()=>{const classes=getClasses();const cls=classes.find(c=>c.id===currentClassId);if(!cls)return;document.getElementById('newClassTitle').textContent='Renommer la classe';document.getElementById('newClassNameInput').value=cls.name;document.getElementById('confirmNewClass').dataset.mode='rename';openModal('modalNewClass');setTimeout(()=>document.getElementById('newClassNameInput').focus(),100);};
 document.getElementById('btnGestionAddList').onclick=()=>{document.getElementById('gestionListInput').value='';openModal('modalGestionList');setTimeout(()=>document.getElementById('gestionListInput').focus(),100);};
 document.getElementById('cancelGestionList').onclick=()=>closeModal('modalGestionList');
-document.getElementById('confirmGestionList').onclick=()=>{const raw=document.getElementById('gestionListInput').value.trim();if(!raw||currentClassId===null)return;const names=raw.replace(/[,;\/\s]+/g,'\n').split('\n').map(n=>n.trim()).filter(n=>n.length>0);if(!names.length)return;const classes=getClasses();const cls=classes.find(c=>c.id===currentClassId);if(!cls)return;names.forEach(n=>cls.students.push(n));saveClasses(classes);queueGitHubSync();closeModal('modalGestionList');renderGestion();showToast(`${names.length} élève(s) ajouté(s)`);};
+document.getElementById('confirmGestionList').onclick=()=>{const raw=document.getElementById('gestionListInput').value.trim();if(!raw||currentClassId===null)return;const names=raw.replace(/[,;\/\s]+/g,'\n').split('\n').map(n=>n.trim()).filter(n=>n.length>0);if(!names.length)return;const classes=getClasses();const cls=classes.find(c=>c.id===currentClassId);if(!cls)return;names.forEach(n=>cls.students.push(n));saveClasses(classes);closeModal('modalGestionList');renderGestion();showToast(`${names.length} élève(s) ajouté(s)`);};
 function renderGestion(){const classes=getClasses();const listEl=document.getElementById('classList');listEl.innerHTML='';classes.forEach(cls=>{const item=document.createElement('div');item.className='class-item'+(cls.id===currentClassId?' active-class':'');item.innerHTML=`<div style="flex:1"><div class="class-name">${cls.name}</div><div class="class-count">${cls.students.length} élève${cls.students.length!==1?'s':''}</div></div><button class="class-delete">🗑</button>`;item.querySelector('.class-delete').onclick=e=>{e.stopPropagation();document.getElementById('deleteSessionMsg').textContent=`Supprimer la classe "${cls.name}" ?`;_deleteConfirmCallback=()=>{const classes2=getClasses().filter(c=>c.id!==cls.id);saveClasses(classes2);if(currentClassId===cls.id)currentClassId=null;renderGestion();showToast(`Classe supprimée`);};openModal('modalDeleteSession');};item.addEventListener('click',()=>{currentClassId=cls.id;currentGestionTab='eleves';renderGestion();});listEl.appendChild(item);});if(!classes.length)listEl.innerHTML='<div class="gestion-empty" style="padding:16px;font-size:.82rem">Aucune classe.</div>';
 const nameEl2=document.getElementById('gestionClassName'),addBtn2=document.getElementById('btnGestionAddList'),renameBtn=document.getElementById('btnGestionRenameClass'),tabsEl=document.getElementById('gestionTabs'),tabEleves=document.getElementById('tabEleves'),tabInfos=document.getElementById('tabInfos'),tabHisto=document.getElementById('tabHistorique');
 if(currentClassId===null){nameEl2.textContent='Sélectionnez une classe';addBtn2.style.display=renameBtn.style.display='none';tabsEl.style.display='none';tabEleves.style.display='';tabEleves.innerHTML='<div class="gestion-empty">👆 Créez ou sélectionnez une classe</div>';tabInfos.style.display='none';tabHisto.style.display='none';return;}
@@ -5089,156 +5089,110 @@ const ACTIVE_BAREME_KEY = 'eps_active_eval';
 initState(numTeams);
 updateSessionButtons();
 
-// ========== GITHUB SYNC ==========
-const GITHUB_SYNC_KEY = 'eps_github_config_v1';
-let gitHubConfig = {username: null, token: null};
-let gitHubSyncTimer = null;
-
-function tryParse(str){try{return JSON.parse(str||'null');}catch{return null;}}
-
-function loadGitHubConfig(){
-  const saved = localStorage.getItem(GITHUB_SYNC_KEY);
-  if(saved) gitHubConfig = JSON.parse(saved);
+// ========== EXPORT/IMPORT CLASSES ENTRE APPS ==========
+function exportClassesJSON_epsrun() {
+  const classes = JSON.parse(localStorage.getItem('eps_classes') || '[]');
+  const exported = classes.map(c => ({
+    name: c.name,
+    students: (c.students || []).map(s => ({
+      prenom: s.prenom || '',
+      nom: s.nom || '',
+      genre: s.genre || ''
+    }))
+  }));
+  
+  const blob = new Blob([JSON.stringify(exported, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `epsrun-export-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  alert('✅ Classes exportées');
 }
 
-function saveGitHubConfig(){
-  localStorage.setItem(GITHUB_SYNC_KEY, JSON.stringify(gitHubConfig));
-}
-
-function isGitHubConfigured(){
-  return gitHubConfig.username && gitHubConfig.token;
-}
-
-function openGitHubSetupModal(){
-  const modal = document.getElementById('gh-setup-modal');
-  if(!modal) return;
-  document.getElementById('gh-username-input').value = gitHubConfig.username || '';
-  document.getElementById('gh-token-input').value = gitHubConfig.token || '';
-  modal.style.display = 'flex';
-}
-
-function closeGitHubSetupModal(){
-  const modal = document.getElementById('gh-setup-modal');
-  if(modal) modal.style.display = 'none';
-}
-
-function saveGitHubSetup(){
-  const username = document.getElementById('gh-username-input').value.trim();
-  const token = document.getElementById('gh-token-input').value.trim();
-  if(!username || !token){ alert('username et token requis'); return; }
-  gitHubConfig = {username, token};
-  saveGitHubConfig();
-  closeGitHubSetupModal();
-  alert('GitHub config saved!');
-}
-
-async function gitHubFetch(path){
-  if(!isGitHubConfigured()) return null;
-  try{
-    const res = await fetch('https://appli-test-camera.vercel.app/api/sync', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({action: 'read', path, username: gitHubConfig.username, token: gitHubConfig.token})});
-    if(res.status === 404) return null;
-    if(!res.ok) throw new Error(`Fetch failed`);
-    const data = await res.json();
-    return data.data;
-  }catch(e){ console.error('Fetch error:', e); return null; }
-}
-
-async function gitHubCommit(path, content, message){
-  if(!isGitHubConfigured()) return false;
-  try{
-    const res = await fetch('https://appli-test-camera.vercel.app/api/sync', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({action: 'write', path, content, message: message || `Update ${path}`, username: gitHubConfig.username, token: gitHubConfig.token})});
-    if(!res.ok) throw new Error(`Commit failed`);
-    return true;
-  }catch(e){ console.error('Commit error:', e); return false; }
-}
-
-async function gitHubSyncEPSRun(){
-  if(!isGitHubConfigured()) return;
-  const classes = tryParse(localStorage.getItem('eps_classes')) || [];
-  const classInfos = tryParse(localStorage.getItem('eps_class_infos')) || {};
-  const payload = {classes, infos: classInfos, synced: new Date().toISOString()};
-  await gitHubCommit('sync-data/tournoi-eps/classes.json', JSON.stringify(payload, null, 2), 'Sync EPSRun classes');
-}
-
-async function gitHubFetchEPSRun(){
-  if(!isGitHubConfigured()) return;
-  const raw = await gitHubFetch('sync-data/tournoi-eps/classes.json');
-  if(!raw) return;
-  try{
-    const data = JSON.parse(raw);
-    const localClasses = tryParse(localStorage.getItem('eps_classes')) || [];
-    const localInfos = tryParse(localStorage.getItem('eps_class_infos')) || {};
-    const remoteClasses = Array.isArray(data.classes) ? data.classes : [];
-    
-    const merged = [];
-    const seenIds = new Set();
-    
-    localClasses.forEach(cls => {
-      if(cls && cls.id){
-        const localStudents = cls.students || cls.members || [];
-        const remote = remoteClasses.find(r => r.id === cls.id);
+function importClassesJSON_epsrun() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = (e) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const imported = JSON.parse(event.target.result);
+        const classes = JSON.parse(localStorage.getItem('eps_classes') || '[]');
+        let added = 0;
         
-        if(remote){
-          const remoteStudents = remote.students || remote.members || [];
-          const students = localStudents.length > 0 ? localStudents : remoteStudents;
-          merged.push({...cls, ...remote, students: students});
-        } else {
-          merged.push({...cls});
+        imported.forEach(imp => {
+          if(!classes.find(c => c.name === imp.name)) {
+            classes.push({id: Date.now() + Math.random(), name: imp.name, students: imp.students || []});
+            added++;
+          }
+        });
+        
+        if(added > 0) {
+          localStorage.setItem('eps_classes', JSON.stringify(classes));
+          alert(`✅ ${added} classe(s) importée(s)`);
+          location.reload();
         }
-        seenIds.add(cls.id);
+      } catch(err) {
+        alert('❌ Fichier invalide');
+      }
+    };
+    reader.readAsText(e.target.files[0]);
+  };
+  input.click();
+}
+
+function exportClassesQR_epsrun() {
+  const classes = JSON.parse(localStorage.getItem('eps_classes') || '[]');
+  const exported = classes.map(c => ({
+    n: c.name,
+    s: (c.students || []).map(s => ({p: s.prenom || '', n: s.nom || '', g: s.genre || ''}))
+  }));
+  const json = JSON.stringify(exported);
+  
+  if(json.length > 4000) { alert('❌ Trop de données'); return; }
+  
+  const qrDiv = document.createElement('div');
+  qrDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:white;display:flex;align-items:center;justify-content:center;z-index:99999;';
+  const qr = document.createElement('div');
+  qrDiv.appendChild(qr);
+  const btn = document.createElement('button');
+  btn.textContent = 'Fermer';
+  btn.onclick = () => qrDiv.remove();
+  btn.style.cssText = 'position:absolute;bottom:20px;';
+  qrDiv.appendChild(btn);
+  document.body.appendChild(qrDiv);
+  
+  if(typeof QRCode !== 'undefined') new QRCode(qr, {text: json, width: 300, height: 300});
+}
+
+function importClassesQR_epsrun() {
+  const text = prompt('Colle le texte du QR code:');
+  if(!text) return;
+  try {
+    const imported = JSON.parse(text);
+    const classes = JSON.parse(localStorage.getItem('eps_classes') || '[]');
+    let added = 0;
+    
+    imported.forEach(imp => {
+      if(!classes.find(c => c.name === imp.n)) {
+        classes.push({id: Date.now() + Math.random(), name: imp.n, students: imp.s.map(s => ({prenom: s.p, nom: s.n, genre: s.g}))});
+        added++;
       }
     });
     
-    remoteClasses.forEach(cls => {
-      if(cls && cls.id && !seenIds.has(cls.id)){
-        merged.push({...cls});
-        seenIds.add(cls.id);
-      }
-    });
-    
-    localStorage.setItem('eps_classes', JSON.stringify(merged));
-    const mergedInfos = {...localInfos, ...(data.infos || {})};
-    localStorage.setItem('eps_class_infos', JSON.stringify(mergedInfos));
-  }catch(e){ console.error('GitHub fetch EPSRun error:', e); }
+    if(added > 0) {
+      localStorage.setItem('eps_classes', JSON.stringify(classes));
+      alert(`✅ ${added} classe(s)`);
+      location.reload();
+    }
+  } catch(err) {
+    alert('❌ QR invalide');
+  }
 }
 
-async function gitHubSyncAll(){
-  if(!isGitHubConfigured()) return;
-  await gitHubSyncEPSRun();
-}
-
-function queueGitHubSync(){
-  if(!isGitHubConfigured()) return;
-  if(gitHubSyncTimer) clearTimeout(gitHubSyncTimer);
-  gitHubSyncTimer = setTimeout(gitHubSyncAll, 30000);
-}
-
-async function gitHubFetchAllOnLoad(){
-  if(!isGitHubConfigured()) return;
-  await gitHubFetchEPSRun();
-}
-
-
-loadGitHubConfig();
-gitHubFetchAllOnLoad();
 </script>
-<div id="gh-setup-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:10000;align-items:center;justify-content:center;flex-direction:column;">
-  <div style="background:var(--surface);padding:30px;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.3);max-width:400px;width:90%;color:var(--text);">
-    <h2 style="margin:0 0 20px 0;font-size:18px;">GitHub Configuration</h2>
-    <div style="margin-bottom:15px;">
-      <label style="display:block;font-weight:600;margin-bottom:5px;font-size:13px;">GitHub Username</label>
-      <input type="text" id="gh-username-input" style="width:100%;padding:10px;border:1px solid var(--surface2);border-radius:5px;font-size:13px;font-family:monospace;background:var(--surface2);color:var(--text);" placeholder="killthisumut">
-    </div>
-    <div style="margin-bottom:20px;">
-      <label style="display:block;font-weight:600;margin-bottom:5px;font-size:13px;">Personal Access Token</label>
-      <input type="password" id="gh-token-input" style="width:100%;padding:10px;border:1px solid var(--surface2);border-radius:5px;font-size:13px;font-family:monospace;background:var(--surface2);color:var(--text);" placeholder="ghp_...">
-      <p style="margin:8px 0 0 0;font-size:11px;color:var(--muted);">Settings → Developer settings → Personal access tokens</p>
-    </div>
-    <div style="display:flex;gap:10px;">
-      <button onclick="saveGitHubSetup()" style="flex:1;padding:10px;background:var(--accent);color:#000;border:none;border-radius:5px;font-weight:600;cursor:pointer;">Save</button>
-      <button onclick="closeGitHubSetupModal()" style="flex:1;padding:10px;background:var(--surface2);color:var(--text);border:none;border-radius:5px;font-weight:600;cursor:pointer;">Cancel</button>
-    </div>
-  </div>
-</div>
 </body>
 </html>
