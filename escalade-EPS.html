@@ -1660,13 +1660,25 @@ function queueGitHubSync(){
 function syncClassesToGitHub(){
   if(!isGitHubConfigured()) return;
   
-  // Extraire les classes du DB d'Escalade
-  const classes = (DB.classes || []).map(c => ({
-    id: c.id,
-    name: c.name,
-    students: c.students || [],
-    members: c.members || []
-  }));
+  // Escalade stocke les élèves dans DB.students (pas dans classes)
+  // Ne synchro que si les classes ont des élèves
+  const classes = (DB.classes || [])
+    .filter(c => {
+      const hasStudents = (DB.students || []).some(s => s.classId === c.id);
+      return hasStudents;
+    })
+    .map(c => ({
+      id: c.id,
+      name: c.name,
+      students: (DB.students || []).filter(s => s.classId === c.id).map(s => ({
+        id: s.id,
+        prenom: s.prenom || '',
+        nom: s.nom || '',
+        genre: s.genre || ''
+      })) || []
+    }));
+  
+  if(classes.length === 0) return; // Ne synchro rien si aucune classe n'a d'élèves
   
   // Sauvegarder dans les clés GitHub
   localStorage.setItem('eps_classes_v1', JSON.stringify(classes));
@@ -1679,7 +1691,6 @@ function syncClassesToGitHub(){
 async function fetchClassesFromGitHub(){
   if(!isGitHubConfigured()) return;
   
-  // Récupérer les classes depuis GitHub
   const raw = await gitHubFetch('sync-data/tournoi-eps/classes.json');
   if(!raw) return;
   
@@ -1687,11 +1698,23 @@ async function fetchClassesFromGitHub(){
     const data = JSON.parse(raw);
     const remoteClasses = Array.isArray(data.classes) ? data.classes : [];
     
-    // Fusionner avec les classes locales d'Escalade
+    // Fusionner les classes ET les élèves (respectant l'architecture Escalade)
     remoteClasses.forEach(remoteClass => {
       const exists = DB.classes.find(c => c.id === remoteClass.id);
-      if(!exists){
-        DB.classes.push(remoteClass);
+      if(!exists && remoteClass.students && remoteClass.students.length > 0){
+        // Ajouter classe + élèves
+        DB.classes.push({id: remoteClass.id, name: remoteClass.name});
+        (remoteClass.students || []).forEach(s => {
+          if(!DB.students.find(st => st.id === s.id)){
+            DB.students.push({
+              id: s.id,
+              prenom: s.prenom || '',
+              nom: s.nom || '',
+              genre: s.genre || '',
+              classId: remoteClass.id
+            });
+          }
+        });
       }
     });
     
