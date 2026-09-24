@@ -4,257 +4,62 @@
       "id": 1789108718190,
       "name": "3e2",
       "students": [
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        }
+        "Abdourahmane",
+        "Anais",
+        "Cyiane",
+        "Djibril",
+        "Emma",
+        "Fenda",
+        "Hamza",
+        "Hamza-Benkou",
+        "Hamza-Bouaziz",
+        "Keyron",
+        "Koussay",
+        "Meryem",
+        "Mohamed",
+        "Mohamed-Amine",
+        "Mouni",
+        "Nour",
+        "Riles",
+        "Rodaina",
+        "Souleymane",
+        "Youhaidini",
+        "Zakaria",
+        "Zhihan",
+        "idriss",
+        "ilef",
+        "insaf"
       ]
     },
     {
       "id": 1789108718191,
       "name": "5e2",
       "students": [
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        }
+        "Camilia",
+        "Dyvane",
+        "Eden",
+        "Farah",
+        "Fatumata",
+        "Hiba",
+        "Jennah",
+        "Jùlio",
+        "Layana",
+        "Limi",
+        "Lina",
+        "Louay",
+        "Loyiel",
+        "Lynna",
+        "Nibras",
+        "Ortencia",
+        "Rayane",
+        "Rayane-Foudi",
+        "Rimes",
+        "Saadia",
+        "Steve-Akins",
+        "Trecy",
+        "Wassim",
+        "Yassir",
+        "Younes"
       ]
     },
     {
@@ -377,596 +182,85 @@
       "id": 1789133991848.2056,
       "name": "Classe test synchro",
       "students": [
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        }
+        "Elève-1",
+        "Elève-10",
+        "Elève-11",
+        "Elève-2",
+        "Elève-3",
+        "Elève-4",
+        "Elève-5",
+        "Elève-6",
+        "Elève-7",
+        "Elève-9"
       ]
     },
     {
       "id": 1789297882238.069,
       "name": "Test 123",
       "students": [
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        }
+        "Bob-1",
+        "Bob-10",
+        "Bob-11",
+        "Bob-12",
+        "Bob-13",
+        "Bob-14",
+        "Bob-15",
+        "Bob-16",
+        "Bob-17",
+        "Bob-18",
+        "Bob-19",
+        "Bob-2",
+        "Bob-20",
+        "Bob-3",
+        "Bob-4",
+        "Bob-5",
+        "Bob-6",
+        "Bob-7",
+        "Bob-8",
+        "Bob-9",
+        "Fjjdud",
+        "Hh",
+        "Hhh",
+        "cfgvbnj",
+        "dcghbn",
+        "dfgbn",
+        "diqujqjs",
+        "qtgqhha",
+        "uzjezjz"
       ]
     },
     {
       "id": 1789458784342.253,
       "name": "6e2",
       "students": [
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        }
-      ]
-    },
-    {
-      "id": 1789109249143,
-      "name": "0",
-      "students": [
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        }
-      ]
-    },
-    {
-      "id": 1789109249144,
-      "name": "1",
-      "students": [
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        }
-      ]
-    },
-    {
-      "id": 1790062354088.1438,
-      "name": "test",
-      "students": [
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        },
-        {
-          "prenom": "",
-          "nom": "",
-          "genre": ""
-        }
+        "Abdenour",
+        "Ahmed",
+        "Amin",
+        "Diahoumba",
+        "Elione",
+        "Farouk",
+        "Hana",
+        "Kawthar",
+        "Laila",
+        "Larin",
+        "Lina",
+        "Mariama-Ledy",
+        "Mohamed",
+        "Mohamed-Cherif",
+        "Oscar",
+        "Ouassim",
+        "Retage",
+        "Sammah",
+        "Siraje",
+        "Tala",
+        "Tariq",
+        "Youssef",
+        "Youssouf"
       ]
     }
   ],
   "infos": {
     "escalade": true
   },
-  "synced": "2026-09-24T05:43:04.795Z"
+  "synced": "2026-09-24T14:37:52.093Z"
 }
