@@ -5,96 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Escalade EPS</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
-// ========== GITHUB SYNCHRO ESCALADE-ONLY ==========
-function isGitHubConfigured_escalade() {
-  try {
-    const cfg = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
-    return cfg.token && cfg.repo && cfg.proxyUrl;
-  } catch {
-    return false;
-  }
-}
-
-async function gitHubSyncEscalade() {
-  if(!isGitHubConfigured_escalade()) return;
-  
-  try {
-    const cfg = JSON.parse(localStorage.getItem('gitHubConfig'));
-    const payload = {
-      app: 'escalade',
-      classes: DB.classes || [],
-      students: DB.students || [],
-      synced: new Date().toISOString()
-    };
-    
-    const url = cfg.proxyUrl;
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Authorization': `token ${cfg.token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        path: 'sync-data/escalade/classes.json',
-        content: JSON.stringify(payload, null, 2),
-        message: 'Sync Escalade EPS'
-      })
-    });
-    
-    if(response.ok) {
-      console.log('✅ Escalade synced to GitHub');
-    }
-  } catch(e) {
-    console.error('Escalade sync error:', e);
-  }
-}
-
-async function gitHubFetchEscalade() {
-  if(!isGitHubConfigured_escalade()) return;
-  
-  try {
-    const cfg = JSON.parse(localStorage.getItem('gitHubConfig'));
-    const url = `https://api.github.com/repos/${cfg.repo}/contents/sync-data/escalade/classes.json`;
-    
-    const response = await fetch(url, {
-      headers: {'Authorization': `token ${cfg.token}`}
-    });
-    
-    if(!response.ok) return;
-    
-    const data = await response.json();
-    const content = atob(data.content);
-    const remote = JSON.parse(content);
-    
-    if(remote.app !== 'escalade') return; // Ignorer si pas escalade
-    
-    let changed = false;
-    
-    // Ajouter classes manquantes
-    (remote.classes || []).forEach(remoteClass => {
-      if(!DB.classes.find(c => c.id === remoteClass.id)) {
-        DB.classes.push(remoteClass);
-        changed = true;
-      }
-    });
-    
-    // Ajouter students manquants
-    (remote.students || []).forEach(remoteStudent => {
-      if(!DB.students.find(s => s.id === remoteStudent.id)) {
-        DB.students.push(remoteStudent);
-        changed = true;
-      }
-    });
-    
-    if(changed) {
-      saveDB();
-      console.log('✅ Escalade fetched from GitHub');
-    }
-  } catch(e) {
-    console.error('Escalade fetch error:', e);
-  }
-}
-
 
 // ========== EXPORT/IMPORT CLASSES INTER-APPS ==========
 function exportClassesJSON_escalade() {
@@ -228,96 +138,6 @@ function importClassesQR_escalade() {
 
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js">
-// ========== GITHUB SYNCHRO ESCALADE-ONLY ==========
-function isGitHubConfigured_escalade() {
-  try {
-    const cfg = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
-    return cfg.token && cfg.repo && cfg.proxyUrl;
-  } catch {
-    return false;
-  }
-}
-
-async function gitHubSyncEscalade() {
-  if(!isGitHubConfigured_escalade()) return;
-  
-  try {
-    const cfg = JSON.parse(localStorage.getItem('gitHubConfig'));
-    const payload = {
-      app: 'escalade',
-      classes: DB.classes || [],
-      students: DB.students || [],
-      synced: new Date().toISOString()
-    };
-    
-    const url = cfg.proxyUrl;
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Authorization': `token ${cfg.token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        path: 'sync-data/escalade/classes.json',
-        content: JSON.stringify(payload, null, 2),
-        message: 'Sync Escalade EPS'
-      })
-    });
-    
-    if(response.ok) {
-      console.log('✅ Escalade synced to GitHub');
-    }
-  } catch(e) {
-    console.error('Escalade sync error:', e);
-  }
-}
-
-async function gitHubFetchEscalade() {
-  if(!isGitHubConfigured_escalade()) return;
-  
-  try {
-    const cfg = JSON.parse(localStorage.getItem('gitHubConfig'));
-    const url = `https://api.github.com/repos/${cfg.repo}/contents/sync-data/escalade/classes.json`;
-    
-    const response = await fetch(url, {
-      headers: {'Authorization': `token ${cfg.token}`}
-    });
-    
-    if(!response.ok) return;
-    
-    const data = await response.json();
-    const content = atob(data.content);
-    const remote = JSON.parse(content);
-    
-    if(remote.app !== 'escalade') return; // Ignorer si pas escalade
-    
-    let changed = false;
-    
-    // Ajouter classes manquantes
-    (remote.classes || []).forEach(remoteClass => {
-      if(!DB.classes.find(c => c.id === remoteClass.id)) {
-        DB.classes.push(remoteClass);
-        changed = true;
-      }
-    });
-    
-    // Ajouter students manquants
-    (remote.students || []).forEach(remoteStudent => {
-      if(!DB.students.find(s => s.id === remoteStudent.id)) {
-        DB.students.push(remoteStudent);
-        changed = true;
-      }
-    });
-    
-    if(changed) {
-      saveDB();
-      console.log('✅ Escalade fetched from GitHub');
-    }
-  } catch(e) {
-    console.error('Escalade fetch error:', e);
-  }
-}
-
 
 // ========== EXPORT/IMPORT CLASSES INTER-APPS ==========
 function exportClassesJSON_escalade() {
@@ -791,9 +611,11 @@ function migrateStudents(db){
     }
   });
 }
-function saveDB() {
-  localStorage.setItem('escalade_db_v1', JSON.stringify(DB));
-  if(isGitHubConfigured_escalade()) gitHubSyncEscalade();
+function saveDB(){ localStorage.setItem(DB_KEY, JSON.stringify(DB)); }
+
+/* ---------- Élèves : helpers ---------- */
+function studentsOfClass(classId){
+  return DB.students.filter(s=>s.classId===classId).slice().sort(sortByFamilyName);
 }
 function sortByFamilyName(a,b){
   const ka = (a.nom||a.prenom||'').toLocaleLowerCase('fr');
@@ -1932,96 +1754,6 @@ function phoneIcon(){ return `<svg viewBox="0 0 24 24" fill="none" stroke="curre
 
 /* ---------- init ---------- */
 render();
-
-// ========== GITHUB SYNCHRO ESCALADE-ONLY ==========
-function isGitHubConfigured_escalade() {
-  try {
-    const cfg = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
-    return cfg.token && cfg.repo && cfg.proxyUrl;
-  } catch {
-    return false;
-  }
-}
-
-async function gitHubSyncEscalade() {
-  if(!isGitHubConfigured_escalade()) return;
-  
-  try {
-    const cfg = JSON.parse(localStorage.getItem('gitHubConfig'));
-    const payload = {
-      app: 'escalade',
-      classes: DB.classes || [],
-      students: DB.students || [],
-      synced: new Date().toISOString()
-    };
-    
-    const url = cfg.proxyUrl;
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Authorization': `token ${cfg.token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        path: 'sync-data/escalade/classes.json',
-        content: JSON.stringify(payload, null, 2),
-        message: 'Sync Escalade EPS'
-      })
-    });
-    
-    if(response.ok) {
-      console.log('✅ Escalade synced to GitHub');
-    }
-  } catch(e) {
-    console.error('Escalade sync error:', e);
-  }
-}
-
-async function gitHubFetchEscalade() {
-  if(!isGitHubConfigured_escalade()) return;
-  
-  try {
-    const cfg = JSON.parse(localStorage.getItem('gitHubConfig'));
-    const url = `https://api.github.com/repos/${cfg.repo}/contents/sync-data/escalade/classes.json`;
-    
-    const response = await fetch(url, {
-      headers: {'Authorization': `token ${cfg.token}`}
-    });
-    
-    if(!response.ok) return;
-    
-    const data = await response.json();
-    const content = atob(data.content);
-    const remote = JSON.parse(content);
-    
-    if(remote.app !== 'escalade') return; // Ignorer si pas escalade
-    
-    let changed = false;
-    
-    // Ajouter classes manquantes
-    (remote.classes || []).forEach(remoteClass => {
-      if(!DB.classes.find(c => c.id === remoteClass.id)) {
-        DB.classes.push(remoteClass);
-        changed = true;
-      }
-    });
-    
-    // Ajouter students manquants
-    (remote.students || []).forEach(remoteStudent => {
-      if(!DB.students.find(s => s.id === remoteStudent.id)) {
-        DB.students.push(remoteStudent);
-        changed = true;
-      }
-    });
-    
-    if(changed) {
-      saveDB();
-      console.log('✅ Escalade fetched from GitHub');
-    }
-  } catch(e) {
-    console.error('Escalade fetch error:', e);
-  }
-}
 
 
 // ========== EXPORT/IMPORT CLASSES INTER-APPS ==========
