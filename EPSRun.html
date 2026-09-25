@@ -5,122 +5,150 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>EPS – Compteur & Calculateur</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
-// ========== GITHUB SYNCHRO EPSRUN-ONLY ==========
-function isGitHubConfigured_epsrun() {
-  try {
-    const cfg = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
-    return cfg.token && cfg.repo && cfg.proxyUrl;
-  } catch {
-    return false;
+// ========== CONFIGURATION GITHUB ==========
+function openGitHubConfig_epsrun() {
+  const token = prompt('GitHub Token (ou vide pour desactiver):');
+  if(token === null) return;
+  
+  const repo = prompt('Nom du repo (killthisumut/Appli-Test-camera):', 
+                      JSON.parse(localStorage.getItem('gitHubConfig') || '{}').repo || '');
+  if(repo === null) return;
+  
+  const proxyUrl = prompt('Proxy Vercel URL:', 
+                          JSON.parse(localStorage.getItem('gitHubConfig') || '{}').proxyUrl || 
+                          'https://appli-test-camera.vercel.app/api/sync');
+  if(proxyUrl === null) return;
+  
+  const config = { token, repo, proxyUrl };
+  localStorage.setItem('gitHubConfig', JSON.stringify(config));
+  alert('Configuration sauvegardee');
+}
+
+// ========== MODAL SYNCHRONISATION ==========
+function openSyncModal_epsrun() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  
+  if(!config.token) {
+    alert('Configurez GitHub d abord');
+    return;
+  }
+  
+  const choice = confirm('Envoyer mes donnees? (OK=Envoyer, Annuler=Recevoir)');
+  
+  if(choice) {
+    gitHubSendData_epsrun();
+  } else {
+    gitHubReceiveData_epsrun();
   }
 }
 
-async function gitHubSyncEPSRun() {
-  if(!isGitHubConfigured_epsrun()) return;
+// ========== ENVOI DONNEES ==========
+async function gitHubSendData_epsrun() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  if(!config.token) return;
   
   try {
-    const cfg = JSON.parse(localStorage.getItem('gitHubConfig'));
     const classes = JSON.parse(localStorage.getItem('eps_classes')) || [];
     const infos = JSON.parse(localStorage.getItem('eps_class_infos')) || {};
     
     const payload = {
       app: 'epsrun',
-      classes: classes,
-      infos: infos,
-      synced: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      data: {
+        classes: classes,
+        infos: infos
+      }
     };
     
-    const response = await fetch(cfg.proxyUrl, {
+    const response = await fetch(config.proxyUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `token ${cfg.token}`,
+        'Authorization': 'token ' + config.token,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         path: 'sync-data/epsrun/classes.json',
         content: JSON.stringify(payload, null, 2),
-        message: 'Sync EPSRun'
+        message: 'Sync EPSRun (manual push)'
       })
     });
     
     if(response.ok) {
-      console.log('✅ EPSRun synced to GitHub');
+      alert('Donnees envoyees');
+    } else {
+      alert('Erreur lors de l envoi');
     }
   } catch(e) {
-    console.error('EPSRun sync error:', e);
+    alert('Erreur: ' + e.message);
   }
 }
 
-async function gitHubFetchEPSRun() {
-  if(!isGitHubConfigured_epsrun()) return;
+// ========== RECEPTION DONNEES ==========
+async function gitHubReceiveData_epsrun() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  if(!config.token) return;
   
   try {
-    const cfg = JSON.parse(localStorage.getItem('gitHubConfig'));
-    const url = `https://api.github.com/repos/${cfg.repo}/contents/sync-data/epsrun/classes.json`;
+    const url = 'https://api.github.com/repos/' + config.repo + '/contents/sync-data/epsrun/classes.json';
     
     const response = await fetch(url, {
-      headers: {'Authorization': `token ${cfg.token}`}
+      headers: {'Authorization': 'token ' + config.token}
     });
     
-    if(!response.ok) return;
+    if(!response.ok) {
+      alert('Fichier non trouve');
+      return;
+    }
     
     const data = await response.json();
     const content = atob(data.content);
     const remote = JSON.parse(content);
     
-    if(remote.app !== 'epsrun') return; // Ignorer si pas epsrun
-    
-    const localClasses = JSON.parse(localStorage.getItem('eps_classes')) || [];
-    const remoteClasses = remote.classes || [];
-    
-    let changed = false;
-    
-    // Merge: si local est vide, prendre remote
-    remoteClasses.forEach(remoteClass => {
-      const local = localClasses.find(c => c.id === remoteClass.id);
-      if(local && (!local.students || local.students.length === 0) && remoteClass.students && remoteClass.students.length > 0) {
-        local.students = remoteClass.students;
-        changed = true;
-      } else if(!local) {
-        localClasses.push(remoteClass);
-        changed = true;
-      }
-    });
-    
-    if(changed) {
-      localStorage.setItem('eps_classes', JSON.stringify(localClasses));
-      localStorage.setItem('eps_class_infos', JSON.stringify(remote.infos || {}));
-      console.log('✅ EPSRun fetched from GitHub');
+    if(remote.app !== 'epsrun') {
+      alert('Ce n est pas un fichier EPSRun');
+      return;
     }
+    
+    localStorage.setItem('eps_classes', JSON.stringify(remote.data.classes || []));
+    localStorage.setItem('eps_class_infos', JSON.stringify(remote.data.infos || {}));
+    
+    alert('Donnees recues');
+    location.reload();
+    
   } catch(e) {
-    console.error('EPSRun fetch error:', e);
+    alert('Erreur: ' + e.message);
   }
 }
 
 
-// ========== EXPORT/IMPORT CLASSES INTER-APPS ==========
-function exportClassesJSON_epsrun() {
-  const classes = JSON.parse(localStorage.getItem('eps_classes') || '[]');
-  const exported = classes.map(c => ({
-    name: c.name,
-    students: (c.students || []).map(s => ({
-      prenom: s.prenom || '',
-      nom: s.nom || '',
-      genre: s.genre || ''
-    }))
-  }));
+// ========== EXPORT/IMPORT UNIFIE ==========
+function exportEPSRunJSON() {
+  const classes = JSON.parse(localStorage.getItem('eps_classes')) || [];
   
-  const blob = new Blob([JSON.stringify(exported, null, 2)], {type: 'application/json'});
+  const exported = {
+    format: 'epsrun-classes-v1',
+    classes: classes.map(c => ({
+      name: c.name,
+      students: (c.students || []).map(s => ({
+        prenom: s.prenom || s.name || '',
+        nom: s.nom || '',
+        genre: s.genre || ''
+      }))
+    }))
+  };
+  
+  const json = JSON.stringify(exported, null, 2);
+  const blob = new Blob([json], {type: 'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `epsrun-export-${new Date().toISOString().slice(0,10)}.json`;
+  a.download = 'epsrun-classes-' + new Date().toISOString().slice(0,10) + '.json';
   a.click();
   URL.revokeObjectURL(url);
-  alert('✅ Classes exportées');
+  alert('Classes exportees');
 }
 
-function importClassesJSON_epsrun() {
+function importEPSRunJSON() {
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = '.json';
@@ -129,15 +157,26 @@ function importClassesJSON_epsrun() {
     reader.onload = (event) => {
       try {
         const imported = JSON.parse(event.target.result);
-        const classes = JSON.parse(localStorage.getItem('eps_classes') || '[]');
+        
+        let classesToImport = [];
+        
+        if(imported.classes) {
+          classesToImport = imported.classes;
+        } else if(Array.isArray(imported)) {
+          classesToImport = imported;
+        } else {
+          throw new Error('Format non reconnu');
+        }
+        
+        const classes = JSON.parse(localStorage.getItem('eps_classes')) || [];
         let added = 0;
         
-        imported.forEach(imp => {
-          if(!classes.find(c => c.name === imp.name)) {
+        classesToImport.forEach(impClass => {
+          if(!classes.find(c => c.name === impClass.name)) {
             classes.push({
               id: Date.now() + Math.random(),
-              name: imp.name,
-              students: imp.students || []
+              name: impClass.name,
+              students: impClass.students || []
             });
             added++;
           }
@@ -145,189 +184,166 @@ function importClassesJSON_epsrun() {
         
         if(added > 0) {
           localStorage.setItem('eps_classes', JSON.stringify(classes));
-          alert(`✅ ${added} classe(s) importée(s)`);
+          alert(added + ' classe(s) importee(s)');
           location.reload();
+        } else {
+          alert('Classes deja existantes');
         }
       } catch(err) {
-        alert('❌ Fichier invalide');
+        alert('Erreur: ' + err.message);
       }
     };
     reader.readAsText(e.target.files[0]);
   };
   input.click();
-}
-
-function exportClassesQR_epsrun() {
-  const classes = JSON.parse(localStorage.getItem('eps_classes') || '[]');
-  const exported = classes.map(c => ({
-    n: c.name,
-    s: (c.students || []).map(s => ({p: s.prenom || '', n: s.nom || '', g: s.genre || ''}))
-  }));
-  const json = JSON.stringify(exported);
-  
-  if(json.length > 4000) { alert('❌ Trop de données'); return; }
-  
-  const qrDiv = document.createElement('div');
-  qrDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:white;display:flex;align-items:center;justify-content:center;z-index:99999;';
-  const qr = document.createElement('div');
-  qrDiv.appendChild(qr);
-  const btn = document.createElement('button');
-  btn.textContent = 'Fermer';
-  btn.onclick = () => qrDiv.remove();
-  btn.style.cssText = 'position:absolute;bottom:20px;padding:10px 20px;';
-  qrDiv.appendChild(btn);
-  document.body.appendChild(qrDiv);
-  
-  if(typeof QRCode !== 'undefined') new QRCode(qr, {text: json, width: 300, height: 300});
-}
-
-function importClassesQR_epsrun() {
-  const text = prompt('Colle le texte du QR code:');
-  if(!text) return;
-  try {
-    const imported = JSON.parse(text);
-    const classes = JSON.parse(localStorage.getItem('eps_classes') || '[]');
-    let added = 0;
-    
-    imported.forEach(imp => {
-      if(!classes.find(c => c.name === imp.n)) {
-        classes.push({
-          id: Date.now() + Math.random(),
-          name: imp.n,
-          students: imp.s.map(s => ({prenom: s.p, nom: s.n, genre: s.g}))
-        });
-        added++;
-      }
-    });
-    
-    if(added > 0) {
-      localStorage.setItem('eps_classes', JSON.stringify(classes));
-      alert(`✅ ${added} classe(s)`);
-      location.reload();
-    }
-  } catch(err) {
-    alert('❌ QR invalide');
-  }
 }
 
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js">
-// ========== GITHUB SYNCHRO EPSRUN-ONLY ==========
-function isGitHubConfigured_epsrun() {
-  try {
-    const cfg = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
-    return cfg.token && cfg.repo && cfg.proxyUrl;
-  } catch {
-    return false;
+// ========== CONFIGURATION GITHUB ==========
+function openGitHubConfig_epsrun() {
+  const token = prompt('GitHub Token (ou vide pour desactiver):');
+  if(token === null) return;
+  
+  const repo = prompt('Nom du repo (killthisumut/Appli-Test-camera):', 
+                      JSON.parse(localStorage.getItem('gitHubConfig') || '{}').repo || '');
+  if(repo === null) return;
+  
+  const proxyUrl = prompt('Proxy Vercel URL:', 
+                          JSON.parse(localStorage.getItem('gitHubConfig') || '{}').proxyUrl || 
+                          'https://appli-test-camera.vercel.app/api/sync');
+  if(proxyUrl === null) return;
+  
+  const config = { token, repo, proxyUrl };
+  localStorage.setItem('gitHubConfig', JSON.stringify(config));
+  alert('Configuration sauvegardee');
+}
+
+// ========== MODAL SYNCHRONISATION ==========
+function openSyncModal_epsrun() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  
+  if(!config.token) {
+    alert('Configurez GitHub d abord');
+    return;
+  }
+  
+  const choice = confirm('Envoyer mes donnees? (OK=Envoyer, Annuler=Recevoir)');
+  
+  if(choice) {
+    gitHubSendData_epsrun();
+  } else {
+    gitHubReceiveData_epsrun();
   }
 }
 
-async function gitHubSyncEPSRun() {
-  if(!isGitHubConfigured_epsrun()) return;
+// ========== ENVOI DONNEES ==========
+async function gitHubSendData_epsrun() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  if(!config.token) return;
   
   try {
-    const cfg = JSON.parse(localStorage.getItem('gitHubConfig'));
     const classes = JSON.parse(localStorage.getItem('eps_classes')) || [];
     const infos = JSON.parse(localStorage.getItem('eps_class_infos')) || {};
     
     const payload = {
       app: 'epsrun',
-      classes: classes,
-      infos: infos,
-      synced: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      data: {
+        classes: classes,
+        infos: infos
+      }
     };
     
-    const response = await fetch(cfg.proxyUrl, {
+    const response = await fetch(config.proxyUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `token ${cfg.token}`,
+        'Authorization': 'token ' + config.token,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         path: 'sync-data/epsrun/classes.json',
         content: JSON.stringify(payload, null, 2),
-        message: 'Sync EPSRun'
+        message: 'Sync EPSRun (manual push)'
       })
     });
     
     if(response.ok) {
-      console.log('✅ EPSRun synced to GitHub');
+      alert('Donnees envoyees');
+    } else {
+      alert('Erreur lors de l envoi');
     }
   } catch(e) {
-    console.error('EPSRun sync error:', e);
+    alert('Erreur: ' + e.message);
   }
 }
 
-async function gitHubFetchEPSRun() {
-  if(!isGitHubConfigured_epsrun()) return;
+// ========== RECEPTION DONNEES ==========
+async function gitHubReceiveData_epsrun() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  if(!config.token) return;
   
   try {
-    const cfg = JSON.parse(localStorage.getItem('gitHubConfig'));
-    const url = `https://api.github.com/repos/${cfg.repo}/contents/sync-data/epsrun/classes.json`;
+    const url = 'https://api.github.com/repos/' + config.repo + '/contents/sync-data/epsrun/classes.json';
     
     const response = await fetch(url, {
-      headers: {'Authorization': `token ${cfg.token}`}
+      headers: {'Authorization': 'token ' + config.token}
     });
     
-    if(!response.ok) return;
+    if(!response.ok) {
+      alert('Fichier non trouve');
+      return;
+    }
     
     const data = await response.json();
     const content = atob(data.content);
     const remote = JSON.parse(content);
     
-    if(remote.app !== 'epsrun') return; // Ignorer si pas epsrun
-    
-    const localClasses = JSON.parse(localStorage.getItem('eps_classes')) || [];
-    const remoteClasses = remote.classes || [];
-    
-    let changed = false;
-    
-    // Merge: si local est vide, prendre remote
-    remoteClasses.forEach(remoteClass => {
-      const local = localClasses.find(c => c.id === remoteClass.id);
-      if(local && (!local.students || local.students.length === 0) && remoteClass.students && remoteClass.students.length > 0) {
-        local.students = remoteClass.students;
-        changed = true;
-      } else if(!local) {
-        localClasses.push(remoteClass);
-        changed = true;
-      }
-    });
-    
-    if(changed) {
-      localStorage.setItem('eps_classes', JSON.stringify(localClasses));
-      localStorage.setItem('eps_class_infos', JSON.stringify(remote.infos || {}));
-      console.log('✅ EPSRun fetched from GitHub');
+    if(remote.app !== 'epsrun') {
+      alert('Ce n est pas un fichier EPSRun');
+      return;
     }
+    
+    localStorage.setItem('eps_classes', JSON.stringify(remote.data.classes || []));
+    localStorage.setItem('eps_class_infos', JSON.stringify(remote.data.infos || {}));
+    
+    alert('Donnees recues');
+    location.reload();
+    
   } catch(e) {
-    console.error('EPSRun fetch error:', e);
+    alert('Erreur: ' + e.message);
   }
 }
 
 
-// ========== EXPORT/IMPORT CLASSES INTER-APPS ==========
-function exportClassesJSON_epsrun() {
-  const classes = JSON.parse(localStorage.getItem('eps_classes') || '[]');
-  const exported = classes.map(c => ({
-    name: c.name,
-    students: (c.students || []).map(s => ({
-      prenom: s.prenom || '',
-      nom: s.nom || '',
-      genre: s.genre || ''
-    }))
-  }));
+// ========== EXPORT/IMPORT UNIFIE ==========
+function exportEPSRunJSON() {
+  const classes = JSON.parse(localStorage.getItem('eps_classes')) || [];
   
-  const blob = new Blob([JSON.stringify(exported, null, 2)], {type: 'application/json'});
+  const exported = {
+    format: 'epsrun-classes-v1',
+    classes: classes.map(c => ({
+      name: c.name,
+      students: (c.students || []).map(s => ({
+        prenom: s.prenom || s.name || '',
+        nom: s.nom || '',
+        genre: s.genre || ''
+      }))
+    }))
+  };
+  
+  const json = JSON.stringify(exported, null, 2);
+  const blob = new Blob([json], {type: 'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `epsrun-export-${new Date().toISOString().slice(0,10)}.json`;
+  a.download = 'epsrun-classes-' + new Date().toISOString().slice(0,10) + '.json';
   a.click();
   URL.revokeObjectURL(url);
-  alert('✅ Classes exportées');
+  alert('Classes exportees');
 }
 
-function importClassesJSON_epsrun() {
+function importEPSRunJSON() {
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = '.json';
@@ -336,15 +352,26 @@ function importClassesJSON_epsrun() {
     reader.onload = (event) => {
       try {
         const imported = JSON.parse(event.target.result);
-        const classes = JSON.parse(localStorage.getItem('eps_classes') || '[]');
+        
+        let classesToImport = [];
+        
+        if(imported.classes) {
+          classesToImport = imported.classes;
+        } else if(Array.isArray(imported)) {
+          classesToImport = imported;
+        } else {
+          throw new Error('Format non reconnu');
+        }
+        
+        const classes = JSON.parse(localStorage.getItem('eps_classes')) || [];
         let added = 0;
         
-        imported.forEach(imp => {
-          if(!classes.find(c => c.name === imp.name)) {
+        classesToImport.forEach(impClass => {
+          if(!classes.find(c => c.name === impClass.name)) {
             classes.push({
               id: Date.now() + Math.random(),
-              name: imp.name,
-              students: imp.students || []
+              name: impClass.name,
+              students: impClass.students || []
             });
             added++;
           }
@@ -352,69 +379,18 @@ function importClassesJSON_epsrun() {
         
         if(added > 0) {
           localStorage.setItem('eps_classes', JSON.stringify(classes));
-          alert(`✅ ${added} classe(s) importée(s)`);
+          alert(added + ' classe(s) importee(s)');
           location.reload();
+        } else {
+          alert('Classes deja existantes');
         }
       } catch(err) {
-        alert('❌ Fichier invalide');
+        alert('Erreur: ' + err.message);
       }
     };
     reader.readAsText(e.target.files[0]);
   };
   input.click();
-}
-
-function exportClassesQR_epsrun() {
-  const classes = JSON.parse(localStorage.getItem('eps_classes') || '[]');
-  const exported = classes.map(c => ({
-    n: c.name,
-    s: (c.students || []).map(s => ({p: s.prenom || '', n: s.nom || '', g: s.genre || ''}))
-  }));
-  const json = JSON.stringify(exported);
-  
-  if(json.length > 4000) { alert('❌ Trop de données'); return; }
-  
-  const qrDiv = document.createElement('div');
-  qrDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:white;display:flex;align-items:center;justify-content:center;z-index:99999;';
-  const qr = document.createElement('div');
-  qrDiv.appendChild(qr);
-  const btn = document.createElement('button');
-  btn.textContent = 'Fermer';
-  btn.onclick = () => qrDiv.remove();
-  btn.style.cssText = 'position:absolute;bottom:20px;padding:10px 20px;';
-  qrDiv.appendChild(btn);
-  document.body.appendChild(qrDiv);
-  
-  if(typeof QRCode !== 'undefined') new QRCode(qr, {text: json, width: 300, height: 300});
-}
-
-function importClassesQR_epsrun() {
-  const text = prompt('Colle le texte du QR code:');
-  if(!text) return;
-  try {
-    const imported = JSON.parse(text);
-    const classes = JSON.parse(localStorage.getItem('eps_classes') || '[]');
-    let added = 0;
-    
-    imported.forEach(imp => {
-      if(!classes.find(c => c.name === imp.n)) {
-        classes.push({
-          id: Date.now() + Math.random(),
-          name: imp.n,
-          students: imp.s.map(s => ({prenom: s.p, nom: s.n, genre: s.g}))
-        });
-        added++;
-      }
-    });
-    
-    if(added > 0) {
-      localStorage.setItem('eps_classes', JSON.stringify(classes));
-      alert(`✅ ${added} classe(s)`);
-      location.reload();
-    }
-  } catch(err) {
-    alert('❌ QR invalide');
-  }
 }
 
 </script>
@@ -2257,8 +2233,7 @@ function buildNomogramme(totalMinutes){const container=document.getElementById('
 function getAllSaves(){return JSON.parse(localStorage.getItem('eps_saves')||'[]');}
 function writeSaves(s){localStorage.setItem('eps_saves',JSON.stringify(s));}
 function getClasses(){return JSON.parse(localStorage.getItem('eps_classes')||'[]');}
-function saveClasses(c){if(isGitHubConfigured_epsrun()) gitHubSyncEPSRun();
-  localStorage.setItem('eps_classes',JSON.stringify(c));}
+function saveClasses(c){localStorage.setItem('eps_classes',JSON.stringify(c));}
 function downloadJSON(obj, filename){
   const blob = new Blob([JSON.stringify(obj, null, 2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
@@ -5502,122 +5477,150 @@ const ACTIVE_BAREME_KEY = 'eps_active_eval';
 initState(numTeams);
 updateSessionButtons();
 
-// ========== GITHUB SYNCHRO EPSRUN-ONLY ==========
-function isGitHubConfigured_epsrun() {
-  try {
-    const cfg = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
-    return cfg.token && cfg.repo && cfg.proxyUrl;
-  } catch {
-    return false;
+// ========== CONFIGURATION GITHUB ==========
+function openGitHubConfig_epsrun() {
+  const token = prompt('GitHub Token (ou vide pour desactiver):');
+  if(token === null) return;
+  
+  const repo = prompt('Nom du repo (killthisumut/Appli-Test-camera):', 
+                      JSON.parse(localStorage.getItem('gitHubConfig') || '{}').repo || '');
+  if(repo === null) return;
+  
+  const proxyUrl = prompt('Proxy Vercel URL:', 
+                          JSON.parse(localStorage.getItem('gitHubConfig') || '{}').proxyUrl || 
+                          'https://appli-test-camera.vercel.app/api/sync');
+  if(proxyUrl === null) return;
+  
+  const config = { token, repo, proxyUrl };
+  localStorage.setItem('gitHubConfig', JSON.stringify(config));
+  alert('Configuration sauvegardee');
+}
+
+// ========== MODAL SYNCHRONISATION ==========
+function openSyncModal_epsrun() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  
+  if(!config.token) {
+    alert('Configurez GitHub d abord');
+    return;
+  }
+  
+  const choice = confirm('Envoyer mes donnees? (OK=Envoyer, Annuler=Recevoir)');
+  
+  if(choice) {
+    gitHubSendData_epsrun();
+  } else {
+    gitHubReceiveData_epsrun();
   }
 }
 
-async function gitHubSyncEPSRun() {
-  if(!isGitHubConfigured_epsrun()) return;
+// ========== ENVOI DONNEES ==========
+async function gitHubSendData_epsrun() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  if(!config.token) return;
   
   try {
-    const cfg = JSON.parse(localStorage.getItem('gitHubConfig'));
     const classes = JSON.parse(localStorage.getItem('eps_classes')) || [];
     const infos = JSON.parse(localStorage.getItem('eps_class_infos')) || {};
     
     const payload = {
       app: 'epsrun',
-      classes: classes,
-      infos: infos,
-      synced: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      data: {
+        classes: classes,
+        infos: infos
+      }
     };
     
-    const response = await fetch(cfg.proxyUrl, {
+    const response = await fetch(config.proxyUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `token ${cfg.token}`,
+        'Authorization': 'token ' + config.token,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         path: 'sync-data/epsrun/classes.json',
         content: JSON.stringify(payload, null, 2),
-        message: 'Sync EPSRun'
+        message: 'Sync EPSRun (manual push)'
       })
     });
     
     if(response.ok) {
-      console.log('✅ EPSRun synced to GitHub');
+      alert('Donnees envoyees');
+    } else {
+      alert('Erreur lors de l envoi');
     }
   } catch(e) {
-    console.error('EPSRun sync error:', e);
+    alert('Erreur: ' + e.message);
   }
 }
 
-async function gitHubFetchEPSRun() {
-  if(!isGitHubConfigured_epsrun()) return;
+// ========== RECEPTION DONNEES ==========
+async function gitHubReceiveData_epsrun() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  if(!config.token) return;
   
   try {
-    const cfg = JSON.parse(localStorage.getItem('gitHubConfig'));
-    const url = `https://api.github.com/repos/${cfg.repo}/contents/sync-data/epsrun/classes.json`;
+    const url = 'https://api.github.com/repos/' + config.repo + '/contents/sync-data/epsrun/classes.json';
     
     const response = await fetch(url, {
-      headers: {'Authorization': `token ${cfg.token}`}
+      headers: {'Authorization': 'token ' + config.token}
     });
     
-    if(!response.ok) return;
+    if(!response.ok) {
+      alert('Fichier non trouve');
+      return;
+    }
     
     const data = await response.json();
     const content = atob(data.content);
     const remote = JSON.parse(content);
     
-    if(remote.app !== 'epsrun') return; // Ignorer si pas epsrun
-    
-    const localClasses = JSON.parse(localStorage.getItem('eps_classes')) || [];
-    const remoteClasses = remote.classes || [];
-    
-    let changed = false;
-    
-    // Merge: si local est vide, prendre remote
-    remoteClasses.forEach(remoteClass => {
-      const local = localClasses.find(c => c.id === remoteClass.id);
-      if(local && (!local.students || local.students.length === 0) && remoteClass.students && remoteClass.students.length > 0) {
-        local.students = remoteClass.students;
-        changed = true;
-      } else if(!local) {
-        localClasses.push(remoteClass);
-        changed = true;
-      }
-    });
-    
-    if(changed) {
-      localStorage.setItem('eps_classes', JSON.stringify(localClasses));
-      localStorage.setItem('eps_class_infos', JSON.stringify(remote.infos || {}));
-      console.log('✅ EPSRun fetched from GitHub');
+    if(remote.app !== 'epsrun') {
+      alert('Ce n est pas un fichier EPSRun');
+      return;
     }
+    
+    localStorage.setItem('eps_classes', JSON.stringify(remote.data.classes || []));
+    localStorage.setItem('eps_class_infos', JSON.stringify(remote.data.infos || {}));
+    
+    alert('Donnees recues');
+    location.reload();
+    
   } catch(e) {
-    console.error('EPSRun fetch error:', e);
+    alert('Erreur: ' + e.message);
   }
 }
 
 
-// ========== EXPORT/IMPORT CLASSES INTER-APPS ==========
-function exportClassesJSON_epsrun() {
-  const classes = JSON.parse(localStorage.getItem('eps_classes') || '[]');
-  const exported = classes.map(c => ({
-    name: c.name,
-    students: (c.students || []).map(s => ({
-      prenom: s.prenom || '',
-      nom: s.nom || '',
-      genre: s.genre || ''
-    }))
-  }));
+// ========== EXPORT/IMPORT UNIFIE ==========
+function exportEPSRunJSON() {
+  const classes = JSON.parse(localStorage.getItem('eps_classes')) || [];
   
-  const blob = new Blob([JSON.stringify(exported, null, 2)], {type: 'application/json'});
+  const exported = {
+    format: 'epsrun-classes-v1',
+    classes: classes.map(c => ({
+      name: c.name,
+      students: (c.students || []).map(s => ({
+        prenom: s.prenom || s.name || '',
+        nom: s.nom || '',
+        genre: s.genre || ''
+      }))
+    }))
+  };
+  
+  const json = JSON.stringify(exported, null, 2);
+  const blob = new Blob([json], {type: 'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `epsrun-export-${new Date().toISOString().slice(0,10)}.json`;
+  a.download = 'epsrun-classes-' + new Date().toISOString().slice(0,10) + '.json';
   a.click();
   URL.revokeObjectURL(url);
-  alert('✅ Classes exportées');
+  alert('Classes exportees');
 }
 
-function importClassesJSON_epsrun() {
+function importEPSRunJSON() {
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = '.json';
@@ -5626,15 +5629,26 @@ function importClassesJSON_epsrun() {
     reader.onload = (event) => {
       try {
         const imported = JSON.parse(event.target.result);
-        const classes = JSON.parse(localStorage.getItem('eps_classes') || '[]');
+        
+        let classesToImport = [];
+        
+        if(imported.classes) {
+          classesToImport = imported.classes;
+        } else if(Array.isArray(imported)) {
+          classesToImport = imported;
+        } else {
+          throw new Error('Format non reconnu');
+        }
+        
+        const classes = JSON.parse(localStorage.getItem('eps_classes')) || [];
         let added = 0;
         
-        imported.forEach(imp => {
-          if(!classes.find(c => c.name === imp.name)) {
+        classesToImport.forEach(impClass => {
+          if(!classes.find(c => c.name === impClass.name)) {
             classes.push({
               id: Date.now() + Math.random(),
-              name: imp.name,
-              students: imp.students || []
+              name: impClass.name,
+              students: impClass.students || []
             });
             added++;
           }
@@ -5642,69 +5656,18 @@ function importClassesJSON_epsrun() {
         
         if(added > 0) {
           localStorage.setItem('eps_classes', JSON.stringify(classes));
-          alert(`✅ ${added} classe(s) importée(s)`);
+          alert(added + ' classe(s) importee(s)');
           location.reload();
+        } else {
+          alert('Classes deja existantes');
         }
       } catch(err) {
-        alert('❌ Fichier invalide');
+        alert('Erreur: ' + err.message);
       }
     };
     reader.readAsText(e.target.files[0]);
   };
   input.click();
-}
-
-function exportClassesQR_epsrun() {
-  const classes = JSON.parse(localStorage.getItem('eps_classes') || '[]');
-  const exported = classes.map(c => ({
-    n: c.name,
-    s: (c.students || []).map(s => ({p: s.prenom || '', n: s.nom || '', g: s.genre || ''}))
-  }));
-  const json = JSON.stringify(exported);
-  
-  if(json.length > 4000) { alert('❌ Trop de données'); return; }
-  
-  const qrDiv = document.createElement('div');
-  qrDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:white;display:flex;align-items:center;justify-content:center;z-index:99999;';
-  const qr = document.createElement('div');
-  qrDiv.appendChild(qr);
-  const btn = document.createElement('button');
-  btn.textContent = 'Fermer';
-  btn.onclick = () => qrDiv.remove();
-  btn.style.cssText = 'position:absolute;bottom:20px;padding:10px 20px;';
-  qrDiv.appendChild(btn);
-  document.body.appendChild(qrDiv);
-  
-  if(typeof QRCode !== 'undefined') new QRCode(qr, {text: json, width: 300, height: 300});
-}
-
-function importClassesQR_epsrun() {
-  const text = prompt('Colle le texte du QR code:');
-  if(!text) return;
-  try {
-    const imported = JSON.parse(text);
-    const classes = JSON.parse(localStorage.getItem('eps_classes') || '[]');
-    let added = 0;
-    
-    imported.forEach(imp => {
-      if(!classes.find(c => c.name === imp.n)) {
-        classes.push({
-          id: Date.now() + Math.random(),
-          name: imp.n,
-          students: imp.s.map(s => ({prenom: s.p, nom: s.n, genre: s.g}))
-        });
-        added++;
-      }
-    });
-    
-    if(added > 0) {
-      localStorage.setItem('eps_classes', JSON.stringify(classes));
-      alert(`✅ ${added} classe(s)`);
-      location.reload();
-    }
-  } catch(err) {
-    alert('❌ QR invalide');
-  }
 }
 
 </script>

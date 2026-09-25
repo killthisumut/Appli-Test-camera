@@ -5,32 +5,149 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Escalade EPS</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
-
-// ========== EXPORT/IMPORT CLASSES INTER-APPS ==========
-function exportClassesJSON_escalade() {
-  const exported = DB.classes.map(c => {
-    const classStudents = DB.students.filter(s => s.classId === c.id);
-    return {
-      name: c.name,
-      students: classStudents.map(s => ({
-        prenom: s.prenom || '',
-        nom: s.nom || '',
-        genre: s.genre || ''
-      }))
-    };
-  });
+// ========== CONFIGURATION GITHUB ==========
+function openGitHubConfig_escalade() {
+  const token = prompt('GitHub Token (ou vide pour desactiver):');
+  if(token === null) return;
   
-  const blob = new Blob([JSON.stringify(exported, null, 2)], {type: 'application/json'});
+  const repo = prompt('Nom du repo (killthisumut/Appli-Test-camera):', 
+                      JSON.parse(localStorage.getItem('gitHubConfig') || '{}').repo || '');
+  if(repo === null) return;
+  
+  const proxyUrl = prompt('Proxy Vercel URL:', 
+                          JSON.parse(localStorage.getItem('gitHubConfig') || '{}').proxyUrl || 
+                          'https://appli-test-camera.vercel.app/api/sync');
+  if(proxyUrl === null) return;
+  
+  const config = { token, repo, proxyUrl };
+  localStorage.setItem('gitHubConfig', JSON.stringify(config));
+  alert('Configuration sauvegardee');
+}
+
+// ========== MODAL SYNCHRONISATION ==========
+function openSyncModal_escalade() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  
+  if(!config.token) {
+    alert('Configurez GitHub d abord');
+    return;
+  }
+  
+  const choice = confirm('Envoyer mes donnees? (OK=Envoyer, Annuler=Recevoir)');
+  
+  if(choice) {
+    gitHubSendData_escalade();
+  } else {
+    gitHubReceiveData_escalade();
+  }
+}
+
+// ========== ENVOI DONNEES ==========
+async function gitHubSendData_escalade() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  if(!config.token) return;
+  
+  try {
+    const payload = {
+      app: 'escalade',
+      timestamp: new Date().toISOString(),
+      data: {
+        classes: DB.classes || [],
+        students: DB.students || []
+      }
+    };
+    
+    const response = await fetch(config.proxyUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'token ' + config.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        path: 'sync-data/escalade/classes.json',
+        content: JSON.stringify(payload, null, 2),
+        message: 'Sync Escalade EPS (manual push)'
+      })
+    });
+    
+    if(response.ok) {
+      alert('Donnees envoyees');
+    } else {
+      alert('Erreur lors de l envoi');
+    }
+  } catch(e) {
+    alert('Erreur: ' + e.message);
+  }
+}
+
+// ========== RECEPTION DONNEES ==========
+async function gitHubReceiveData_escalade() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  if(!config.token) return;
+  
+  try {
+    const url = 'https://api.github.com/repos/' + config.repo + '/contents/sync-data/escalade/classes.json';
+    
+    const response = await fetch(url, {
+      headers: {'Authorization': 'token ' + config.token}
+    });
+    
+    if(!response.ok) {
+      alert('Fichier non trouve');
+      return;
+    }
+    
+    const data = await response.json();
+    const content = atob(data.content);
+    const remote = JSON.parse(content);
+    
+    if(remote.app !== 'escalade') {
+      alert('Ce n est pas un fichier Escalade');
+      return;
+    }
+    
+    DB.classes = remote.data.classes || [];
+    DB.students = remote.data.students || [];
+    saveDB();
+    
+    alert('Donnees recues');
+    location.reload();
+    
+  } catch(e) {
+    alert('Erreur: ' + e.message);
+  }
+}
+
+
+// ========== EXPORT/IMPORT UNIFIE ==========
+function exportEscaladeJSON() {
+  const exported = {
+    format: 'escalade-classes-v1',
+    classes: DB.classes.map(c => {
+      const classStudents = DB.students.filter(s => s.classId === c.id);
+      return {
+        name: c.name,
+        students: classStudents.map(s => ({
+          prenom: s.prenom || '',
+          nom: s.nom || '',
+          genre: s.genre || ''
+        }))
+      };
+    })
+  };
+  
+  const json = JSON.stringify(exported, null, 2);
+  const blob = new Blob([json], {type: 'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `escalade-export-${new Date().toISOString().slice(0,10)}.json`;
+  a.download = 'escalade-classes-' + new Date().toISOString().slice(0,10) + '.json';
   a.click();
   URL.revokeObjectURL(url);
-  alert('✅ Classes exportées');
+  alert('Classes exportees');
 }
 
-function importClassesJSON_escalade() {
+function importEscaladeJSON() {
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = '.json';
@@ -39,9 +156,20 @@ function importClassesJSON_escalade() {
     reader.onload = (event) => {
       try {
         const imported = JSON.parse(event.target.result);
+        
+        let classesToImport = [];
+        
+        if(imported.classes) {
+          classesToImport = imported.classes;
+        } else if(Array.isArray(imported)) {
+          classesToImport = imported;
+        } else {
+          throw new Error('Format non reconnu');
+        }
+        
         let added = 0;
         
-        imported.forEach(impClass => {
+        classesToImport.forEach(impClass => {
           if(!DB.classes.find(c => c.name === impClass.name)) {
             const newClassId = Date.now() + Math.random();
             DB.classes.push({id: newClassId, name: impClass.name});
@@ -62,108 +190,165 @@ function importClassesJSON_escalade() {
         
         if(added > 0) {
           saveDB();
-          alert(`✅ ${added} classe(s) importée(s)`);
+          alert(added + ' classe(s) importee(s)');
           location.reload();
+        } else {
+          alert('Classes deja existantes');
         }
       } catch(err) {
-        alert('❌ Fichier invalide');
+        alert('Erreur: ' + err.message);
       }
     };
     reader.readAsText(e.target.files[0]);
   };
   input.click();
-}
-
-function exportClassesQR_escalade() {
-  const exported = DB.classes.map(c => {
-    const classStudents = DB.students.filter(s => s.classId === c.id);
-    return {
-      n: c.name,
-      s: classStudents.map(s => ({p: s.prenom || '', n: s.nom || '', g: s.genre || ''}))
-    };
-  });
-  
-  const json = JSON.stringify(exported);
-  if(json.length > 4000) { alert('❌ Trop de données'); return; }
-  
-  const qrDiv = document.createElement('div');
-  qrDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:white;display:flex;align-items:center;justify-content:center;z-index:99999;';
-  const qr = document.createElement('div');
-  qrDiv.appendChild(qr);
-  const btn = document.createElement('button');
-  btn.textContent = 'Fermer';
-  btn.onclick = () => qrDiv.remove();
-  btn.style.cssText = 'position:absolute;bottom:20px;padding:10px 20px;';
-  qrDiv.appendChild(btn);
-  document.body.appendChild(qrDiv);
-  
-  if(typeof QRCode !== 'undefined') new QRCode(qr, {text: json, width: 300, height: 300});
-}
-
-function importClassesQR_escalade() {
-  const text = prompt('Colle le texte du QR code:');
-  if(!text) return;
-  try {
-    const imported = JSON.parse(text);
-    let added = 0;
-    
-    imported.forEach(imp => {
-      if(!DB.classes.find(c => c.name === imp.n)) {
-        const newClassId = Date.now() + Math.random();
-        DB.classes.push({id: newClassId, name: imp.n});
-        
-        imp.s.forEach(s => {
-          DB.students.push({
-            id: Date.now() + Math.random(),
-            classId: newClassId,
-            prenom: s.p,
-            nom: s.n,
-            genre: s.g
-          });
-        });
-        
-        added++;
-      }
-    });
-    
-    if(added > 0) {
-      saveDB();
-      alert(`✅ ${added} classe(s)`);
-      location.reload();
-    }
-  } catch(err) {
-    alert('❌ QR invalide');
-  }
 }
 
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js">
-
-// ========== EXPORT/IMPORT CLASSES INTER-APPS ==========
-function exportClassesJSON_escalade() {
-  const exported = DB.classes.map(c => {
-    const classStudents = DB.students.filter(s => s.classId === c.id);
-    return {
-      name: c.name,
-      students: classStudents.map(s => ({
-        prenom: s.prenom || '',
-        nom: s.nom || '',
-        genre: s.genre || ''
-      }))
-    };
-  });
+// ========== CONFIGURATION GITHUB ==========
+function openGitHubConfig_escalade() {
+  const token = prompt('GitHub Token (ou vide pour desactiver):');
+  if(token === null) return;
   
-  const blob = new Blob([JSON.stringify(exported, null, 2)], {type: 'application/json'});
+  const repo = prompt('Nom du repo (killthisumut/Appli-Test-camera):', 
+                      JSON.parse(localStorage.getItem('gitHubConfig') || '{}').repo || '');
+  if(repo === null) return;
+  
+  const proxyUrl = prompt('Proxy Vercel URL:', 
+                          JSON.parse(localStorage.getItem('gitHubConfig') || '{}').proxyUrl || 
+                          'https://appli-test-camera.vercel.app/api/sync');
+  if(proxyUrl === null) return;
+  
+  const config = { token, repo, proxyUrl };
+  localStorage.setItem('gitHubConfig', JSON.stringify(config));
+  alert('Configuration sauvegardee');
+}
+
+// ========== MODAL SYNCHRONISATION ==========
+function openSyncModal_escalade() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  
+  if(!config.token) {
+    alert('Configurez GitHub d abord');
+    return;
+  }
+  
+  const choice = confirm('Envoyer mes donnees? (OK=Envoyer, Annuler=Recevoir)');
+  
+  if(choice) {
+    gitHubSendData_escalade();
+  } else {
+    gitHubReceiveData_escalade();
+  }
+}
+
+// ========== ENVOI DONNEES ==========
+async function gitHubSendData_escalade() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  if(!config.token) return;
+  
+  try {
+    const payload = {
+      app: 'escalade',
+      timestamp: new Date().toISOString(),
+      data: {
+        classes: DB.classes || [],
+        students: DB.students || []
+      }
+    };
+    
+    const response = await fetch(config.proxyUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'token ' + config.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        path: 'sync-data/escalade/classes.json',
+        content: JSON.stringify(payload, null, 2),
+        message: 'Sync Escalade EPS (manual push)'
+      })
+    });
+    
+    if(response.ok) {
+      alert('Donnees envoyees');
+    } else {
+      alert('Erreur lors de l envoi');
+    }
+  } catch(e) {
+    alert('Erreur: ' + e.message);
+  }
+}
+
+// ========== RECEPTION DONNEES ==========
+async function gitHubReceiveData_escalade() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  if(!config.token) return;
+  
+  try {
+    const url = 'https://api.github.com/repos/' + config.repo + '/contents/sync-data/escalade/classes.json';
+    
+    const response = await fetch(url, {
+      headers: {'Authorization': 'token ' + config.token}
+    });
+    
+    if(!response.ok) {
+      alert('Fichier non trouve');
+      return;
+    }
+    
+    const data = await response.json();
+    const content = atob(data.content);
+    const remote = JSON.parse(content);
+    
+    if(remote.app !== 'escalade') {
+      alert('Ce n est pas un fichier Escalade');
+      return;
+    }
+    
+    DB.classes = remote.data.classes || [];
+    DB.students = remote.data.students || [];
+    saveDB();
+    
+    alert('Donnees recues');
+    location.reload();
+    
+  } catch(e) {
+    alert('Erreur: ' + e.message);
+  }
+}
+
+
+// ========== EXPORT/IMPORT UNIFIE ==========
+function exportEscaladeJSON() {
+  const exported = {
+    format: 'escalade-classes-v1',
+    classes: DB.classes.map(c => {
+      const classStudents = DB.students.filter(s => s.classId === c.id);
+      return {
+        name: c.name,
+        students: classStudents.map(s => ({
+          prenom: s.prenom || '',
+          nom: s.nom || '',
+          genre: s.genre || ''
+        }))
+      };
+    })
+  };
+  
+  const json = JSON.stringify(exported, null, 2);
+  const blob = new Blob([json], {type: 'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `escalade-export-${new Date().toISOString().slice(0,10)}.json`;
+  a.download = 'escalade-classes-' + new Date().toISOString().slice(0,10) + '.json';
   a.click();
   URL.revokeObjectURL(url);
-  alert('✅ Classes exportées');
+  alert('Classes exportees');
 }
 
-function importClassesJSON_escalade() {
+function importEscaladeJSON() {
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = '.json';
@@ -172,9 +357,20 @@ function importClassesJSON_escalade() {
     reader.onload = (event) => {
       try {
         const imported = JSON.parse(event.target.result);
+        
+        let classesToImport = [];
+        
+        if(imported.classes) {
+          classesToImport = imported.classes;
+        } else if(Array.isArray(imported)) {
+          classesToImport = imported;
+        } else {
+          throw new Error('Format non reconnu');
+        }
+        
         let added = 0;
         
-        imported.forEach(impClass => {
+        classesToImport.forEach(impClass => {
           if(!DB.classes.find(c => c.name === impClass.name)) {
             const newClassId = Date.now() + Math.random();
             DB.classes.push({id: newClassId, name: impClass.name});
@@ -195,78 +391,18 @@ function importClassesJSON_escalade() {
         
         if(added > 0) {
           saveDB();
-          alert(`✅ ${added} classe(s) importée(s)`);
+          alert(added + ' classe(s) importee(s)');
           location.reload();
+        } else {
+          alert('Classes deja existantes');
         }
       } catch(err) {
-        alert('❌ Fichier invalide');
+        alert('Erreur: ' + err.message);
       }
     };
     reader.readAsText(e.target.files[0]);
   };
   input.click();
-}
-
-function exportClassesQR_escalade() {
-  const exported = DB.classes.map(c => {
-    const classStudents = DB.students.filter(s => s.classId === c.id);
-    return {
-      n: c.name,
-      s: classStudents.map(s => ({p: s.prenom || '', n: s.nom || '', g: s.genre || ''}))
-    };
-  });
-  
-  const json = JSON.stringify(exported);
-  if(json.length > 4000) { alert('❌ Trop de données'); return; }
-  
-  const qrDiv = document.createElement('div');
-  qrDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:white;display:flex;align-items:center;justify-content:center;z-index:99999;';
-  const qr = document.createElement('div');
-  qrDiv.appendChild(qr);
-  const btn = document.createElement('button');
-  btn.textContent = 'Fermer';
-  btn.onclick = () => qrDiv.remove();
-  btn.style.cssText = 'position:absolute;bottom:20px;padding:10px 20px;';
-  qrDiv.appendChild(btn);
-  document.body.appendChild(qrDiv);
-  
-  if(typeof QRCode !== 'undefined') new QRCode(qr, {text: json, width: 300, height: 300});
-}
-
-function importClassesQR_escalade() {
-  const text = prompt('Colle le texte du QR code:');
-  if(!text) return;
-  try {
-    const imported = JSON.parse(text);
-    let added = 0;
-    
-    imported.forEach(imp => {
-      if(!DB.classes.find(c => c.name === imp.n)) {
-        const newClassId = Date.now() + Math.random();
-        DB.classes.push({id: newClassId, name: imp.n});
-        
-        imp.s.forEach(s => {
-          DB.students.push({
-            id: Date.now() + Math.random(),
-            classId: newClassId,
-            prenom: s.p,
-            nom: s.n,
-            genre: s.g
-          });
-        });
-        
-        added++;
-      }
-    });
-    
-    if(added > 0) {
-      saveDB();
-      alert(`✅ ${added} classe(s)`);
-      location.reload();
-    }
-  } catch(err) {
-    alert('❌ QR invalide');
-  }
 }
 
 </script>
@@ -1755,32 +1891,149 @@ function phoneIcon(){ return `<svg viewBox="0 0 24 24" fill="none" stroke="curre
 /* ---------- init ---------- */
 render();
 
-
-// ========== EXPORT/IMPORT CLASSES INTER-APPS ==========
-function exportClassesJSON_escalade() {
-  const exported = DB.classes.map(c => {
-    const classStudents = DB.students.filter(s => s.classId === c.id);
-    return {
-      name: c.name,
-      students: classStudents.map(s => ({
-        prenom: s.prenom || '',
-        nom: s.nom || '',
-        genre: s.genre || ''
-      }))
-    };
-  });
+// ========== CONFIGURATION GITHUB ==========
+function openGitHubConfig_escalade() {
+  const token = prompt('GitHub Token (ou vide pour desactiver):');
+  if(token === null) return;
   
-  const blob = new Blob([JSON.stringify(exported, null, 2)], {type: 'application/json'});
+  const repo = prompt('Nom du repo (killthisumut/Appli-Test-camera):', 
+                      JSON.parse(localStorage.getItem('gitHubConfig') || '{}').repo || '');
+  if(repo === null) return;
+  
+  const proxyUrl = prompt('Proxy Vercel URL:', 
+                          JSON.parse(localStorage.getItem('gitHubConfig') || '{}').proxyUrl || 
+                          'https://appli-test-camera.vercel.app/api/sync');
+  if(proxyUrl === null) return;
+  
+  const config = { token, repo, proxyUrl };
+  localStorage.setItem('gitHubConfig', JSON.stringify(config));
+  alert('Configuration sauvegardee');
+}
+
+// ========== MODAL SYNCHRONISATION ==========
+function openSyncModal_escalade() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  
+  if(!config.token) {
+    alert('Configurez GitHub d abord');
+    return;
+  }
+  
+  const choice = confirm('Envoyer mes donnees? (OK=Envoyer, Annuler=Recevoir)');
+  
+  if(choice) {
+    gitHubSendData_escalade();
+  } else {
+    gitHubReceiveData_escalade();
+  }
+}
+
+// ========== ENVOI DONNEES ==========
+async function gitHubSendData_escalade() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  if(!config.token) return;
+  
+  try {
+    const payload = {
+      app: 'escalade',
+      timestamp: new Date().toISOString(),
+      data: {
+        classes: DB.classes || [],
+        students: DB.students || []
+      }
+    };
+    
+    const response = await fetch(config.proxyUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'token ' + config.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        path: 'sync-data/escalade/classes.json',
+        content: JSON.stringify(payload, null, 2),
+        message: 'Sync Escalade EPS (manual push)'
+      })
+    });
+    
+    if(response.ok) {
+      alert('Donnees envoyees');
+    } else {
+      alert('Erreur lors de l envoi');
+    }
+  } catch(e) {
+    alert('Erreur: ' + e.message);
+  }
+}
+
+// ========== RECEPTION DONNEES ==========
+async function gitHubReceiveData_escalade() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  if(!config.token) return;
+  
+  try {
+    const url = 'https://api.github.com/repos/' + config.repo + '/contents/sync-data/escalade/classes.json';
+    
+    const response = await fetch(url, {
+      headers: {'Authorization': 'token ' + config.token}
+    });
+    
+    if(!response.ok) {
+      alert('Fichier non trouve');
+      return;
+    }
+    
+    const data = await response.json();
+    const content = atob(data.content);
+    const remote = JSON.parse(content);
+    
+    if(remote.app !== 'escalade') {
+      alert('Ce n est pas un fichier Escalade');
+      return;
+    }
+    
+    DB.classes = remote.data.classes || [];
+    DB.students = remote.data.students || [];
+    saveDB();
+    
+    alert('Donnees recues');
+    location.reload();
+    
+  } catch(e) {
+    alert('Erreur: ' + e.message);
+  }
+}
+
+
+// ========== EXPORT/IMPORT UNIFIE ==========
+function exportEscaladeJSON() {
+  const exported = {
+    format: 'escalade-classes-v1',
+    classes: DB.classes.map(c => {
+      const classStudents = DB.students.filter(s => s.classId === c.id);
+      return {
+        name: c.name,
+        students: classStudents.map(s => ({
+          prenom: s.prenom || '',
+          nom: s.nom || '',
+          genre: s.genre || ''
+        }))
+      };
+    })
+  };
+  
+  const json = JSON.stringify(exported, null, 2);
+  const blob = new Blob([json], {type: 'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `escalade-export-${new Date().toISOString().slice(0,10)}.json`;
+  a.download = 'escalade-classes-' + new Date().toISOString().slice(0,10) + '.json';
   a.click();
   URL.revokeObjectURL(url);
-  alert('✅ Classes exportées');
+  alert('Classes exportees');
 }
 
-function importClassesJSON_escalade() {
+function importEscaladeJSON() {
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = '.json';
@@ -1789,9 +2042,20 @@ function importClassesJSON_escalade() {
     reader.onload = (event) => {
       try {
         const imported = JSON.parse(event.target.result);
+        
+        let classesToImport = [];
+        
+        if(imported.classes) {
+          classesToImport = imported.classes;
+        } else if(Array.isArray(imported)) {
+          classesToImport = imported;
+        } else {
+          throw new Error('Format non reconnu');
+        }
+        
         let added = 0;
         
-        imported.forEach(impClass => {
+        classesToImport.forEach(impClass => {
           if(!DB.classes.find(c => c.name === impClass.name)) {
             const newClassId = Date.now() + Math.random();
             DB.classes.push({id: newClassId, name: impClass.name});
@@ -1812,78 +2076,18 @@ function importClassesJSON_escalade() {
         
         if(added > 0) {
           saveDB();
-          alert(`✅ ${added} classe(s) importée(s)`);
+          alert(added + ' classe(s) importee(s)');
           location.reload();
+        } else {
+          alert('Classes deja existantes');
         }
       } catch(err) {
-        alert('❌ Fichier invalide');
+        alert('Erreur: ' + err.message);
       }
     };
     reader.readAsText(e.target.files[0]);
   };
   input.click();
-}
-
-function exportClassesQR_escalade() {
-  const exported = DB.classes.map(c => {
-    const classStudents = DB.students.filter(s => s.classId === c.id);
-    return {
-      n: c.name,
-      s: classStudents.map(s => ({p: s.prenom || '', n: s.nom || '', g: s.genre || ''}))
-    };
-  });
-  
-  const json = JSON.stringify(exported);
-  if(json.length > 4000) { alert('❌ Trop de données'); return; }
-  
-  const qrDiv = document.createElement('div');
-  qrDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:white;display:flex;align-items:center;justify-content:center;z-index:99999;';
-  const qr = document.createElement('div');
-  qrDiv.appendChild(qr);
-  const btn = document.createElement('button');
-  btn.textContent = 'Fermer';
-  btn.onclick = () => qrDiv.remove();
-  btn.style.cssText = 'position:absolute;bottom:20px;padding:10px 20px;';
-  qrDiv.appendChild(btn);
-  document.body.appendChild(qrDiv);
-  
-  if(typeof QRCode !== 'undefined') new QRCode(qr, {text: json, width: 300, height: 300});
-}
-
-function importClassesQR_escalade() {
-  const text = prompt('Colle le texte du QR code:');
-  if(!text) return;
-  try {
-    const imported = JSON.parse(text);
-    let added = 0;
-    
-    imported.forEach(imp => {
-      if(!DB.classes.find(c => c.name === imp.n)) {
-        const newClassId = Date.now() + Math.random();
-        DB.classes.push({id: newClassId, name: imp.n});
-        
-        imp.s.forEach(s => {
-          DB.students.push({
-            id: Date.now() + Math.random(),
-            classId: newClassId,
-            prenom: s.p,
-            nom: s.n,
-            genre: s.g
-          });
-        });
-        
-        added++;
-      }
-    });
-    
-    if(added > 0) {
-      saveDB();
-      alert(`✅ ${added} classe(s)`);
-      location.reload();
-    }
-  } catch(err) {
-    alert('❌ QR invalide');
-  }
 }
 
 </script>

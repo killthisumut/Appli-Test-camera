@@ -5,8 +5,402 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>EPS Tournois</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
+// ========== CONFIGURATION GITHUB ==========
+function openGitHubConfig() {
+  const token = prompt('GitHub Token (ou vide pour desactiver):');
+  if(token === null) return;
+  
+  const repo = prompt('Nom du repo (killthisumut/Appli-Test-camera):', 
+                      JSON.parse(localStorage.getItem('gitHubConfig') || '{}').repo || '');
+  if(repo === null) return;
+  
+  const proxyUrl = prompt('Proxy Vercel URL:', 
+                          JSON.parse(localStorage.getItem('gitHubConfig') || '{}').proxyUrl || 
+                          'https://appli-test-camera.vercel.app/api/sync');
+  if(proxyUrl === null) return;
+  
+  const config = { token, repo, proxyUrl };
+  localStorage.setItem('gitHubConfig', JSON.stringify(config));
+  alert('Configuration sauvegardee');
+}
+
+// ========== MODAL SYNCHRONISATION ==========
+function openSyncModal() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  
+  if(!config.token) {
+    alert('Configurez GitHub d abord');
+    return;
+  }
+  
+  const choice = confirm('Envoyer mes donnees? (OK=Envoyer, Annuler=Recevoir)');
+  
+  if(choice) {
+    gitHubSendData();
+  } else {
+    gitHubReceiveData();
+  }
+}
+
+// ========== ENVOI DONNEES ==========
+async function gitHubSendData() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  if(!config.token) return;
+  
+  try {
+    const classes = JSON.parse(localStorage.getItem('eps_classes_v1')) || [];
+    const history = JSON.parse(localStorage.getItem('trn_history_v1')) || [];
+    const infos = JSON.parse(localStorage.getItem('trn_class_infos_v1')) || {};
+    
+    const payload = {
+      app: 'tournoi-eps',
+      timestamp: new Date().toISOString(),
+      data: {
+        classes: classes,
+        history: history,
+        infos: infos
+      }
+    };
+    
+    const response = await fetch(config.proxyUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'token ' + config.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        path: 'sync-data/tournoi-eps/classes.json',
+        content: JSON.stringify(payload, null, 2),
+        message: 'Sync Tournoi-eps (manual push)'
+      })
+    });
+    
+    if(response.ok) {
+      alert('Donnees envoyees');
+    } else {
+      alert('Erreur lors de l envoi');
+    }
+  } catch(e) {
+    alert('Erreur: ' + e.message);
+  }
+}
+
+// ========== RECEPTION DONNEES ==========
+async function gitHubReceiveData() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  if(!config.token) return;
+  
+  try {
+    const url = 'https://api.github.com/repos/' + config.repo + '/contents/sync-data/tournoi-eps/classes.json';
+    
+    const response = await fetch(url, {
+      headers: {'Authorization': 'token ' + config.token}
+    });
+    
+    if(!response.ok) {
+      alert('Fichier non trouve');
+      return;
+    }
+    
+    const data = await response.json();
+    const content = atob(data.content);
+    const remote = JSON.parse(content);
+    
+    if(remote.app !== 'tournoi-eps') {
+      alert('Ce n est pas un fichier Tournoi-eps');
+      return;
+    }
+    
+    localStorage.setItem('eps_classes_v1', JSON.stringify(remote.data.classes || []));
+    localStorage.setItem('trn_history_v1', JSON.stringify(remote.data.history || []));
+    localStorage.setItem('trn_class_infos_v1', JSON.stringify(remote.data.infos || {}));
+    
+    alert('Donnees recues');
+    location.reload();
+    
+  } catch(e) {
+    alert('Erreur: ' + e.message);
+  }
+}
+
+
+// ========== EXPORT/IMPORT UNIFIE ==========
+function exportTournoisJSON() {
+  const classes = JSON.parse(localStorage.getItem('eps_classes_v1')) || [];
+  
+  const exported = {
+    format: 'tournoi-eps-classes-v1',
+    classes: classes.map(c => ({
+      name: c.name,
+      students: (c.students || []).map(s => ({
+        prenom: s.prenom || s.name || '',
+        nom: s.nom || '',
+        genre: s.genre || ''
+      }))
+    }))
+  };
+  
+  const json = JSON.stringify(exported, null, 2);
+  const blob = new Blob([json], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'tournoi-eps-classes-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  alert('Classes exportees');
+}
+
+function importTournoisJSON() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = (e) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const imported = JSON.parse(event.target.result);
+        
+        let classesToImport = [];
+        
+        if(imported.classes) {
+          classesToImport = imported.classes;
+        } else if(Array.isArray(imported)) {
+          classesToImport = imported;
+        } else {
+          throw new Error('Format non reconnu');
+        }
+        
+        const classes = JSON.parse(localStorage.getItem('eps_classes_v1')) || [];
+        let added = 0;
+        
+        classesToImport.forEach(impClass => {
+          if(!classes.find(c => c.name === impClass.name)) {
+            classes.push({
+              id: Date.now() + Math.random(),
+              name: impClass.name,
+              students: impClass.students || []
+            });
+            added++;
+          }
+        });
+        
+        if(added > 0) {
+          localStorage.setItem('eps_classes_v1', JSON.stringify(classes));
+          alert(added + ' classe(s) importee(s)');
+          location.reload();
+        } else {
+          alert('Classes deja existantes');
+        }
+      } catch(err) {
+        alert('Erreur: ' + err.message);
+      }
+    };
+    reader.readAsText(e.target.files[0]);
+  };
+  input.click();
+}
+
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js">
+// ========== CONFIGURATION GITHUB ==========
+function openGitHubConfig() {
+  const token = prompt('GitHub Token (ou vide pour desactiver):');
+  if(token === null) return;
+  
+  const repo = prompt('Nom du repo (killthisumut/Appli-Test-camera):', 
+                      JSON.parse(localStorage.getItem('gitHubConfig') || '{}').repo || '');
+  if(repo === null) return;
+  
+  const proxyUrl = prompt('Proxy Vercel URL:', 
+                          JSON.parse(localStorage.getItem('gitHubConfig') || '{}').proxyUrl || 
+                          'https://appli-test-camera.vercel.app/api/sync');
+  if(proxyUrl === null) return;
+  
+  const config = { token, repo, proxyUrl };
+  localStorage.setItem('gitHubConfig', JSON.stringify(config));
+  alert('Configuration sauvegardee');
+}
+
+// ========== MODAL SYNCHRONISATION ==========
+function openSyncModal() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  
+  if(!config.token) {
+    alert('Configurez GitHub d abord');
+    return;
+  }
+  
+  const choice = confirm('Envoyer mes donnees? (OK=Envoyer, Annuler=Recevoir)');
+  
+  if(choice) {
+    gitHubSendData();
+  } else {
+    gitHubReceiveData();
+  }
+}
+
+// ========== ENVOI DONNEES ==========
+async function gitHubSendData() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  if(!config.token) return;
+  
+  try {
+    const classes = JSON.parse(localStorage.getItem('eps_classes_v1')) || [];
+    const history = JSON.parse(localStorage.getItem('trn_history_v1')) || [];
+    const infos = JSON.parse(localStorage.getItem('trn_class_infos_v1')) || {};
+    
+    const payload = {
+      app: 'tournoi-eps',
+      timestamp: new Date().toISOString(),
+      data: {
+        classes: classes,
+        history: history,
+        infos: infos
+      }
+    };
+    
+    const response = await fetch(config.proxyUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'token ' + config.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        path: 'sync-data/tournoi-eps/classes.json',
+        content: JSON.stringify(payload, null, 2),
+        message: 'Sync Tournoi-eps (manual push)'
+      })
+    });
+    
+    if(response.ok) {
+      alert('Donnees envoyees');
+    } else {
+      alert('Erreur lors de l envoi');
+    }
+  } catch(e) {
+    alert('Erreur: ' + e.message);
+  }
+}
+
+// ========== RECEPTION DONNEES ==========
+async function gitHubReceiveData() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  if(!config.token) return;
+  
+  try {
+    const url = 'https://api.github.com/repos/' + config.repo + '/contents/sync-data/tournoi-eps/classes.json';
+    
+    const response = await fetch(url, {
+      headers: {'Authorization': 'token ' + config.token}
+    });
+    
+    if(!response.ok) {
+      alert('Fichier non trouve');
+      return;
+    }
+    
+    const data = await response.json();
+    const content = atob(data.content);
+    const remote = JSON.parse(content);
+    
+    if(remote.app !== 'tournoi-eps') {
+      alert('Ce n est pas un fichier Tournoi-eps');
+      return;
+    }
+    
+    localStorage.setItem('eps_classes_v1', JSON.stringify(remote.data.classes || []));
+    localStorage.setItem('trn_history_v1', JSON.stringify(remote.data.history || []));
+    localStorage.setItem('trn_class_infos_v1', JSON.stringify(remote.data.infos || {}));
+    
+    alert('Donnees recues');
+    location.reload();
+    
+  } catch(e) {
+    alert('Erreur: ' + e.message);
+  }
+}
+
+
+// ========== EXPORT/IMPORT UNIFIE ==========
+function exportTournoisJSON() {
+  const classes = JSON.parse(localStorage.getItem('eps_classes_v1')) || [];
+  
+  const exported = {
+    format: 'tournoi-eps-classes-v1',
+    classes: classes.map(c => ({
+      name: c.name,
+      students: (c.students || []).map(s => ({
+        prenom: s.prenom || s.name || '',
+        nom: s.nom || '',
+        genre: s.genre || ''
+      }))
+    }))
+  };
+  
+  const json = JSON.stringify(exported, null, 2);
+  const blob = new Blob([json], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'tournoi-eps-classes-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  alert('Classes exportees');
+}
+
+function importTournoisJSON() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = (e) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const imported = JSON.parse(event.target.result);
+        
+        let classesToImport = [];
+        
+        if(imported.classes) {
+          classesToImport = imported.classes;
+        } else if(Array.isArray(imported)) {
+          classesToImport = imported;
+        } else {
+          throw new Error('Format non reconnu');
+        }
+        
+        const classes = JSON.parse(localStorage.getItem('eps_classes_v1')) || [];
+        let added = 0;
+        
+        classesToImport.forEach(impClass => {
+          if(!classes.find(c => c.name === impClass.name)) {
+            classes.push({
+              id: Date.now() + Math.random(),
+              name: impClass.name,
+              students: impClass.students || []
+            });
+            added++;
+          }
+        });
+        
+        if(added > 0) {
+          localStorage.setItem('eps_classes_v1', JSON.stringify(classes));
+          alert(added + ' classe(s) importee(s)');
+          location.reload();
+        } else {
+          alert('Classes deja existantes');
+        }
+      } catch(err) {
+        alert('Erreur: ' + err.message);
+      }
+    };
+    reader.readAsText(e.target.files[0]);
+  };
+  input.click();
+}
+
+</script>
 <style>
 /* ═══════════════════════════════════════════════
    THEME VARIABLES
@@ -894,6 +1288,203 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
       console.log('Page reload detected - cache busting active');
     }
   } catch(e) {}
+
+// ========== CONFIGURATION GITHUB ==========
+function openGitHubConfig() {
+  const token = prompt('GitHub Token (ou vide pour desactiver):');
+  if(token === null) return;
+  
+  const repo = prompt('Nom du repo (killthisumut/Appli-Test-camera):', 
+                      JSON.parse(localStorage.getItem('gitHubConfig') || '{}').repo || '');
+  if(repo === null) return;
+  
+  const proxyUrl = prompt('Proxy Vercel URL:', 
+                          JSON.parse(localStorage.getItem('gitHubConfig') || '{}').proxyUrl || 
+                          'https://appli-test-camera.vercel.app/api/sync');
+  if(proxyUrl === null) return;
+  
+  const config = { token, repo, proxyUrl };
+  localStorage.setItem('gitHubConfig', JSON.stringify(config));
+  alert('Configuration sauvegardee');
+}
+
+// ========== MODAL SYNCHRONISATION ==========
+function openSyncModal() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  
+  if(!config.token) {
+    alert('Configurez GitHub d abord');
+    return;
+  }
+  
+  const choice = confirm('Envoyer mes donnees? (OK=Envoyer, Annuler=Recevoir)');
+  
+  if(choice) {
+    gitHubSendData();
+  } else {
+    gitHubReceiveData();
+  }
+}
+
+// ========== ENVOI DONNEES ==========
+async function gitHubSendData() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  if(!config.token) return;
+  
+  try {
+    const classes = JSON.parse(localStorage.getItem('eps_classes_v1')) || [];
+    const history = JSON.parse(localStorage.getItem('trn_history_v1')) || [];
+    const infos = JSON.parse(localStorage.getItem('trn_class_infos_v1')) || {};
+    
+    const payload = {
+      app: 'tournoi-eps',
+      timestamp: new Date().toISOString(),
+      data: {
+        classes: classes,
+        history: history,
+        infos: infos
+      }
+    };
+    
+    const response = await fetch(config.proxyUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'token ' + config.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        path: 'sync-data/tournoi-eps/classes.json',
+        content: JSON.stringify(payload, null, 2),
+        message: 'Sync Tournoi-eps (manual push)'
+      })
+    });
+    
+    if(response.ok) {
+      alert('Donnees envoyees');
+    } else {
+      alert('Erreur lors de l envoi');
+    }
+  } catch(e) {
+    alert('Erreur: ' + e.message);
+  }
+}
+
+// ========== RECEPTION DONNEES ==========
+async function gitHubReceiveData() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  if(!config.token) return;
+  
+  try {
+    const url = 'https://api.github.com/repos/' + config.repo + '/contents/sync-data/tournoi-eps/classes.json';
+    
+    const response = await fetch(url, {
+      headers: {'Authorization': 'token ' + config.token}
+    });
+    
+    if(!response.ok) {
+      alert('Fichier non trouve');
+      return;
+    }
+    
+    const data = await response.json();
+    const content = atob(data.content);
+    const remote = JSON.parse(content);
+    
+    if(remote.app !== 'tournoi-eps') {
+      alert('Ce n est pas un fichier Tournoi-eps');
+      return;
+    }
+    
+    localStorage.setItem('eps_classes_v1', JSON.stringify(remote.data.classes || []));
+    localStorage.setItem('trn_history_v1', JSON.stringify(remote.data.history || []));
+    localStorage.setItem('trn_class_infos_v1', JSON.stringify(remote.data.infos || {}));
+    
+    alert('Donnees recues');
+    location.reload();
+    
+  } catch(e) {
+    alert('Erreur: ' + e.message);
+  }
+}
+
+
+// ========== EXPORT/IMPORT UNIFIE ==========
+function exportTournoisJSON() {
+  const classes = JSON.parse(localStorage.getItem('eps_classes_v1')) || [];
+  
+  const exported = {
+    format: 'tournoi-eps-classes-v1',
+    classes: classes.map(c => ({
+      name: c.name,
+      students: (c.students || []).map(s => ({
+        prenom: s.prenom || s.name || '',
+        nom: s.nom || '',
+        genre: s.genre || ''
+      }))
+    }))
+  };
+  
+  const json = JSON.stringify(exported, null, 2);
+  const blob = new Blob([json], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'tournoi-eps-classes-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  alert('Classes exportees');
+}
+
+function importTournoisJSON() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = (e) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const imported = JSON.parse(event.target.result);
+        
+        let classesToImport = [];
+        
+        if(imported.classes) {
+          classesToImport = imported.classes;
+        } else if(Array.isArray(imported)) {
+          classesToImport = imported;
+        } else {
+          throw new Error('Format non reconnu');
+        }
+        
+        const classes = JSON.parse(localStorage.getItem('eps_classes_v1')) || [];
+        let added = 0;
+        
+        classesToImport.forEach(impClass => {
+          if(!classes.find(c => c.name === impClass.name)) {
+            classes.push({
+              id: Date.now() + Math.random(),
+              name: impClass.name,
+              students: impClass.students || []
+            });
+            added++;
+          }
+        });
+        
+        if(added > 0) {
+          localStorage.setItem('eps_classes_v1', JSON.stringify(classes));
+          alert(added + ' classe(s) importee(s)');
+          location.reload();
+        } else {
+          alert('Classes deja existantes');
+        }
+      } catch(err) {
+        alert('Erreur: ' + err.message);
+      }
+    };
+    reader.readAsText(e.target.files[0]);
+  };
+  input.click();
+}
+
 </script>
 </head>
 <body>
@@ -5433,47 +6024,177 @@ window.addEventListener('load',()=>{
   document.querySelectorAll('.overlay').forEach(ov=>ov.addEventListener('click',e=>{if(e.target===ov)ov.classList.remove('show');}));
 });
 
-// ========== EXPORT/IMPORT CLASSES ENTRE APPS ==========
-function exportClassesToJSON_tournoi() {
-  const classes = tryParse(localStorage.getItem('eps_classes_v1')) || [];
+// ========== CONFIGURATION GITHUB ==========
+function openGitHubConfig() {
+  const token = prompt('GitHub Token (ou vide pour desactiver):');
+  if(token === null) return;
   
-  // Export UNIQUEMENT: prenom, nom, classe, genre
-  const exported = classes.map(c => ({
-    name: c.name,
-    students: (c.students || []).map(s => ({
-      prenom: s.prenom || '',
-      nom: s.nom || '',
-      genre: s.genre || ''
+  const repo = prompt('Nom du repo (killthisumut/Appli-Test-camera):', 
+                      JSON.parse(localStorage.getItem('gitHubConfig') || '{}').repo || '');
+  if(repo === null) return;
+  
+  const proxyUrl = prompt('Proxy Vercel URL:', 
+                          JSON.parse(localStorage.getItem('gitHubConfig') || '{}').proxyUrl || 
+                          'https://appli-test-camera.vercel.app/api/sync');
+  if(proxyUrl === null) return;
+  
+  const config = { token, repo, proxyUrl };
+  localStorage.setItem('gitHubConfig', JSON.stringify(config));
+  alert('Configuration sauvegardee');
+}
+
+// ========== MODAL SYNCHRONISATION ==========
+function openSyncModal() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  
+  if(!config.token) {
+    alert('Configurez GitHub d abord');
+    return;
+  }
+  
+  const choice = confirm('Envoyer mes donnees? (OK=Envoyer, Annuler=Recevoir)');
+  
+  if(choice) {
+    gitHubSendData();
+  } else {
+    gitHubReceiveData();
+  }
+}
+
+// ========== ENVOI DONNEES ==========
+async function gitHubSendData() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  if(!config.token) return;
+  
+  try {
+    const classes = JSON.parse(localStorage.getItem('eps_classes_v1')) || [];
+    const history = JSON.parse(localStorage.getItem('trn_history_v1')) || [];
+    const infos = JSON.parse(localStorage.getItem('trn_class_infos_v1')) || {};
+    
+    const payload = {
+      app: 'tournoi-eps',
+      timestamp: new Date().toISOString(),
+      data: {
+        classes: classes,
+        history: history,
+        infos: infos
+      }
+    };
+    
+    const response = await fetch(config.proxyUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'token ' + config.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        path: 'sync-data/tournoi-eps/classes.json',
+        content: JSON.stringify(payload, null, 2),
+        message: 'Sync Tournoi-eps (manual push)'
+      })
+    });
+    
+    if(response.ok) {
+      alert('Donnees envoyees');
+    } else {
+      alert('Erreur lors de l envoi');
+    }
+  } catch(e) {
+    alert('Erreur: ' + e.message);
+  }
+}
+
+// ========== RECEPTION DONNEES ==========
+async function gitHubReceiveData() {
+  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  if(!config.token) return;
+  
+  try {
+    const url = 'https://api.github.com/repos/' + config.repo + '/contents/sync-data/tournoi-eps/classes.json';
+    
+    const response = await fetch(url, {
+      headers: {'Authorization': 'token ' + config.token}
+    });
+    
+    if(!response.ok) {
+      alert('Fichier non trouve');
+      return;
+    }
+    
+    const data = await response.json();
+    const content = atob(data.content);
+    const remote = JSON.parse(content);
+    
+    if(remote.app !== 'tournoi-eps') {
+      alert('Ce n est pas un fichier Tournoi-eps');
+      return;
+    }
+    
+    localStorage.setItem('eps_classes_v1', JSON.stringify(remote.data.classes || []));
+    localStorage.setItem('trn_history_v1', JSON.stringify(remote.data.history || []));
+    localStorage.setItem('trn_class_infos_v1', JSON.stringify(remote.data.infos || {}));
+    
+    alert('Donnees recues');
+    location.reload();
+    
+  } catch(e) {
+    alert('Erreur: ' + e.message);
+  }
+}
+
+
+// ========== EXPORT/IMPORT UNIFIE ==========
+function exportTournoisJSON() {
+  const classes = JSON.parse(localStorage.getItem('eps_classes_v1')) || [];
+  
+  const exported = {
+    format: 'tournoi-eps-classes-v1',
+    classes: classes.map(c => ({
+      name: c.name,
+      students: (c.students || []).map(s => ({
+        prenom: s.prenom || s.name || '',
+        nom: s.nom || '',
+        genre: s.genre || ''
+      }))
     }))
-  }));
+  };
   
   const json = JSON.stringify(exported, null, 2);
   const blob = new Blob([json], {type: 'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `tournoi-eps-export-${new Date().toISOString().slice(0,10)}.json`;
+  a.download = 'tournoi-eps-classes-' + new Date().toISOString().slice(0,10) + '.json';
   a.click();
   URL.revokeObjectURL(url);
-  alert('✅ Classes exportées en JSON');
+  alert('Classes exportees');
 }
 
-function importClassesFromJSON_tournoi() {
+function importTournoisJSON() {
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = '.json';
   input.onchange = (e) => {
-    const file = e.target.files[0];
     const reader = new FileReader();
     reader.onload = (event) => {
       try {
         const imported = JSON.parse(event.target.result);
-        const classes = tryParse(localStorage.getItem('eps_classes_v1')) || [];
         
+        let classesToImport = [];
+        
+        if(imported.classes) {
+          classesToImport = imported.classes;
+        } else if(Array.isArray(imported)) {
+          classesToImport = imported;
+        } else {
+          throw new Error('Format non reconnu');
+        }
+        
+        const classes = JSON.parse(localStorage.getItem('eps_classes_v1')) || [];
         let added = 0;
-        imported.forEach(impClass => {
-          const exists = classes.find(c => c.name === impClass.name);
-          if(!exists) {
+        
+        classesToImport.forEach(impClass => {
+          if(!classes.find(c => c.name === impClass.name)) {
             classes.push({
               id: Date.now() + Math.random(),
               name: impClass.name,
@@ -5485,81 +6206,18 @@ function importClassesFromJSON_tournoi() {
         
         if(added > 0) {
           localStorage.setItem('eps_classes_v1', JSON.stringify(classes));
-          alert(`✅ ${added} classe(s) importée(s)`);
+          alert(added + ' classe(s) importee(s)');
           location.reload();
         } else {
-          alert('⚠️ Classes déjà existantes');
+          alert('Classes deja existantes');
         }
       } catch(err) {
-        alert('❌ Erreur: fichier JSON invalide');
+        alert('Erreur: ' + err.message);
       }
     };
-    reader.readAsText(file);
+    reader.readAsText(e.target.files[0]);
   };
   input.click();
-}
-
-function exportClassesToQR_tournoi() {
-  const classes = tryParse(localStorage.getItem('eps_classes_v1')) || [];
-  const exported = classes.map(c => ({
-    n: c.name,
-    s: (c.students || []).map(s => ({p: s.prenom || '', n: s.nom || '', g: s.genre || ''}))
-  }));
-  
-  const json = JSON.stringify(exported);
-  if(json.length > 4000) {
-    alert('❌ Trop de données pour QR code');
-    return;
-  }
-  
-  const qrDiv = document.createElement('div');
-  qrDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:white;display:flex;align-items:center;justify-content:center;z-index:99999;flex-direction:column;';
-  
-  const qrCanvas = document.createElement('div');
-  qrDiv.appendChild(qrCanvas);
-  
-  const closeBtn = document.createElement('button');
-  closeBtn.textContent = 'Fermer';
-  closeBtn.style.cssText = 'margin-top:20px;padding:10px 20px;';
-  closeBtn.onclick = () => qrDiv.remove();
-  qrDiv.appendChild(closeBtn);
-  
-  document.body.appendChild(qrDiv);
-  
-  if(typeof QRCode !== 'undefined') {
-    new QRCode(qrCanvas, {text: json, width: 300, height: 300});
-  }
-}
-
-function importClassesFromQR_tournoi() {
-  const text = prompt('Colle le texte du QR code:');
-  if(!text) return;
-  
-  try {
-    const imported = JSON.parse(text);
-    const classes = tryParse(localStorage.getItem('eps_classes_v1')) || [];
-    
-    let added = 0;
-    imported.forEach(impClass => {
-      const exists = classes.find(c => c.name === impClass.n);
-      if(!exists) {
-        classes.push({
-          id: Date.now() + Math.random(),
-          name: impClass.n,
-          students: impClass.s.map(s => ({prenom: s.p, nom: s.n, genre: s.g}))
-        });
-        added++;
-      }
-    });
-    
-    if(added > 0) {
-      localStorage.setItem('eps_classes_v1', JSON.stringify(classes));
-      alert(`✅ ${added} classe(s) importée(s)`);
-      location.reload();
-    }
-  } catch(err) {
-    alert('❌ QR code invalide');
-  }
 }
 
 </script>
