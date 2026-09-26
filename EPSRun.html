@@ -4,396 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>EPS – Compteur & Calculateur</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
-// ========== CONFIGURATION GITHUB ==========
-function openGitHubConfig_epsrun() {
-  const token = prompt('GitHub Token (ou vide pour desactiver):');
-  if(token === null) return;
-  
-  const repo = prompt('Nom du repo (killthisumut/Appli-Test-camera):', 
-                      JSON.parse(localStorage.getItem('gitHubConfig') || '{}').repo || '');
-  if(repo === null) return;
-  
-  const proxyUrl = prompt('Proxy Vercel URL:', 
-                          JSON.parse(localStorage.getItem('gitHubConfig') || '{}').proxyUrl || 
-                          'https://appli-test-camera.vercel.app/api/sync');
-  if(proxyUrl === null) return;
-  
-  const config = { token, repo, proxyUrl };
-  localStorage.setItem('gitHubConfig', JSON.stringify(config));
-  alert('Configuration sauvegardee');
-}
-
-// ========== MODAL SYNCHRONISATION ==========
-function openSyncModal_epsrun() {
-  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
-  
-  if(!config.token) {
-    alert('Configurez GitHub d abord');
-    return;
-  }
-  
-  const choice = confirm('Envoyer mes donnees? (OK=Envoyer, Annuler=Recevoir)');
-  
-  if(choice) {
-    gitHubSendData_epsrun();
-  } else {
-    gitHubReceiveData_epsrun();
-  }
-}
-
-// ========== ENVOI DONNEES ==========
-async function gitHubSendData_epsrun() {
-  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
-  if(!config.token) return;
-  
-  try {
-    const classes = JSON.parse(localStorage.getItem('eps_classes')) || [];
-    const infos = JSON.parse(localStorage.getItem('eps_class_infos')) || {};
-    
-    const payload = {
-      app: 'epsrun',
-      timestamp: new Date().toISOString(),
-      data: {
-        classes: classes,
-        infos: infos
-      }
-    };
-    
-    const response = await fetch(config.proxyUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': 'token ' + config.token,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        path: 'sync-data/epsrun/classes.json',
-        content: JSON.stringify(payload, null, 2),
-        message: 'Sync EPSRun (manual push)'
-      })
-    });
-    
-    if(response.ok) {
-      alert('Donnees envoyees');
-    } else {
-      alert('Erreur lors de l envoi');
-    }
-  } catch(e) {
-    alert('Erreur: ' + e.message);
-  }
-}
-
-// ========== RECEPTION DONNEES ==========
-async function gitHubReceiveData_epsrun() {
-  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
-  if(!config.token) return;
-  
-  try {
-    const url = 'https://api.github.com/repos/' + config.repo + '/contents/sync-data/epsrun/classes.json';
-    
-    const response = await fetch(url, {
-      headers: {'Authorization': 'token ' + config.token}
-    });
-    
-    if(!response.ok) {
-      alert('Fichier non trouve');
-      return;
-    }
-    
-    const data = await response.json();
-    const content = atob(data.content);
-    const remote = JSON.parse(content);
-    
-    if(remote.app !== 'epsrun') {
-      alert('Ce n est pas un fichier EPSRun');
-      return;
-    }
-    
-    localStorage.setItem('eps_classes', JSON.stringify(remote.data.classes || []));
-    localStorage.setItem('eps_class_infos', JSON.stringify(remote.data.infos || {}));
-    
-    alert('Donnees recues');
-    location.reload();
-    
-  } catch(e) {
-    alert('Erreur: ' + e.message);
-  }
-}
-
-
-// ========== EXPORT/IMPORT UNIFIE ==========
-function exportEPSRunJSON() {
-  const classes = JSON.parse(localStorage.getItem('eps_classes')) || [];
-  
-  const exported = {
-    format: 'epsrun-classes-v1',
-    classes: classes.map(c => ({
-      name: c.name,
-      students: (c.students || []).map(s => ({
-        prenom: s.prenom || s.name || '',
-        nom: s.nom || '',
-        genre: s.genre || ''
-      }))
-    }))
-  };
-  
-  const json = JSON.stringify(exported, null, 2);
-  const blob = new Blob([json], {type: 'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'epsrun-classes-' + new Date().toISOString().slice(0,10) + '.json';
-  a.click();
-  URL.revokeObjectURL(url);
-  alert('Classes exportees');
-}
-
-function importEPSRunJSON() {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = '.json';
-  input.onchange = (e) => {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const imported = JSON.parse(event.target.result);
-        
-        let classesToImport = [];
-        
-        if(imported.classes) {
-          classesToImport = imported.classes;
-        } else if(Array.isArray(imported)) {
-          classesToImport = imported;
-        } else {
-          throw new Error('Format non reconnu');
-        }
-        
-        const classes = JSON.parse(localStorage.getItem('eps_classes')) || [];
-        let added = 0;
-        
-        classesToImport.forEach(impClass => {
-          if(!classes.find(c => c.name === impClass.name)) {
-            classes.push({
-              id: Date.now() + Math.random(),
-              name: impClass.name,
-              students: impClass.students || []
-            });
-            added++;
-          }
-        });
-        
-        if(added > 0) {
-          localStorage.setItem('eps_classes', JSON.stringify(classes));
-          alert(added + ' classe(s) importee(s)');
-          location.reload();
-        } else {
-          alert('Classes deja existantes');
-        }
-      } catch(err) {
-        alert('Erreur: ' + err.message);
-      }
-    };
-    reader.readAsText(e.target.files[0]);
-  };
-  input.click();
-}
-
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js">
-// ========== CONFIGURATION GITHUB ==========
-function openGitHubConfig_epsrun() {
-  const token = prompt('GitHub Token (ou vide pour desactiver):');
-  if(token === null) return;
-  
-  const repo = prompt('Nom du repo (killthisumut/Appli-Test-camera):', 
-                      JSON.parse(localStorage.getItem('gitHubConfig') || '{}').repo || '');
-  if(repo === null) return;
-  
-  const proxyUrl = prompt('Proxy Vercel URL:', 
-                          JSON.parse(localStorage.getItem('gitHubConfig') || '{}').proxyUrl || 
-                          'https://appli-test-camera.vercel.app/api/sync');
-  if(proxyUrl === null) return;
-  
-  const config = { token, repo, proxyUrl };
-  localStorage.setItem('gitHubConfig', JSON.stringify(config));
-  alert('Configuration sauvegardee');
-}
-
-// ========== MODAL SYNCHRONISATION ==========
-function openSyncModal_epsrun() {
-  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
-  
-  if(!config.token) {
-    alert('Configurez GitHub d abord');
-    return;
-  }
-  
-  const choice = confirm('Envoyer mes donnees? (OK=Envoyer, Annuler=Recevoir)');
-  
-  if(choice) {
-    gitHubSendData_epsrun();
-  } else {
-    gitHubReceiveData_epsrun();
-  }
-}
-
-// ========== ENVOI DONNEES ==========
-async function gitHubSendData_epsrun() {
-  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
-  if(!config.token) return;
-  
-  try {
-    const classes = JSON.parse(localStorage.getItem('eps_classes')) || [];
-    const infos = JSON.parse(localStorage.getItem('eps_class_infos')) || {};
-    
-    const payload = {
-      app: 'epsrun',
-      timestamp: new Date().toISOString(),
-      data: {
-        classes: classes,
-        infos: infos
-      }
-    };
-    
-    const response = await fetch(config.proxyUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': 'token ' + config.token,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        path: 'sync-data/epsrun/classes.json',
-        content: JSON.stringify(payload, null, 2),
-        message: 'Sync EPSRun (manual push)'
-      })
-    });
-    
-    if(response.ok) {
-      alert('Donnees envoyees');
-    } else {
-      alert('Erreur lors de l envoi');
-    }
-  } catch(e) {
-    alert('Erreur: ' + e.message);
-  }
-}
-
-// ========== RECEPTION DONNEES ==========
-async function gitHubReceiveData_epsrun() {
-  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
-  if(!config.token) return;
-  
-  try {
-    const url = 'https://api.github.com/repos/' + config.repo + '/contents/sync-data/epsrun/classes.json';
-    
-    const response = await fetch(url, {
-      headers: {'Authorization': 'token ' + config.token}
-    });
-    
-    if(!response.ok) {
-      alert('Fichier non trouve');
-      return;
-    }
-    
-    const data = await response.json();
-    const content = atob(data.content);
-    const remote = JSON.parse(content);
-    
-    if(remote.app !== 'epsrun') {
-      alert('Ce n est pas un fichier EPSRun');
-      return;
-    }
-    
-    localStorage.setItem('eps_classes', JSON.stringify(remote.data.classes || []));
-    localStorage.setItem('eps_class_infos', JSON.stringify(remote.data.infos || {}));
-    
-    alert('Donnees recues');
-    location.reload();
-    
-  } catch(e) {
-    alert('Erreur: ' + e.message);
-  }
-}
-
-
-// ========== EXPORT/IMPORT UNIFIE ==========
-function exportEPSRunJSON() {
-  const classes = JSON.parse(localStorage.getItem('eps_classes')) || [];
-  
-  const exported = {
-    format: 'epsrun-classes-v1',
-    classes: classes.map(c => ({
-      name: c.name,
-      students: (c.students || []).map(s => ({
-        prenom: s.prenom || s.name || '',
-        nom: s.nom || '',
-        genre: s.genre || ''
-      }))
-    }))
-  };
-  
-  const json = JSON.stringify(exported, null, 2);
-  const blob = new Blob([json], {type: 'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'epsrun-classes-' + new Date().toISOString().slice(0,10) + '.json';
-  a.click();
-  URL.revokeObjectURL(url);
-  alert('Classes exportees');
-}
-
-function importEPSRunJSON() {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = '.json';
-  input.onchange = (e) => {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const imported = JSON.parse(event.target.result);
-        
-        let classesToImport = [];
-        
-        if(imported.classes) {
-          classesToImport = imported.classes;
-        } else if(Array.isArray(imported)) {
-          classesToImport = imported;
-        } else {
-          throw new Error('Format non reconnu');
-        }
-        
-        const classes = JSON.parse(localStorage.getItem('eps_classes')) || [];
-        let added = 0;
-        
-        classesToImport.forEach(impClass => {
-          if(!classes.find(c => c.name === impClass.name)) {
-            classes.push({
-              id: Date.now() + Math.random(),
-              name: impClass.name,
-              students: impClass.students || []
-            });
-            added++;
-          }
-        });
-        
-        if(added > 0) {
-          localStorage.setItem('eps_classes', JSON.stringify(classes));
-          alert(added + ' classe(s) importee(s)');
-          location.reload();
-        } else {
-          alert('Classes deja existantes');
-        }
-      } catch(err) {
-        alert('Erreur: ' + err.message);
-      }
-    };
-    reader.readAsText(e.target.files[0]);
-  };
-  input.click();
-}
-
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&display=swap');
 /* =====================================================
@@ -1479,7 +1091,11 @@ label.s-lbl{display:block;margin-bottom:6px;font-weight:600;color:#495057;font-s
 <!-- ===== HOME ===== -->
 <div id="homeScreen" class="screen active">
   <div class="home-card" style="position:relative">
-    <button id="themeToggle">☀️ Mode clair</button>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <button id="themeToggle">☀️ Mode clair</button>
+      <button id="configGitHubBtn" style="padding:6px 12px; background:#4CAF50; color:white; border:none; border-radius:4px; cursor:pointer; font-size:13px;" onclick="openGitHubConfigEpsRun()">⚙️ GitHub</button>
+      <button id="syncBtn" style="padding:6px 12px; background:#2196F3; color:white; border:none; border-radius:4px; cursor:pointer; font-size:13px;" onclick="gitHubSyncEpsRun()">🔄 Synchro</button>
+    </div>
     <div>
       <div class="home-title">EPS – Compteur & Calculateur</div>
       <div class="home-subtitle">Choisissez un mode</div>
@@ -5477,197 +5093,55 @@ const ACTIVE_BAREME_KEY = 'eps_active_eval';
 initState(numTeams);
 updateSessionButtons();
 
-// ========== CONFIGURATION GITHUB ==========
-function openGitHubConfig_epsrun() {
-  const token = prompt('GitHub Token (ou vide pour desactiver):');
+// ===== GITHUB SYNC EPSRUN =====
+function openGitHubConfigEpsRun(){
+  const cfg = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  const token = prompt('GitHub Token:', cfg.token || '');
   if(token === null) return;
-  
-  const repo = prompt('Nom du repo (killthisumut/Appli-Test-camera):', 
-                      JSON.parse(localStorage.getItem('gitHubConfig') || '{}').repo || '');
+  const repo = prompt('Repo (user/repo):', cfg.repo || 'killthisumut/Appli-Test-camera');
   if(repo === null) return;
-  
-  const proxyUrl = prompt('Proxy Vercel URL:', 
-                          JSON.parse(localStorage.getItem('gitHubConfig') || '{}').proxyUrl || 
-                          'https://appli-test-camera.vercel.app/api/sync');
-  if(proxyUrl === null) return;
-  
-  const config = { token, repo, proxyUrl };
-  localStorage.setItem('gitHubConfig', JSON.stringify(config));
+  localStorage.setItem('gitHubConfig', JSON.stringify({token, repo, proxyUrl: 'https://appli-test-camera.vercel.app/api/sync'}));
   alert('Configuration sauvegardee');
 }
 
-// ========== MODAL SYNCHRONISATION ==========
-function openSyncModal_epsrun() {
-  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
-  
-  if(!config.token) {
-    alert('Configurez GitHub d abord');
-    return;
-  }
-  
+function gitHubSyncEpsRun(){
+  const cfg = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
+  if(!cfg.token) { alert('Configurez GitHub d\'abord'); return; }
   const choice = confirm('Envoyer mes donnees? (OK=Envoyer, Annuler=Recevoir)');
-  
-  if(choice) {
-    gitHubSendData_epsrun();
-  } else {
-    gitHubReceiveData_epsrun();
-  }
+  if(choice) gitHubSendEpsRun();
+  else gitHubReceiveEpsRun();
 }
 
-// ========== ENVOI DONNEES ==========
-async function gitHubSendData_epsrun() {
-  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
-  if(!config.token) return;
-  
+async function gitHubSendEpsRun(){
+  const cfg = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
   try {
-    const classes = JSON.parse(localStorage.getItem('eps_classes')) || [];
-    const infos = JSON.parse(localStorage.getItem('eps_class_infos')) || {};
-    
     const payload = {
       app: 'epsrun',
       timestamp: new Date().toISOString(),
-      data: {
-        classes: classes,
-        infos: infos
-      }
+      data: {classes: JSON.parse(localStorage.getItem('eps_classes') || '[]')}
     };
-    
-    const response = await fetch(config.proxyUrl, {
+    const res = await fetch(cfg.proxyUrl || 'https://appli-test-camera.vercel.app/api/sync', {
       method: 'POST',
-      headers: {
-        'Authorization': 'token ' + config.token,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        path: 'sync-data/epsrun/classes.json',
-        content: JSON.stringify(payload, null, 2),
-        message: 'Sync EPSRun (manual push)'
-      })
+      headers: {'Authorization': 'token ' + cfg.token, 'Content-Type': 'application/json'},
+      body: JSON.stringify({path: 'sync-data/epsrun/classes.json', content: JSON.stringify(payload, null, 2), message: 'Sync'})
     });
-    
-    if(response.ok) {
-      alert('Donnees envoyees');
-    } else {
-      alert('Erreur lors de l envoi');
-    }
-  } catch(e) {
-    alert('Erreur: ' + e.message);
-  }
+    alert(res.ok ? 'Donnees envoyees' : 'Erreur envoi');
+  } catch(e) { alert('Erreur: ' + e.message); }
 }
 
-// ========== RECEPTION DONNEES ==========
-async function gitHubReceiveData_epsrun() {
-  const config = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
-  if(!config.token) return;
-  
+async function gitHubReceiveEpsRun(){
+  const cfg = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
   try {
-    const url = 'https://api.github.com/repos/' + config.repo + '/contents/sync-data/epsrun/classes.json';
-    
-    const response = await fetch(url, {
-      headers: {'Authorization': 'token ' + config.token}
-    });
-    
-    if(!response.ok) {
-      alert('Fichier non trouve');
-      return;
-    }
-    
-    const data = await response.json();
-    const content = atob(data.content);
-    const remote = JSON.parse(content);
-    
-    if(remote.app !== 'epsrun') {
-      alert('Ce n est pas un fichier EPSRun');
-      return;
-    }
-    
+    const url = 'https://api.github.com/repos/' + cfg.repo + '/contents/sync-data/epsrun/classes.json';
+    const res = await fetch(url, {headers: {'Authorization': 'token ' + cfg.token}});
+    if(!res.ok) { alert('Fichier non trouve'); return; }
+    const data = await res.json();
+    const remote = JSON.parse(atob(data.content));
+    if(remote.app !== 'epsrun') { alert('Mauvais fichier'); return; }
     localStorage.setItem('eps_classes', JSON.stringify(remote.data.classes || []));
-    localStorage.setItem('eps_class_infos', JSON.stringify(remote.data.infos || {}));
-    
     alert('Donnees recues');
     location.reload();
-    
-  } catch(e) {
-    alert('Erreur: ' + e.message);
-  }
-}
-
-
-// ========== EXPORT/IMPORT UNIFIE ==========
-function exportEPSRunJSON() {
-  const classes = JSON.parse(localStorage.getItem('eps_classes')) || [];
-  
-  const exported = {
-    format: 'epsrun-classes-v1',
-    classes: classes.map(c => ({
-      name: c.name,
-      students: (c.students || []).map(s => ({
-        prenom: s.prenom || s.name || '',
-        nom: s.nom || '',
-        genre: s.genre || ''
-      }))
-    }))
-  };
-  
-  const json = JSON.stringify(exported, null, 2);
-  const blob = new Blob([json], {type: 'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'epsrun-classes-' + new Date().toISOString().slice(0,10) + '.json';
-  a.click();
-  URL.revokeObjectURL(url);
-  alert('Classes exportees');
-}
-
-function importEPSRunJSON() {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = '.json';
-  input.onchange = (e) => {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const imported = JSON.parse(event.target.result);
-        
-        let classesToImport = [];
-        
-        if(imported.classes) {
-          classesToImport = imported.classes;
-        } else if(Array.isArray(imported)) {
-          classesToImport = imported;
-        } else {
-          throw new Error('Format non reconnu');
-        }
-        
-        const classes = JSON.parse(localStorage.getItem('eps_classes')) || [];
-        let added = 0;
-        
-        classesToImport.forEach(impClass => {
-          if(!classes.find(c => c.name === impClass.name)) {
-            classes.push({
-              id: Date.now() + Math.random(),
-              name: impClass.name,
-              students: impClass.students || []
-            });
-            added++;
-          }
-        });
-        
-        if(added > 0) {
-          localStorage.setItem('eps_classes', JSON.stringify(classes));
-          alert(added + ' classe(s) importee(s)');
-          location.reload();
-        } else {
-          alert('Classes deja existantes');
-        }
-      } catch(err) {
-        alert('Erreur: ' + err.message);
-      }
-    };
-    reader.readAsText(e.target.files[0]);
-  };
-  input.click();
+  } catch(e) { alert('Erreur: ' + e.message); }
 }
 
 </script>
