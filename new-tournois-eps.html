@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tournois-EPS</title>
+<style>
+:root{
+  --bg:#f4f6f8; --panel:#ffffff; --ink:#1c2530; --sub:#5c6b7a; --line:#e1e6ea;
+  --accent:#2f6fed; --accent-ink:#ffffff; --good:#1f9d55; --bad:#e0473e; --warn:#e0a010;
+  --gold:#d4a017; --silver:#9aa4ad; --bronze:#b5651d; --radius:14px;
+}
+[data-theme="dark"]{
+  --bg:#12161c; --panel:#1b212a; --ink:#eef2f6; --sub:#93a1af; --line:#2a323d;
+  --accent:#5a8dff; --accent-ink:#0b1220;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);}
+header{position:sticky;top:0;z-index:30;background:var(--panel);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;padding:8px 12px;flex-wrap:wrap;}
+header h1{font-size:16px;margin:0 12px 0 0;white-space:nowrap;}
+nav{display:flex;gap:4px;flex-wrap:wrap;flex:1;}
+nav button{border:none;background:transparent;color:var(--sub);padding:8px 12px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;}
+nav button.active{background:var(--accent);color:var(--accent-ink);}
+.tool-btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:10px;padding:7px 10px;cursor:pointer;font-size:13px;}
+.tool-btn.on{background:var(--good);color:#fff;border-color:var(--good);}
+main{padding:14px;max-width:1400px;margin:0 auto;}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-bottom:12px;}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+.btn{background:var(--accent);color:var(--accent-ink);border:none;padding:9px 14px;border-radius:10px;cursor:pointer;font-weight:700;font-size:13px;}
+.btn.secondary{background:transparent;color:var(--accent);border:1px solid var(--accent);}
+.btn.danger{background:var(--bad);color:#fff;}
+.btn.ghost{background:transparent;color:var(--sub);border:1px solid var(--line);}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+input,select{background:var(--bg);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:8px 10px;font-size:14px;}
+label{font-size:12px;color:var(--sub);font-weight:600;display:block;margin-bottom:3px;}
+h2{font-size:18px;margin:4px 0 12px;}
+h3{font-size:15px;margin:0 0 8px;}
+.list-item{display:flex;justify-content:space-between;align-items:center;padding:10px 8px;border-bottom:1px solid var(--line);gap:8px;}
+.list-item:last-child{border-bottom:none;}
+.pill{font-size:11px;background:var(--bg);border:1px solid var(--line);border-radius:20px;padding:3px 9px;color:var(--sub);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media (max-width:820px){.grid2{grid-template-columns:1fr;}}
+.game-grid{height:calc(100vh - 150px);}
+.game-grid .card{height:100%;display:flex;flex-direction:column;overflow:hidden;}
+.game-grid #rankGrid{flex:1;overflow-y:auto;}
+.game-grid #timeline{flex:1;overflow-y:auto;}
+.game-grid #matchZone{flex:0 0 auto;}
+@media (max-width:820px){.game-grid{height:auto;}.game-grid .card{height:auto;}}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:flex;align-items:center;justify-content:center;padding:16px;}
+.modal{background:var(--panel);border-radius:var(--radius);padding:18px;max-width:480px;width:100%;max-height:88vh;overflow:auto;}
+.rank-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 10px;max-height:70vh;overflow-y:auto;}
+.rank-row{display:flex;align-items:center;gap:8px;padding:6px 6px;border-bottom:1px solid var(--line);cursor:pointer;}
+.rank-row .medal{width:22px;text-align:center;font-weight:800;font-size:13px;}
+.rank-row .name{flex:1;font-weight:700;font-size:16px;}
+.rank-row .pts{font-weight:900;font-size:15px;}
+.r1 .medal{color:var(--gold);}.r2 .medal{color:var(--silver);}.r3 .medal{color:var(--bronze);}
+.eligible-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;}
+.pick-btn{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 6px;text-align:center;font-weight:700;font-size:13px;cursor:pointer;}
+.pick-btn:hover{border-color:var(--accent);}
+.timeline-item{font-size:12px;padding:6px 4px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:6px;}
+.timeline-item .cheat{color:var(--bad);font-weight:800;}
+.col-board{display:grid;grid-template-columns:repeat(9,1fr);gap:8px;}
+.col{background:var(--col-bg,var(--bg));border:1px solid var(--line);border-radius:10px;padding:8px;max-height:calc(100vh - 340px);overflow-y:auto;}
+@media (max-width:820px){.col-board{display:flex;overflow-x:auto;padding-bottom:8px;}.col{min-width:120px;max-height:none;}}
+.col h4{margin:0 0 6px;font-size:12px;color:var(--sub);}
+.col .stu{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 8px;margin-bottom:6px;font-size:13px;font-weight:700;cursor:pointer;}
+.hidden{display:none !important;}
+.badge{font-size:10px;padding:2px 6px;border-radius:8px;background:var(--accent);color:#fff;}
+textarea{width:100%;min-height:90px;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:8px;}
+.muted{color:var(--sub);font-size:12px;}
+</style>
+</head>
+<body>
+<header>
+  <h1>🏆 Tournois-EPS</h1>
+  <nav id="nav"></nav>
+  <span class="pill" id="activeClassPill">Aucune classe active</span>
+  <button class="tool-btn" id="themeBtn" title="Mode sombre/clair">🌙</button>
+  <button class="tool-btn" id="syncBtn" title="Synchroniser">🔄 Sync</button>
+  <button class="tool-btn" id="teacherBtn" title="Mode professeur">👨‍🏫</button>
+</header>
+<main id="app"></main>
+
+<script>
+/* ================== DATA LAYER ================== */
+const DB_KEY = 'tournois_eps_data_v1';
+function uid(p){return (p||'id')+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
+function nowTs(){return Date.now();}
+function fmtTime(ts){const d=new Date(ts);return d.toLocaleDateString('fr-FR')+' '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});}
+function fmtTimeShort(ts){const d=new Date(ts);return d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});}
+
+function defaultDB(){
+  return {
+    classes: [],
+    atpSessions: [],
+    swissSessions: [],
+    activeClassId: null,
+    settings: { teacherHash: null, github: {owner:'',repo:'',path:'tournois-eps-data.json',token:'',branch:'main'}, theme:'light' }
+  };
+}
+let DB = load();
+function load(){
+  try{
+    const raw = localStorage.getItem(DB_KEY);
+    if(!raw) return defaultDB();
+    const parsed = JSON.parse(raw);
+    return Object.assign(defaultDB(), parsed);
+  }catch(e){ return defaultDB(); }
+}
+function save(){ localStorage.setItem(DB_KEY, JSON.stringify(DB)); }
+
+/* simple non-cryptographic hash, just to avoid storing password in clear */
+function simpleHash(s){let h=0;for(let i=0;i<s.length;i++){h=(h*31+s.charCodeAt(i))|0;}return String(h);}
+
+/* ================== CLASS / STUDENT HELPERS ================== */
+function getClass(id){return DB.classes.find(c=>c.id===id);}
+function getStudent(cls,sid){return cls.students.find(s=>s.id===sid);}
+function studentName(s){return s.firstName + (s.lastName ? ' '+s.lastName[0]+'.' : '');}
+function studentFullName(s){return s.firstName + (s.lastName ? ' '+s.lastName : '');}
+
+/* ================== NAVIGATION ================== */
+const TABS = [
+  {id:'home', label:'Accueil'},
+  {id:'classes', label:'Gestion Classes'},
+  {id:'atp', label:'Tournoi ATP'},
+  {id:'swiss', label:'Ronde Suisse'},
+  {id:'stats', label:'Statistiques'}
+];
+let currentTab = 'home';
+let teacherMode = false;
+
+function renderNav(){
+  const nav = document.getElementById('nav');
+  nav.innerHTML='';
+  TABS.forEach(t=>{
+    const b=document.createElement('button');
+    b.textContent=t.label;
+    b.className = t.id===currentTab ? 'active':'';
+    b.onclick=()=>{currentTab=t.id; render();};
+    nav.appendChild(b);
+  });
+}
+function goTab(id){currentTab=id; render();}
+
+/* ================== THEME ================== */
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme', DB.settings.theme==='dark'?'dark':'light');
+  document.getElementById('themeBtn').textContent = DB.settings.theme==='dark' ? '☀️' : '🌙';
+}
+document.getElementById('themeBtn').onclick=()=>{
+  DB.settings.theme = DB.settings.theme==='dark' ? 'light' : 'dark';
+  save(); applyTheme();
+};
+
+/* ================== TEACHER MODE ================== */
+document.getElementById('teacherBtn').onclick=()=>{
+  if(teacherMode){ teacherMode=false; updateTeacherBtn(); render(); return; }
+  if(!DB.settings.teacherHash){
+    const pw = prompt('Créez le mot de passe professeur (une seule fois) :');
+    if(pw===null) return;
+    if(pw.trim().length<3){ alert('Mot de passe trop court (3 caractères min).'); return; }
+    DB.settings.teacherHash = simpleHash(pw.trim());
+    save();
+    teacherMode = true;
+  } else {
+    const pw = prompt('Mot de passe professeur :');
+    if(pw===null) return;
+    if(simpleHash(pw.trim()) !== DB.settings.teacherHash){ alert('Mot de passe incorrect.'); return; }
+    teacherMode = true;
+  }
+  updateTeacherBtn();
+  render();
+};
+function updateTeacherBtn(){
+  const b=document.getElementById('teacherBtn');
+  b.classList.toggle('on', teacherMode);
+  b.title = teacherMode ? 'Quitter le mode professeur' : 'Mode professeur';
+}
+
+/* ================== GITHUB SYNC ================== */
+document.getElementById('syncBtn').onclick=openSyncMenu;
+function openSyncMenu(){
+  openModal(`
+    <h3>🔄 Synchronisation (GitHub)</h3>
+    <p class="muted">Les données sont stockées dans un fichier JSON de votre dépôt GitHub. Configurez une seule fois, puis envoyez/recevez depuis n'importe quel appareil connecté au même dépôt.</p>
+    <div class="row" style="margin-bottom:10px;">
+      <button class="btn secondary" id="cfgBtn">⚙️ Paramètres</button>
+      <button class="btn" id="sendBtn">⬆️ Envoyer les données</button>
+      <button class="btn ghost" id="recvBtn">⬇️ Recevoir les données</button>
+    </div>
+    <div id="syncStatus" class="muted"></div>
+  `);
+  document.getElementById('cfgBtn').onclick=openSyncConfig;
+  document.getElementById('sendBtn').onclick=()=>doSync('send');
+  document.getElementById('recvBtn').onclick=()=>doSync('recv');
+}
+function openSyncConfig(){
+  const g = DB.settings.github;
+  openModal(`
+    <h3>⚙️ Paramètres de synchronisation</h3>
+    <label>Propriétaire du dépôt (owner)</label>
+    <input id="gh_owner" value="${g.owner||''}" style="width:100%;margin-bottom:8px;">
+    <label>Nom du dépôt (repo)</label>
+    <input id="gh_repo" value="${g.repo||''}" style="width:100%;margin-bottom:8px;">
+    <label>Branche</label>
+    <input id="gh_branch" value="${g.branch||'main'}" style="width:100%;margin-bottom:8px;">
+    <label>Chemin du fichier de données</label>
+    <input id="gh_path" value="${g.path||'tournois-eps-data.json'}" style="width:100%;margin-bottom:8px;">
+    <label>Token d'accès personnel GitHub (avec droit "repo")</label>
+    <input id="gh_token" type="password" value="${g.token||''}" style="width:100%;margin-bottom:12px;">
+    <div class="row"><button class="btn" id="saveCfg">Enregistrer</button><button class="btn ghost" id="closeCfg">Annuler</button></div>
+  `);
+  document.getElementById('saveCfg').onclick=()=>{
+    DB.settings.github = {
+      owner: document.getElementById('gh_owner').value.trim(),
+      repo: document.getElementById('gh_repo').value.trim(),
+      branch: document.getElementById('gh_branch').value.trim()||'main',
+      path: document.getElementById('gh_path').value.trim()||'tournois-eps-data.json',
+      token: document.getElementById('gh_token').value.trim()
+    };
+    save();
+    closeModal();
+    openSyncMenu();
+  };
+  document.getElementById('closeCfg').onclick=openSyncMenu;
+}
+async function ghRequest(method, body){
+  const g = DB.settings.github;
+  if(!g.owner||!g.repo||!g.token){ throw new Error('Configuration GitHub incomplète.'); }
+  const url = `https://api.github.com/repos/${g.owner}/${g.repo}/contents/${encodeURIComponent(g.path)}?ref=${encodeURIComponent(g.branch)}`;
+  const headers = {'Authorization':'Bearer '+g.token, 'Accept':'application/vnd.github+json'};
+  if(method==='GET'){
+    const res = await fetch(url, {headers});
+    if(res.status===404) return null;
+    if(!res.ok) throw new Error('Erreur GitHub ('+res.status+')');
+    return res.json();
+  } else {
+    const res = await fetch(`https://api.github.com/repos/${g.owner}/${g.repo}/contents/${encodeURIComponent(g.path)}`, {
+      method:'PUT', headers:{...headers,'Content-Type':'application/json'}, body: JSON.stringify(body)
+    });
+    if(!res.ok){ const t = await res.text(); throw new Error('Erreur GitHub ('+res.status+'): '+t.slice(0,200)); }
+    return res.json();
+  }
+}
+function b64EncodeUnicode(str){ return btoa(unescape(encodeURIComponent(str))); }
+function b64DecodeUnicode(str){ return decodeURIComponent(escape(atob(str))); }
+
+async function doSync(mode){
+  const statusEl = document.getElementById('syncStatus');
+  statusEl.textContent = 'Connexion en cours…';
+  try{
+    if(mode==='send'){
+      const existing = await ghRequest('GET');
+      const payload = { message:'Sync Tournois-EPS '+new Date().toISOString(), content:b64EncodeUnicode(JSON.stringify(DB)), branch:DB.settings.github.branch };
+      if(existing && existing.sha) payload.sha = existing.sha;
+      await ghRequest('PUT', payload);
+      statusEl.textContent = '✅ Données envoyées avec succès.';
+    } else {
+      const existing = await ghRequest('GET');
+      if(!existing){ statusEl.textContent='Aucune donnée distante trouvée.'; return; }
+      if(!confirm('Recevoir les données va ÉCRASER toutes les données locales de cet appareil. Continuer ?')) { statusEl.textContent=''; return; }
+      const remote = JSON.parse(b64DecodeUnicode(existing.content.replace(/\n/g,'')));
+      DB = Object.assign(defaultDB(), remote);
+      save();
+      statusEl.textContent = '✅ Données reçues et appliquées.';
+      render();
+    }
+  }catch(e){
+    statusEl.textContent = '❌ '+e.message;
+  }
+}
+
+/* ================== MODAL ================== */
+function openModal(html){
+  closeModal();
+  const bg=document.createElement('div');
+  bg.className='modal-bg'; bg.id='modalBg';
+  bg.onclick=(e)=>{ if(e.target===bg) closeModal(); };
+  const m=document.createElement('div');
+  m.className='modal';
+  m.innerHTML=html;
+  bg.appendChild(m);
+  document.body.appendChild(bg);
+}
+function closeModal(){ const e=document.getElementById('modalBg'); if(e) e.remove(); }
+
+/* ================== RENDER ROOT ================== */
+function render(){
+  renderNav();
+  updateTeacherBtn();
+  const pill = document.getElementById('activeClassPill');
+  const cls = DB.activeClassId ? getClass(DB.activeClassId) : null;
+  pill.textContent = cls ? ('Classe active : '+cls.name) : 'Aucune classe active';
+  const app = document.getElementById('app');
+  app.innerHTML='';
+  if(currentTab==='home') renderHome(app);
+  else if(currentTab==='classes') renderClasses(app);
+  else if(currentTab==='atp') renderATP(app);
+  else if(currentTab==='swiss') renderSwiss(app);
+  else if(currentTab==='stats') renderStats(app);
+}
+
+/* ================== HOME ================== */
+function renderHome(app){
+  const cls = DB.activeClassId ? getClass(DB.activeClassId) : null;
+  const cards = [
+    {tab:'classes', icon:'📋', title:'Gestion de classe', desc:'Enregistrez vos classes, gérez les listes d\'élèves.'},
+    {tab:'atp', icon:'🏆', title:'Tournoi ATP', desc:'Classement par points avec barème. Écart de classement réglable.'},
+    {tab:'swiss', icon:'♟️', title:'Ronde Suisse', desc:'Tableau de colonnes par nombre de victoires.'},
+    {tab:'stats', icon:'📊', title:'Statistiques', desc:'Vue professeur et suivi des séances en cours.'}
+  ];
+  app.innerHTML = `
+  <div class="card">
+    <h2>🏆 Tournois-EPS</h2>
+    <p class="muted">Choisissez un format de tournoi ou gérez vos classes.</p>
+  </div>
+  <div class="card row" style="justify-content:space-between;">
+    <span>${cls ? ('📁 Classe chargée : '+cls.name) : '📁 Aucune classe chargée — lancez un tournoi manuellement ou chargez une classe'}</span>
+    <button class="btn" onclick="goTab('classes')">Gérer</button>
+  </div>
+  <div class="grid2" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
+    ${cards.map(c=>`<div class="card" style="cursor:pointer;" onclick="goTab('${c.tab}')">
+      <div style="font-size:34px;">${c.icon}</div>
+      <h3>${c.title}</h3>
+      <p class="muted">${c.desc}</p>
+    </div>`).join('')}
+  </div>`;
+}
+
+/* ================== CLASSES ================== */
+let openClassId = null;
+function renderClasses(app){
+  if(openClassId){
+    const c = getClass(openClassId);
+    if(c){ renderClassDetail(app, c); return; }
+    openClassId = null;
+  }
+  app.innerHTML = `
+  <div class="card">
+    <div class="row" style="justify-content:space-between;">
+      <h2 style="margin:0;">Gestion des classes</h2>
+      <button class="btn" id="newClassBtn">➕ Nouvelle classe</button>
+    </div>
+  </div>
+  <div class="card" id="classesList"></div>`;
+  document.getElementById('newClassBtn').onclick=()=>{
+    const name = prompt('Nom de la nouvelle classe (ex: 3e2) :');
+    if(!name||!name.trim()) return;
+    if(DB.classes.some(c=>c.name.toLowerCase()===name.trim().toLowerCase())){ alert('Une classe avec ce nom existe déjà.'); return; }
+    const c = {id:uid('cls'), name:name.trim(), students:[], createdAt:nowTs()};
+    DB.classes.push(c);
+    save(); renderClasses(app);
+  };
+  const list = document.getElementById('classesList');
+  if(DB.classes.length===0){ list.innerHTML = '<p class="muted">Aucune classe pour l\'instant. Créez-en une.</p>'; return; }
+  list.innerHTML = DB.classes.map(cls=>`
+    <div class="list-item" style="cursor:pointer;" onclick="openClassId='${cls.id}';render();">
+      <span>${cls.name} ${DB.activeClassId===cls.id?'<span class="badge">active</span>':''} <span class="muted">— ${cls.students.length} élève(s)</span></span>
+      <span class="row" onclick="event.stopPropagation();">
+        <button class="btn ghost" onclick="DB.activeClassId='${cls.id}';save();render();">Utiliser</button>
+        <button class="btn danger" onclick="deleteClass('${cls.id}')">🗑️</button>
+      </span>
+    </div>`).join('');
+}
+function deleteClass(id){
+  const cls = getClass(id);
+  if(!confirm('Supprimer la classe "'+cls.name+'" et toutes ses données ? Cette action est irréversible.')) return;
+  DB.classes = DB.classes.filter(c=>c.id!==id);
+  if(DB.activeClassId===id) DB.activeClassId=null;
+  save(); render();
+}
+function renderClassDetail(app, cls){
+  const sessions = [...DB.atpSessions,...DB.swissSessions].filter(s=>s.classId===cls.id).sort((a,b)=>b.startedAt-a.startedAt);
+  app.innerHTML = `
+  <div class="row" style="margin-bottom:8px;">
+    <button class="btn ghost" onclick="openClassId=null;render();">← Retour aux classes</button>
+  </div>
+  <div class="card">
+    <div class="row" style="justify-content:space-between;">
+      <h2 style="margin:0;">${cls.name} ${DB.activeClassId===cls.id?'<span class="badge">active</span>':''}</h2>
+      <div class="row">
+        <button class="btn ghost" id="useBtn">Utiliser</button>
+        <button class="btn ghost" id="renameBtn">✏️ Renommer</button>
+        <button class="btn danger" id="delBtn">🗑️ Supprimer</button>
+      </div>
+    </div>
+    <p class="muted">${cls.students.length} élève(s)</p>
+    <div class="list" id="stuList"></div>
+    <div class="row" style="margin-top:8px;">
+      <button class="btn secondary" id="addBtn">➕ Ajouter un élève</button>
+      <button class="btn secondary" id="addManyBtn">➕ Ajouter plusieurs élèves</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>🕘 Historique des séances (${sessions.length})</h3>
+    <div id="histBox"></div>
+  </div>`;
+  const stuList = document.getElementById('stuList');
+  cls.students.forEach(s=>{
+    const row=document.createElement('div'); row.className='list-item';
+    row.innerHTML = `<span>${studentFullName(s)} ${s.gender?('<span class="pill">'+s.gender+'</span>'):''}</span>
+    <span class="row"><button class="btn ghost" data-e="1">✏️</button><button class="btn danger" data-d="1">🗑️</button></span>`;
+    row.querySelector('[data-e]').onclick=()=>editStudent(cls, s, ()=>renderClassDetail(app, cls));
+    row.querySelector('[data-d]').onclick=()=>{
+      if(confirm('Supprimer '+studentFullName(s)+' de la classe ?')){
+        cls.students = cls.students.filter(x=>x.id!==s.id);
+        save(); renderClassDetail(app, cls);
+      }
+    };
+    stuList.appendChild(row);
+  });
+  document.getElementById('useBtn').onclick=()=>{ DB.activeClassId=cls.id; save(); render(); };
+  document.getElementById('renameBtn').onclick=()=>{
+    const n = prompt('Nouveau nom de classe :', cls.name);
+    if(n&&n.trim()){ cls.name=n.trim(); save(); renderClassDetail(app, cls); }
+  };
+  document.getElementById('delBtn').onclick=()=>{ deleteClass(cls.id); };
+  document.getElementById('addBtn').onclick=()=>editStudent(cls, null, ()=>renderClassDetail(app, cls));
+  document.getElementById('addManyBtn').onclick=()=>addManyStudents(cls, ()=>renderClassDetail(app, cls));
+  const box = document.getElementById('histBox');
+  if(sessions.length===0){ box.innerHTML='<p class="muted">Aucune séance archivée.</p>'; return; }
+  box.innerHTML = sessions.map(s=>{
+    const type = DB.atpSessions.includes(s) ? 'ATP' : 'Ronde Suisse';
+    return `<div class="list-item"><span>${type} — ${s.title||s.activity||'(sans titre)'} — ${fmtTime(s.startedAt)} ${s.status==='active'?'<span class="pill">en cours</span>':''}</span>
+    <span class="row">
+      <button class="btn ghost" onclick="openSession('${type==='ATP'?'atp':'swiss'}','${s.id}')">👁️</button>
+      <button class="btn danger" onclick="deleteSession('${type==='ATP'?'atp':'swiss'}','${s.id}')">🗑️</button>
+    </span></div>`;
+  }).join('');
+}
+function editStudent(cls, student, cb){
+  const isNew = !student;
+  openModal(`
+    <h3>${isNew?'Ajouter un élève':'Modifier l\'élève'}</h3>
+    <label>Prénom *</label><input id="s_fn" value="${student?student.firstName:''}" style="width:100%;margin-bottom:8px;">
+    <label>Nom (optionnel)</label><input id="s_ln" value="${student?(student.lastName||''):''}" style="width:100%;margin-bottom:8px;">
+    <label>Genre (optionnel)</label>
+    <select id="s_g" style="width:100%;margin-bottom:12px;">
+      <option value="">Non défini</option>
+      <option value="F" ${student&&student.gender==='F'?'selected':''}>F</option>
+      <option value="M" ${student&&student.gender==='M'?'selected':''}>M</option>
+    </select>
+    <div class="row"><button class="btn" id="saveStu">Enregistrer</button><button class="btn ghost" onclick="closeModal()">Annuler</button></div>
+  `);
+  document.getElementById('saveStu').onclick=()=>{
+    const fn = document.getElementById('s_fn').value.trim();
+    if(!fn){ alert('Le prénom est obligatoire.'); return; }
+    const ln = document.getElementById('s_ln').value.trim();
+    const g = document.getElementById('s_g').value;
+    if(isNew){
+      cls.students.push({id:uid('stu'), firstName:fn, lastName:ln, gender:g});
+    } else {
+      student.firstName=fn; student.lastName=ln; student.gender=g;
+    }
+    save(); closeModal(); cb();
+  };
+}
+function addManyStudents(cls, cb){
+  openModal(`
+    <h3>Ajouter plusieurs élèves</h3>
+    <p class="muted">Séparez les prénoms par un espace, une virgule, un point-virgule, un slash, un tiret du bas ou un retour à la ligne. Un tiret "-" reste collé au prénom (ex: Jean-Pierre = un seul élève).</p>
+    <textarea id="many_names" placeholder="Jean-Pierre, Marie Alice/Bob"></textarea>
+    <div class="row" style="margin-top:10px;"><button class="btn" id="saveMany">Ajouter</button><button class="btn ghost" onclick="closeModal()">Annuler</button></div>
+  `);
+  document.getElementById('saveMany').onclick=()=>{
+    const raw = document.getElementById('many_names').value;
+    const names = raw.split(/[\s,;\/_]+/).map(n=>n.trim()).filter(Boolean);
+    if(names.length===0){ alert('Aucun prénom détecté.'); return; }
+    names.forEach(n=>cls.students.push({id:uid('stu'), firstName:n, lastName:'', gender:''}));
+    save(); closeModal(); cb();
+  };
+}
+function deleteSession(type, id){
+  if(!confirm('Supprimer définitivement cette séance ?')) return;
+  if(type==='atp') DB.atpSessions = DB.atpSessions.filter(s=>s.id!==id);
+  else DB.swissSessions = DB.swissSessions.filter(s=>s.id!==id);
+  save(); render();
+}
+function openSession(type,id){
+  currentTab = type; activeSessionId = id;
+  render();
+}
+
+/* ================== SYNCHRONISATION CLASSE <-> SESSION ================== */
+function syncSessionWithClass(session, cls){
+  cls.students.forEach(cs=>{
+    if(!session.students.find(x=>x.studentId===cs.id)){
+      session.students.push({studentId:cs.id, points:0, sessionPoints:0, wins:0, losses:0, refs:0});
+    }
+  });
+  session.students = session.students.filter(x=>cls.students.some(cs=>cs.id===x.studentId));
+}
+
+/* ================== ATP MODULE ================== */
+let activeSessionId = null;
+let matchFlow = { step:null, winnerId:null, loserId:null, refId:null };
+
+function renderATP(app){
+  const running = DB.atpSessions.find(s=>s.id===activeSessionId && s.status==='active');
+  if(running){ renderATPGame(app, running); return; }
+  app.innerHTML = `
+  <div class="card">
+    <h2>Tournoi ATP — Nouvelle séance</h2>
+    <div class="row" style="margin-bottom:10px;">
+      <div><label>Classe</label>
+        <select id="atp_class">${DB.classes.map(c=>`<option value="${c.id}" ${c.id===DB.activeClassId?'selected':''}>${c.name}</option>`).join('')}</select>
+      </div>
+      <div><label>Activité</label><input id="atp_activity" placeholder="Badminton, Ping-pong..."></div>
+      <div><label>Écart de classement (±)</label><input id="atp_gap" type="number" value="5" style="width:70px;"></div>
+    </div>
+    <div class="row">
+      <div><label>Points victoire</label><input id="atp_pw" type="number" value="5" style="width:70px;"></div>
+      <div><label>Points défaite</label><input id="atp_pl" type="number" value="2" style="width:70px;"></div>
+      <div><label>Points arbitrage</label><input id="atp_pr" type="number" value="1" style="width:70px;"></div>
+    </div>
+    <div class="row" style="margin-top:12px;">
+      <button class="btn" id="atp_start">🏁 Commencer une séance</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Séances ATP archivées / en cours</h3>
+    <div id="atpHistList"></div>
+  </div>`;
+  document.getElementById('atp_start').onclick=()=>{
+    const classId = document.getElementById('atp_class').value;
+    if(!classId){ alert('Choisissez une classe.'); return; }
+    const cls = getClass(classId);
+    if(!cls || cls.students.length===0){ alert('Cette classe n\'a aucun élève.'); return; }
+    const session = {
+      id: uid('atp'), classId, activity: document.getElementById('atp_activity').value.trim(),
+      startedAt: nowTs(), status:'active',
+      scoring:{win:+document.getElementById('atp_pw').value||5, loss:+document.getElementById('atp_pl').value||2, ref:+document.getElementById('atp_pr').value||1},
+      rankGap:+document.getElementById('atp_gap').value||5,
+      students: cls.students.map((s,i)=>({studentId:s.id, points:0, sessionPoints:0, wins:0, losses:0, refs:0})),
+      matches: [], rankHistory: []
+    };
+    DB.activeClassId = classId;
+    DB.atpSessions.push(session);
+    save();
+    setupInitialRanking(session, cls);
+  };
+  const list = document.getElementById('atpHistList');
+  const items = DB.atpSessions.slice().sort((a,b)=>b.startedAt-a.startedAt);
+  if(items.length===0){ list.innerHTML='<p class="muted">Aucune séance.</p>'; }
+  else list.innerHTML = items.map(s=>{
+    const cls = getClass(s.classId);
+    return `<div class="list-item"><span>${cls?cls.name:'?'} — ${s.title||s.activity||'(sans titre)'} — ${fmtTime(s.startedAt)} ${s.status==='active'?'<span class="pill">en cours</span>':'<span class="pill">archivée</span>'}</span>
+    <span class="row">
+      ${s.status==='archived'?`<button class="btn ghost" onclick="resumeATP('${s.id}')">▶️ Reprendre</button>`:`<button class="btn" onclick="activeSessionId='${s.id}';render();">Ouvrir</button>`}
+      <button class="btn danger" onclick="deleteSession('atp','${s.id}')">🗑️</button>
+    </span></div>`;
+  }).join('');
+}
+
+function setupInitialRanking(session, cls){
+  activeSessionId = session.id;
+  let order = session.students.slice();
+  const app = document.getElementById('app');
+  function draw(){
+    app.innerHTML = `
+    <div class="card">
+      <h2>Classement initial — ${cls.name}</h2>
+      <p class="muted">Ordonnez les élèves (flèches ou clic sur le rang pour saisir un chiffre), puis validez.</p>
+      <div id="initList"></div>
+      <div class="row" style="margin-top:12px;"><button class="btn" id="validateRank">✅ Valider et démarrer</button></div>
+    </div>`;
+    const list = document.getElementById('initList');
+    order.forEach((os,idx)=>{
+      const stu = getStudent(cls, os.studentId);
+      const row=document.createElement('div'); row.className='list-item';
+      row.innerHTML = `<span><span class="pill" id="rankNum_${idx}" style="cursor:pointer;">#${idx+1}</span> ${studentFullName(stu)}</span>
+        <span class="row"><button class="btn ghost" ${idx===0?'disabled':''} data-up>⬆️</button><button class="btn ghost" ${idx===order.length-1?'disabled':''} data-down>⬇️</button></span>`;
+      row.querySelector('[data-up]').onclick=()=>{ [order[idx-1],order[idx]]=[order[idx],order[idx-1]]; draw(); };
+      row.querySelector('[data-down]').onclick=()=>{ [order[idx+1],order[idx]]=[order[idx],order[idx+1]]; draw(); };
+      row.querySelector('#rankNum_'+idx).onclick=()=>{
+        const n = prompt('Nouveau rang pour '+studentFullName(stu)+' (1 à '+order.length+') :', idx+1);
+        const ni = parseInt(n);
+        if(!ni || ni<1 || ni>order.length) return;
+        const item = order.splice(idx,1)[0];
+        order.splice(ni-1,0,item);
+        draw();
+      };
+      list.appendChild(row);
+    });
+  }
+  draw();
+  document.addEventListener('click', function handler(e){
+    if(e.target && e.target.id==='validateRank'){
+      session.students = order;
+      session.rankHistory.push(order.map(o=>o.studentId));
+      save();
+      document.removeEventListener('click', handler);
+      render();
+    }
+  });
+}
+function resumeATP(id){
+  const s = DB.atpSessions.find(x=>x.id===id);
+  const cls = getClass(s.classId);
+  if(!cls){ alert('Classe introuvable.'); return; }
+  openModal(`
+    <h3>Reprendre la séance</h3>
+    <p class="muted"><strong>Reprendre</strong> : continue les statistiques telles quelles, à la suite.<br><strong>Continuer</strong> : garde le classement et les points, mais repart sur une nouvelle ligne de statistiques de séance.</p>
+    <div class="row">
+      <button class="btn" onclick="doResumeATP('${id}','resume')">▶️ Reprendre</button>
+      <button class="btn secondary" onclick="doResumeATP('${id}','continue')">🔁 Continuer</button>
+      <button class="btn ghost" onclick="closeModal()">Annuler</button>
+    </div>`);
+}
+function doResumeATP(id, mode){
+  const s = DB.atpSessions.find(x=>x.id===id);
+  const cls = getClass(s.classId);
+  syncSessionWithClass(s, cls);
+  if(mode==='continue'){ s.students.forEach(st=>st.sessionPoints=0); }
+  s.status='active'; DB.activeClassId=cls.id;
+  matchFlow={step:null,winnerId:null,loserId:null,refId:null};
+  save(); closeModal(); activeSessionId=id; render();
+}
+
+function currentRanking(session){
+  return session.students.slice().sort((a,b)=>b.points-a.points);
+}
+function eligibleOpponents(session, forStudentId){
+  const ranking = currentRanking(session);
+  const idx = ranking.findIndex(x=>x.studentId===forStudentId);
+  const gap = session.rankGap;
+  let eligibleIds = new Set();
+  ranking.forEach((s,i)=>{ if(Math.abs(i-idx)<=gap && s.studentId!==forStudentId) eligibleIds.add(s.studentId); });
+  const hist = session.rankHistory.slice(-10);
+  hist.forEach(order=>{
+    const j = order.indexOf(forStudentId);
+    if(j<0) return;
+    order.forEach((sid,i)=>{ if(Math.abs(i-j)<=gap && sid!==forStudentId) eligibleIds.add(sid); });
+  });
+  return session.students.filter(s=>eligibleIds.has(s.studentId));
+}
+
+function curCls(){ return getClass(currentSession().classId); }
+function renderATPGame(app, session){
+  const cls = getClass(session.classId);
+  syncSessionWithClass(session, cls);
+  if(matchFlow.step && !session.students.find(s=>s.studentId===matchFlow.winnerId)){
+    matchFlow={step:null,winnerId:null,loserId:null,refId:null};
+  }
+  const ranking = currentRanking(session);
+  app.innerHTML = `
+  <div class="row" style="margin-bottom:8px;">
+    <button class="btn ghost" onclick="matchFlow={step:null,winnerId:null,loserId:null,refId:null};activeSessionId=null;render();">← Retour</button>
+    <span class="pill">${cls.name} — ${session.activity||''}</span>
+    ${teacherMode?'<span class="badge">Mode professeur actif</span>':''}
+    <button class="btn danger" style="margin-left:auto;" onclick="endATPSession()">🏁 Fin de séance</button>
+  </div>
+  <div class="grid2 game-grid">
+    <div class="card">
+      <h3>Classement</h3>
+      <div class="rank-grid" id="rankGrid"></div>
+    </div>
+    <div class="card">
+      <h3 id="matchTitle">Enregistrer un match</h3>
+      <div id="matchZone"></div>
+      <h3 style="margin-top:14px;">Matchs de la séance</h3>
+      <div id="timeline"></div>
+    </div>
+  </div>
+  ${teacherMode ? renderATPTeacherPanel(session,cls) : ''}
+  `;
+  const grid = document.getElementById('rankGrid');
+  const half = Math.ceil(ranking.length/2);
+  const colL = ranking.slice(0,half), colR = ranking.slice(half);
+  function rowHtml(entry, i){
+    const stu = getStudent(cls, entry.studentId);
+    if(!stu) return '';
+    const rankClass = i===0?'r1':i===1?'r2':i===2?'r3':'';
+    const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':('#'+(i+1));
+    return `<div class="rank-row ${rankClass}" onclick="openStudentDetail('atp','${session.id}','${entry.studentId}')">
+      <span class="medal">${medal}</span><span class="name">${studentName(stu)}</span><span class="pts">${entry.points} pts</span>
+    </div>`;
+  }
+  let html='<div>'+colL.map((e,i)=>rowHtml(e,i)).join('')+'</div><div>'+colR.map((e,i)=>rowHtml(e,i+half)).join('')+'</div>';
+  grid.innerHTML = html;
+  const tl = document.getElementById('timeline');
+  const cheatWindowMs = 90*1000;
+  const matchesSorted = session.matches.slice().sort((a,b)=>b.timestamp-a.timestamp);
+  tl.innerHTML = matchesSorted.map(m=>{
+    const w=getStudent(cls,m.winnerId), l=getStudent(cls,m.loserId);
+    const near = session.matches.filter(mm=>(mm.winnerId===m.winnerId||mm.loserId===m.winnerId||mm.winnerId===m.loserId||mm.loserId===m.loserId) && mm.id!==m.id && Math.abs(mm.timestamp-m.timestamp)<cheatWindowMs).length>0;
+    return `<div class="timeline-item"><span>${fmtTimeShort(m.timestamp)} ${w?studentName(w):'?'} bat ${l?studentName(l):'?'} (+${m.pointsWinner}) ${near?'<span class="cheat">⚠️</span>':''}</span>
+    <button class="btn danger" style="padding:2px 8px;font-size:11px;" onclick="cancelATPMatch('${session.id}','${m.id}')">annuler</button></div>`;
+  }).join('') || '<p class="muted">Aucun match enregistré.</p>';
+
+  renderMatchZone(session, cls);
+}
+
+function renderMatchZone(session, cls){
+  const zone = document.getElementById('matchZone');
+  const title = document.getElementById('matchTitle');
+  if(matchFlow.step===null){
+    title.textContent = 'Étape 1 : qui a gagné ?';
+    const ranking = currentRanking(session);
+    zone.innerHTML = `<div class="eligible-grid">${ranking.map(e=>{
+      const stu=getStudent(cls,e.studentId); if(!stu) return '';
+      return `<button class="pick-btn" onclick="pickWinner('${e.studentId}')">${studentName(stu)}</button>`;
+    }).join('')}</div>`;
+  } else if(matchFlow.step==='loser'){
+    const winner = getStudent(cls, matchFlow.winnerId);
+    title.textContent = 'Étape 2 : contre qui (perdant) ?  — Gagnant : '+studentName(winner);
+    const opponents = eligibleOpponents(session, matchFlow.winnerId).filter(e=>e.studentId!==matchFlow.winnerId);
+    zone.innerHTML = `<div class="eligible-grid">${opponents.map(e=>{
+      const stu=getStudent(cls,e.studentId); if(!stu) return '';
+      return `<button class="pick-btn" onclick="pickLoser('${e.studentId}')">${studentName(stu)}</button>`;
+    }).join('')}</div>
+    <div class="row" style="margin-top:10px;"><button class="btn ghost" onclick="matchFlow={step:null};renderMatchZone(currentSession(),curCls());">← Retour</button></div>`;
+  } else if(matchFlow.step==='ref'){
+    const winner=getStudent(cls,matchFlow.winnerId), loser=getStudent(cls,matchFlow.loserId);
+    title.textContent = 'Étape 3 : arbitre (optionnel)';
+    const others = session.students.filter(e=>e.studentId!==matchFlow.winnerId && e.studentId!==matchFlow.loserId);
+    zone.innerHTML = `<div class="eligible-grid">${others.map(e=>{
+      const stu=getStudent(cls,e.studentId); if(!stu) return '';
+      return `<button class="pick-btn" onclick="pickRef('${e.studentId}')">${studentName(stu)}</button>`;
+    }).join('')}</div>
+    <div class="row" style="margin-top:10px;">
+      <button class="btn secondary" onclick="pickRef(null)">Aucun arbitre</button>
+      <button class="btn ghost" onclick="matchFlow.step='loser';renderMatchZone(currentSession(),curCls());">← Retour</button>
+    </div>`;
+  } else if(matchFlow.step==='confirm'){
+    const winner=getStudent(cls,matchFlow.winnerId), loser=getStudent(cls,matchFlow.loserId);
+    const ref = matchFlow.refId ? getStudent(cls,matchFlow.refId) : null;
+    title.textContent = 'Confirmation';
+    zone.innerHTML = `<p>${studentFullName(winner)} a gagné contre ${studentFullName(loser)}${ref?(' — arbitre : '+studentFullName(ref)):' — aucun arbitre'}.</p>
+    <div class="row"><button class="btn" onclick="confirmMatch()">✅ Confirmer</button><button class="btn ghost" onclick="matchFlow.step='ref';renderMatchZone(currentSession(),curCls());">← Retour</button></div>`;
+  }
+}
+function currentSession(){ return DB.atpSessions.find(s=>s.id===activeSessionId); }
+function pickWinner(id){ matchFlow={step:'loser',winnerId:id,loserId:null,refId:null}; render(); }
+function pickLoser(id){ matchFlow.loserId=id; matchFlow.step='ref'; render(); }
+function pickRef(id){ matchFlow.refId=id; matchFlow.step='confirm'; render(); }
+function confirmMatch(){
+  const session = currentSession();
+  const w = session.students.find(s=>s.studentId===matchFlow.winnerId);
+  const l = session.students.find(s=>s.studentId===matchFlow.loserId);
+  const r = matchFlow.refId ? session.students.find(s=>s.studentId===matchFlow.refId) : null;
+  w.points+=session.scoring.win; w.sessionPoints+=session.scoring.win; w.wins++;
+  l.points+=session.scoring.loss; l.sessionPoints+=session.scoring.loss; l.losses++;
+  if(r){ r.points+=session.scoring.ref; r.sessionPoints+=session.scoring.ref; r.refs++; }
+  session.matches.push({id:uid('m'), winnerId:matchFlow.winnerId, loserId:matchFlow.loserId, refId:matchFlow.refId,
+    timestamp:nowTs(), pointsWinner:session.scoring.win, pointsLoser:session.scoring.loss, pointsRef:r?session.scoring.ref:0});
+  session.rankHistory.push(currentRanking(session).map(e=>e.studentId));
+  if(session.rankHistory.length>50) session.rankHistory.shift();
+  matchFlow={step:null,winnerId:null,loserId:null,refId:null};
+  save(); render();
+}
+function cancelATPMatch(sessionId, matchId){
+  const session = DB.atpSessions.find(s=>s.id===sessionId);
+  const m = session.matches.find(x=>x.id===matchId);
+  if(!m) return;
+  if(!confirm('Annuler ce match ? Les points seront restitués.')) return;
+  const w = session.students.find(s=>s.studentId===m.winnerId);
+  const l = session.students.find(s=>s.studentId===m.loserId);
+  if(w){ w.points-=m.pointsWinner; w.sessionPoints-=m.pointsWinner; w.wins--; }
+  if(l){ l.points-=m.pointsLoser; l.sessionPoints-=m.pointsLoser; l.losses--; }
+  if(m.refId){ const r=session.students.find(s=>s.studentId===m.refId); if(r){ r.points-=m.pointsRef; r.sessionPoints-=m.pointsRef; r.refs--; } }
+  session.matches = session.matches.filter(x=>x.id!==matchId);
+  save(); render();
+}
+function endATPSession(){
+  const session = currentSession();
+  openModal(`
+    <h3>Terminer la séance</h3>
+    <label>Titre de la séance (optionnel)</label>
+    <input id="endTitle" value="${session.activity||''}" style="width:100%;margin-bottom:12px;">
+    <div class="row"><button class="btn" onclick="doEndATPSession()">🏁 Archiver</button><button class="btn ghost" onclick="closeModal()">Annuler</button></div>
+  `);
+}
+function doEndATPSession(){
+  const session = currentSession();
+  session.title = document.getElementById('endTitle').value.trim();
+  session.status='archived';
+  save(); closeModal(); activeSessionId=null; render();
+}
+
+function renderATPTeacherPanel(session, cls){
+  const ranking = currentRanking(session);
+  return `<div class="card">
+    <h3>👨‍🏫 Vue professeur — ATP</h3>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <tr style="text-align:left;color:var(--sub);"><th>Élève</th><th>Points</th><th>V</th><th>D</th><th>Arb.</th><th>Actions</th></tr>
+      ${ranking.map(e=>{
+        const stu = getStudent(cls,e.studentId); if(!stu) return '';
+        return `<tr style="border-top:1px solid var(--line);">
+        <td>${studentFullName(stu)}</td><td>${e.points}</td><td>${e.wins}</td><td>${e.losses}</td><td>${e.refs}</td>
+        <td><button class="btn ghost" style="font-size:11px;padding:3px 6px;" onclick="teacherEditPoints('${session.id}','${e.studentId}')">Points</button></td>
+        </tr>`;
+      }).join('')}
+    </table>
+    <div class="row" style="margin-top:10px;">
+      <button class="btn secondary" onclick="teacherAddStudent('${session.id}')">➕ Ajouter un élève à la séance</button>
+    </div>
+  </div>`;
+}
+function teacherEditPoints(sessionId, studentId){
+  const session = DB.atpSessions.find(s=>s.id===sessionId);
+  const e = session.students.find(x=>x.studentId===studentId);
+  const n = prompt('Nouveau total de points :', e.points);
+  const ni = parseInt(n);
+  if(isNaN(ni)) return;
+  e.points = ni;
+  save(); render();
+}
+function teacherAddStudent(sessionId){
+  const session = DB.atpSessions.find(s=>s.id===sessionId);
+  const cls = getClass(session.classId);
+  const fn = prompt('Prénom du nouvel élève :');
+  if(!fn||!fn.trim()) return;
+  const s = {id:uid('stu'), firstName:fn.trim(), lastName:'', gender:''};
+  cls.students.push(s);
+  session.students.push({studentId:s.id, points:0, sessionPoints:0, wins:0, losses:0, refs:0});
+  save(); render();
+}
+
+/* ================== STUDENT DETAIL (shared ATP / Swiss) ================== */
+function openStudentDetail(type, sessionId, studentId){
+  const session = type==='atp' ? DB.atpSessions.find(s=>s.id===sessionId) : DB.swissSessions.find(s=>s.id===sessionId);
+  const cls = getClass(session.classId);
+  const stu = getStudent(cls, studentId);
+  const entry = session.students.find(s=>s.studentId===studentId);
+  const matches = session.matches.filter(m=>m.winnerId===studentId||m.loserId===studentId||m.refId===studentId)
+    .sort((a,b)=>b.timestamp-a.timestamp);
+  const cheatWindowMs = 90*1000;
+  const rows = matches.map(m=>{
+    const isWin = m.winnerId===studentId, isRef = m.refId===studentId && !isWin && m.loserId!==studentId;
+    const oppId = isWin ? m.loserId : (m.loserId===studentId ? m.winnerId : null);
+    const opp = oppId ? getStudent(cls, oppId) : null;
+    const kind = isRef ? '🎯 Arbitrage' : (isWin ? '🏆 Victoire' : '❌ Défaite');
+    const near = matches.some(mm=>mm.id!==m.id && Math.abs(mm.timestamp-m.timestamp)<cheatWindowMs);
+    return `<div class="timeline-item"><span>${kind} ${opp?('— '+studentName(opp)):''} ${fmtTimeShort(m.timestamp)} ${near?'<span class="cheat">⚠️ rapproché</span>':''}</span>
+      <button class="btn danger" style="padding:2px 8px;font-size:11px;" onclick="${type==='atp'?`cancelATPMatch('${sessionId}','${m.id}');closeModal();`:`cancelSwissMatch('${sessionId}','${m.id}');closeModal();`}">annuler</button></div>`;
+  }).join('') || '<p class="muted">Aucun match.</p>';
+  openModal(`
+    <h3>${studentFullName(stu)}</h3>
+    <p class="muted">${type==='atp' ? (entry.points+' Points | '+entry.wins+' Victoires | '+entry.losses+' Défaites | '+entry.refs+' Arbitrages') : ((entry.wins+entry.losses)+' matchs joués | '+entry.wins+' Victoires | '+entry.losses+' Défaites')}</p>
+    <div style="max-height:320px;overflow-y:auto;">${rows}</div>
+    <div class="row" style="margin-top:10px;"><button class="btn ghost" onclick="closeModal()">Fermer</button></div>
+  `);
+}
+
+/* ================== RONDE SUISSE MODULE ================== */
+function renderSwiss(app){
+  const running = DB.swissSessions.find(s=>s.id===activeSessionId && s.status==='active');
+  if(running){ renderSwissGame(app, running); return; }
+  app.innerHTML = `
+  <div class="card">
+    <h2>Ronde Suisse — Nouvelle séance</h2>
+    <div class="row">
+      <div><label>Classe</label>
+        <select id="sw_class">${DB.classes.map(c=>`<option value="${c.id}" ${c.id===DB.activeClassId?'selected':''}>${c.name}</option>`).join('')}</select>
+      </div>
+      <div><label>Activité</label><input id="sw_activity" placeholder="Badminton, Ping-pong..."></div>
+    </div>
+    <div class="row" style="margin-top:12px;"><button class="btn" id="sw_start">🏁 Commencer une séance</button></div>
+  </div>
+  <div class="card"><h3>Séances Ronde Suisse</h3><div id="swHistList"></div></div>`;
+  document.getElementById('sw_start').onclick=()=>{
+    const classId = document.getElementById('sw_class').value;
+    if(!classId){ alert('Choisissez une classe.'); return; }
+    const cls = getClass(classId);
+    if(!cls || cls.students.length===0){ alert('Cette classe n\'a aucun élève.'); return; }
+    const session = { id: uid('sw'), classId, activity: document.getElementById('sw_activity').value.trim(),
+      startedAt: nowTs(), status:'active',
+      students: cls.students.map(s=>({studentId:s.id, wins:0, losses:0})),
+      matches: [], redoStack: [] };
+    DB.activeClassId = classId;
+    DB.swissSessions.push(session);
+    save(); activeSessionId=session.id; render();
+  };
+  const list = document.getElementById('swHistList');
+  const items = DB.swissSessions.slice().sort((a,b)=>b.startedAt-a.startedAt);
+  if(items.length===0){ list.innerHTML='<p class="muted">Aucune séance.</p>'; }
+  else list.innerHTML = items.map(s=>{
+    const cls = getClass(s.classId);
+    return `<div class="list-item"><span>${cls?cls.name:'?'} — ${s.title||s.activity||'(sans titre)'} — ${fmtTime(s.startedAt)} ${s.status==='active'?'<span class="pill">en cours</span>':'<span class="pill">archivée</span>'}</span>
+    <span class="row">
+      ${s.status==='archived'?`<button class="btn ghost" onclick="resumeSwiss('${s.id}')">▶️ Reprendre</button>`:`<button class="btn" onclick="activeSessionId='${s.id}';render();">Ouvrir</button>`}
+      <button class="btn danger" onclick="deleteSession('swiss','${s.id}')">🗑️</button>
+    </span></div>`;
+  }).join('');
+}
+function resumeSwiss(id){
+  const s = DB.swissSessions.find(x=>x.id===id);
+  const cls = getClass(s.classId);
+  syncSessionWithClass(s, cls);
+  s.redoStack = s.redoStack||[];
+  s.status='active'; DB.activeClassId=cls.id;
+  save(); activeSessionId=id; render();
+}
+const SWISS_COLS = 9; // colonnes 0 à 8 victoires
+function currentSwissSession(){ return DB.swissSessions.find(s=>s.id===activeSessionId); }
+function renderSwissGame(app, session){
+  const cls = getClass(session.classId);
+  syncSessionWithClass(session, cls);
+  session.redoStack = session.redoStack||[];
+  app.innerHTML = `
+  <div class="row" style="margin-bottom:8px;">
+    <button class="btn ghost" onclick="activeSessionId=null;render();">← Retour</button>
+    <span class="pill">${cls.name} — ${session.activity||''}</span>
+    ${teacherMode?'<span class="badge">Mode professeur actif</span>':''}
+    <button class="btn danger" style="margin-left:auto;" onclick="endSwissSession()">🏁 Fin de séance</button>
+  </div>
+  <div class="card">
+    <h3>Colonnes (nombre de victoires) — cliquez un élève pour saisir un match</h3>
+    <div class="col-board" id="colBoard"></div>
+  </div>
+  ${teacherMode ? renderSwissTeacherPanel(session,cls) : ''}
+  <div class="card row" style="position:sticky;bottom:8px;">
+    <button class="btn ghost" onclick="swissUndo()">↩️ Annuler</button>
+    <button class="btn ghost" onclick="swissRedo()">↪️ Retour avant</button>
+    <button class="btn secondary" onclick="openSwissStats()">📊 Statistiques</button>
+  </div>`;
+  const board = document.getElementById('colBoard');
+  const light = DB.settings.theme!=='dark';
+  board.innerHTML = Array.from({length:SWISS_COLS},(_,w)=>w).map(w=>{
+    const inCol = session.students.filter(e=>e.wins===w);
+    const hue = 210 - (w/(SWISS_COLS-1))*90; // bleu pastel -> vert pastel
+    const bg = light ? `hsl(${hue},60%,92%)` : `hsl(${hue},30%,20%)`;
+    return `<div class="col" style="--col-bg:${bg};"><h4>${w} victoire${w>1?'s':''}</h4>${inCol.map(e=>{
+      const stu=getStudent(cls,e.studentId); if(!stu) return '';
+      return `<div class="stu" onclick="openSwissMatchModal('${session.id}','${e.studentId}')">${studentName(stu)}</div>`;
+    }).join('')}</div>`;
+  }).join('');
+}
+function openSwissMatchModal(sessionId, winnerId){
+  const session = DB.swissSessions.find(s=>s.id===sessionId);
+  const cls = getClass(session.classId);
+  const winner = getStudent(cls, winnerId);
+  const winnerEntry = session.students.find(s=>s.studentId===winnerId);
+  const sameCol = session.students.filter(e=>e.studentId!==winnerId && e.wins===winnerEntry.wins);
+  openModal(`
+    <h3>${studentFullName(winner)} vainqueur — perdant ?</h3>
+    <div class="eligible-grid">${sameCol.map(e=>{
+      const stu=getStudent(cls,e.studentId); if(!stu) return '';
+      return `<button class="pick-btn" onclick="confirmSwissModalMatch('${sessionId}','${winnerId}','${e.studentId}')">${studentName(stu)}</button>`;
+    }).join('') || '<p class="muted">Aucun adversaire dans cette colonne.</p>'}</div>
+    <div class="row" style="margin-top:10px;"><button class="btn ghost" onclick="closeModal()">Annuler</button></div>
+  `);
+}
+function confirmSwissModalMatch(sessionId, winnerId, loserId){
+  const session = DB.swissSessions.find(s=>s.id===sessionId);
+  const cls = getClass(session.classId);
+  const w = getStudent(cls,winnerId), l = getStudent(cls,loserId);
+  openModal(`
+    <h3>Confirmer le résultat</h3>
+    <p>${studentFullName(w)} a gagné contre ${studentFullName(l)}.</p>
+    <div class="row">
+      <button class="btn" onclick="applySwissMatch('${sessionId}','${winnerId}','${loserId}')">✅ Confirmer</button>
+      <button class="btn ghost" onclick="openSwissMatchModal('${sessionId}','${winnerId}')">← Retour</button>
+    </div>`);
+}
+function applySwissMatch(sessionId, winnerId, loserId){
+  const session = DB.swissSessions.find(s=>s.id===sessionId);
+  const w = session.students.find(s=>s.studentId===winnerId);
+  const l = session.students.find(s=>s.studentId===loserId);
+  w.wins++; l.losses++;
+  session.matches.push({id:uid('m'), winnerId, loserId, timestamp:nowTs()});
+  session.redoStack = [];
+  save(); closeModal(); render();
+}
+function swissUndo(){
+  const session = currentSwissSession();
+  if(!session || session.matches.length===0) return;
+  const m = session.matches.pop();
+  const w = session.students.find(s=>s.studentId===m.winnerId);
+  const l = session.students.find(s=>s.studentId===m.loserId);
+  if(w) w.wins--; if(l) l.losses--;
+  session.redoStack.push(m);
+  save(); render();
+}
+function swissRedo(){
+  const session = currentSwissSession();
+  if(!session || !session.redoStack.length) return;
+  const m = session.redoStack.pop();
+  const w = session.students.find(s=>s.studentId===m.winnerId);
+  const l = session.students.find(s=>s.studentId===m.loserId);
+  if(w) w.wins++; if(l) l.losses++;
+  session.matches.push(m);
+  save(); render();
+}
+function cancelSwissMatch(sessionId, matchId){
+  const session = DB.swissSessions.find(s=>s.id===sessionId);
+  const m = session.matches.find(x=>x.id===matchId);
+  if(!m) return;
+  if(!confirm('Annuler ce match ?')) return;
+  const w = session.students.find(s=>s.studentId===m.winnerId);
+  const l = session.students.find(s=>s.studentId===m.loserId);
+  if(w) w.wins--; if(l) l.losses--;
+  session.matches = session.matches.filter(x=>x.id!==matchId);
+  save(); render();
+}
+function endSwissSession(){
+  const session = currentSwissSession();
+  openModal(`
+    <h3>Terminer la séance</h3>
+    <label>Titre de la séance (optionnel)</label>
+    <input id="endTitle" value="${session.activity||''}" style="width:100%;margin-bottom:12px;">
+    <div class="row"><button class="btn" onclick="doEndSwissSession()">🏁 Archiver</button><button class="btn ghost" onclick="closeModal()">Annuler</button></div>
+  `);
+}
+function doEndSwissSession(){
+  const session = currentSwissSession();
+  session.title = document.getElementById('endTitle').value.trim();
+  session.status='archived';
+  save(); closeModal(); activeSessionId=null; render();
+}
+function openSwissStats(){
+  const session = currentSwissSession();
+  const cls = getClass(session.classId);
+  const rows = session.students.slice().sort((a,b)=>b.wins-a.wins).map(e=>{
+    const stu=getStudent(cls,e.studentId); if(!stu) return '';
+    return `<div class="list-item"><span>${studentFullName(stu)} — ${e.wins+e.losses} match(s) — ${e.wins}V / ${e.losses}D</span>
+    <button class="btn ghost" onclick="openStudentDetail('swiss','${session.id}','${e.studentId}')">Historique</button></div>`;
+  }).join('');
+  openModal(`<h3>📊 Statistiques — Ronde Suisse</h3><div style="max-height:400px;overflow-y:auto;">${rows}</div>
+  <div class="row" style="margin-top:10px;"><button class="btn ghost" onclick="closeModal()">Fermer</button></div>`);
+}
+function renderSwissTeacherPanel(session, cls){
+  return `<div class="card">
+    <h3>👨‍🏫 Vue professeur — Ronde Suisse</h3>
+    ${Array.from({length:SWISS_COLS},(_,w)=>w).map(w=>{
+      const grp = session.students.filter(e=>e.wins===w);
+      if(grp.length===0) return '';
+      return `<div class="row" style="margin-bottom:6px;"><strong>${w}V</strong> — ${grp.map(e=>{
+        const stu=getStudent(cls,e.studentId); if(!stu) return '';
+        return `${studentName(stu)} <button class="btn ghost" style="font-size:11px;padding:2px 6px;" onclick="promoteStudent('${e.studentId}')">⬆️</button>`;
+      }).join(' · ')}</div>`;
+    }).join('')}
+    <div class="row" style="margin-top:8px;"><button class="btn secondary" onclick="teacherAddSwissStudent()">➕ Ajouter un élève</button></div>
+  </div>`;
+}
+function promoteStudent(studentId){
+  const session = currentSwissSession();
+  const e = session.students.find(s=>s.studentId===studentId);
+  e.wins = Math.min(e.wins+1, SWISS_COLS-1);
+  save(); render();
+}
+function teacherAddSwissStudent(){
+  const session = currentSwissSession();
+  const cls = getClass(session.classId);
+  const fn = prompt('Prénom du nouvel élève :');
+  if(!fn||!fn.trim()) return;
+  const s = {id:uid('stu'), firstName:fn.trim(), lastName:'', gender:''};
+  cls.students.push(s);
+  session.students.push({studentId:s.id, wins:0, losses:0});
+  save(); render();
+}
+
+/* ================== STATS TAB ================== */
+function renderStats(app){
+  const activeAtp = DB.atpSessions.filter(s=>s.status==='active');
+  const activeSwiss = DB.swissSessions.filter(s=>s.status==='active');
+  app.innerHTML = `
+  <div class="card"><h2>Statistiques</h2>
+  <p class="muted">${activeAtp.length} séance(s) ATP en cours · ${activeSwiss.length} séance(s) Ronde Suisse en cours.</p>
+  <p class="muted">Ouvrez une séance depuis l'onglet ATP ou Ronde Suisse pour voir la vue professeur (activez le mode 👨‍🏫 en haut).</p>
+  </div>`;
+}
+
+/* ================== INIT ================== */
+applyTheme();
+render();
+</script>
+</body>
+</html>
