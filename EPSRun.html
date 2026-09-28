@@ -1091,11 +1091,7 @@ label.s-lbl{display:block;margin-bottom:6px;font-weight:600;color:#495057;font-s
 <!-- ===== HOME ===== -->
 <div id="homeScreen" class="screen active">
   <div class="home-card" style="position:relative">
-    <div style="display:flex; gap:8px; align-items:center;">
-      <button id="themeToggle">☀️ Mode clair</button>
-      <button id="configGitHubBtn" style="padding:6px 12px; background:#4CAF50; color:white; border:none; border-radius:4px; cursor:pointer; font-size:13px;" onclick="openGitHubConfigEpsRun()">⚙️ GitHub</button>
-      <button id="syncBtn" style="padding:6px 12px; background:#2196F3; color:white; border:none; border-radius:4px; cursor:pointer; font-size:13px;" onclick="gitHubSyncEpsRun()">🔄 Synchro</button>
-    </div>
+    <div style="display:flex;gap:8px;"><button id="themeToggle">☀️ Mode clair</button><button onclick="openGitHubConfigEpsRun()">⚙️ GitHub</button><button onclick="gitHubSyncEpsRun()">🔄 Synchro</button></div>
     <div>
       <div class="home-title">EPS – Compteur & Calculateur</div>
       <div class="home-subtitle">Choisissez un mode</div>
@@ -5093,56 +5089,10 @@ const ACTIVE_BAREME_KEY = 'eps_active_eval';
 initState(numTeams);
 updateSessionButtons();
 
-// ===== GITHUB SYNC EPSRUN =====
-function openGitHubConfigEpsRun(){
-  const cfg = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
-  const token = prompt('GitHub Token:', cfg.token || '');
-  if(token === null) return;
-  const repo = prompt('Repo (user/repo):', cfg.repo || 'killthisumut/Appli-Test-camera');
-  if(repo === null) return;
-  localStorage.setItem('gitHubConfig', JSON.stringify({token, repo, proxyUrl: 'https://appli-test-camera.vercel.app/api/sync'}));
-  alert('Configuration sauvegardee');
-}
-
-function gitHubSyncEpsRun(){
-  const cfg = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
-  if(!cfg.token) { alert('Configurez GitHub d\'abord'); return; }
-  const choice = confirm('Envoyer mes donnees? (OK=Envoyer, Annuler=Recevoir)');
-  if(choice) gitHubSendEpsRun();
-  else gitHubReceiveEpsRun();
-}
-
-async function gitHubSendEpsRun(){
-  const cfg = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
-  try {
-    const payload = {
-      app: 'epsrun',
-      timestamp: new Date().toISOString(),
-      data: {classes: JSON.parse(localStorage.getItem('eps_classes') || '[]')}
-    };
-    const res = await fetch(cfg.proxyUrl || 'https://appli-test-camera.vercel.app/api/sync', {
-      method: 'POST',
-      headers: {'Authorization': 'token ' + cfg.token, 'Content-Type': 'application/json'},
-      body: JSON.stringify({path: 'sync-data/epsrun/classes.json', content: JSON.stringify(payload, null, 2), message: 'Sync'})
-    });
-    alert(res.ok ? 'Donnees envoyees' : 'Erreur envoi');
-  } catch(e) { alert('Erreur: ' + e.message); }
-}
-
-async function gitHubReceiveEpsRun(){
-  const cfg = JSON.parse(localStorage.getItem('gitHubConfig') || '{}');
-  try {
-    const url = 'https://api.github.com/repos/' + cfg.repo + '/contents/sync-data/epsrun/classes.json';
-    const res = await fetch(url, {headers: {'Authorization': 'token ' + cfg.token}});
-    if(!res.ok) { alert('Fichier non trouve'); return; }
-    const data = await res.json();
-    const remote = JSON.parse(atob(data.content));
-    if(remote.app !== 'epsrun') { alert('Mauvais fichier'); return; }
-    localStorage.setItem('eps_classes', JSON.stringify(remote.data.classes || []));
-    alert('Donnees recues');
-    location.reload();
-  } catch(e) { alert('Erreur: ' + e.message); }
-}
+function openGitHubConfigEpsRun(){const cfg=JSON.parse(localStorage.getItem('gitHubConfig')||'{}');const token=prompt('GitHub Token:',cfg.token||'');if(token===null)return;const username=prompt('GitHub username:',cfg.username||'');if(username===null)return;const repo=prompt('Repo name:',cfg.repo||'');if(repo===null)return;localStorage.setItem('gitHubConfig',JSON.stringify({token,username,repo:username+'/'+repo,proxyUrl:'https://appli-test-camera.vercel.app/api/sync'}));alert('Config sauvegardee');}
+function gitHubSyncEpsRun(){const cfg=JSON.parse(localStorage.getItem('gitHubConfig')||'{}');if(!cfg.token||!cfg.repo){alert('Configurez GitHub d\'abord');return;}const choice=confirm('Envoyer mes donnees?');if(choice)gitHubSendEpsRun();else gitHubReceiveEpsRun();}
+async function gitHubSendEpsRun(){const cfg=JSON.parse(localStorage.getItem('gitHubConfig')||'{}');try{const payload={app:'epsrun',timestamp:new Date().toISOString(),data:{classes:JSON.parse(localStorage.getItem('eps_classes')||'[]')}};const res=await fetch(cfg.proxyUrl||'https://appli-test-camera.vercel.app/api/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:'sync-data/epsrun/classes.json',content:JSON.stringify(payload,null,2),message:'Sync',token:cfg.token})});alert(res.ok?'Donnees envoyees':'Erreur');}catch(e){alert('Erreur: '+e.message);}}
+async function gitHubReceiveEpsRun(){const cfg=JSON.parse(localStorage.getItem('gitHubConfig')||'{}');try{const url='https://api.github.com/repos/'+cfg.repo+'/contents/sync-data/epsrun/classes.json';const res=await fetch(url,{headers:{'Authorization':'token '+cfg.token}});if(!res.ok){alert('Fichier non trouve');return;}const data=await res.json();const remote=JSON.parse(atob(data.content));if(remote.app!=='epsrun'){alert('Mauvais fichier');return;}localStorage.setItem('eps_classes',JSON.stringify(remote.data.classes||[]));alert('Donnees recues');location.reload();}catch(e){alert('Erreur: '+e.message);}}
 
 </script>
 </body>
