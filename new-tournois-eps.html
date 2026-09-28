@@ -60,7 +60,7 @@ h3{font-size:15px;margin:0 0 8px;}
 .timeline-item{font-size:12px;padding:6px 4px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:6px;}
 .timeline-item .cheat{color:var(--bad);font-weight:800;}
 .col-board{display:grid;grid-template-columns:repeat(9,1fr);gap:8px;}
-.col{background:var(--col-bg,var(--bg));border:1px solid var(--line);border-radius:10px;padding:8px;max-height:calc(100vh - 340px);overflow-y:auto;}
+.col{background:var(--col-bg,var(--bg));border:1px solid var(--line);border-radius:10px;padding:8px;max-height:calc(100vh - 255px);overflow-y:auto;}
 @media (max-width:820px){.col-board{display:flex;overflow-x:auto;padding-bottom:8px;}.col{min-width:120px;max-height:none;}}
 .col h4{margin:0 0 6px;font-size:12px;color:var(--sub);}
 .col .stu{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 8px;margin-bottom:6px;font-size:13px;font-weight:700;cursor:pointer;}
@@ -212,8 +212,8 @@ function openSyncConfig(){
   `);
   document.getElementById('saveCfg').onclick=()=>{
     DB.settings.github = {
-      owner: document.getElementById('gh_owner').value.trim(),
-      repo: document.getElementById('gh_repo').value.trim(),
+      owner: ghClean(document.getElementById('gh_owner').value),
+      repo: ghClean(document.getElementById('gh_repo').value),
       branch: document.getElementById('gh_branch').value.trim()||'main',
       path: document.getElementById('gh_path').value.trim()||'tournois-eps-data.json',
       token: document.getElementById('gh_token').value.trim()
@@ -224,10 +224,11 @@ function openSyncConfig(){
   };
   document.getElementById('closeCfg').onclick=openSyncMenu;
 }
+function ghClean(v){ return v.trim().replace(/^https?:\/\/[^/]+\//,'').split('/').filter(Boolean).pop()||''; }
 async function ghRequest(method, body){
   const g = DB.settings.github;
   if(!g.owner||!g.repo||!g.token){ throw new Error('Configuration GitHub incomplète.'); }
-  const url = `https://api.github.com/repos/${g.owner}/${g.repo}/contents/${encodeURIComponent(g.path)}?ref=${encodeURIComponent(g.branch)}`;
+  const url = `https://api.github.com/repos/${g.owner}/${g.repo}/contents/${g.path.split('/').map(encodeURIComponent).join('/')}?ref=${encodeURIComponent(g.branch)}`;
   const headers = {'Authorization':'Bearer '+g.token, 'Accept':'application/vnd.github+json'};
   if(method==='GET'){
     const res = await fetch(url, {headers});
@@ -235,7 +236,7 @@ async function ghRequest(method, body){
     if(!res.ok) throw new Error('Erreur GitHub ('+res.status+')');
     return res.json();
   } else {
-    const res = await fetch(`https://api.github.com/repos/${g.owner}/${g.repo}/contents/${encodeURIComponent(g.path)}`, {
+    const res = await fetch(`https://api.github.com/repos/${g.owner}/${g.repo}/contents/${g.path.split('/').map(encodeURIComponent).join('/')}`, {
       method:'PUT', headers:{...headers,'Content-Type':'application/json'}, body: JSON.stringify(body)
     });
     if(!res.ok){ const t = await res.text(); throw new Error('Erreur GitHub ('+res.status+'): '+t.slice(0,200)); }
