@@ -1091,7 +1091,11 @@ function autoResolveByes(session, roundIdx){
     }
   });
 }
-function createBracketSession(cls, mode, activity, orderedIds){
+function bracketStudent(session, sid){
+  const cls = getClass(session.classId);
+  return getStudent(cls, sid) || (session.extras||[]).find(e=>e.id===sid);
+}
+function createBracketSession(cls, mode, activity, orderedIds, extras){
   const n = orderedIds.length;
   const size = nextPow2(n);
   const slots = seedSlots(size);
@@ -1102,7 +1106,7 @@ function createBracketSession(cls, mode, activity, orderedIds){
     round1.push(makeMatch(seedToStudent[slots[i]]||null, seedToStudent[slots[i+1]]||null));
   }
   const session = {
-    id:uid('bk'), mode, classId:cls.id, activity, startedAt:nowTs(), status:'active',
+    id:uid('bk'), mode, classId:cls.id, activity, startedAt:nowTs(), status:'active', extras:extras||[],
     students: orderedIds.map((sid,i)=>({studentId:sid, seed:i+1, wins:0, losses:0, byes:0, history:[], eliminated:false, eliminatedRound:null})),
     rounds:[round1]
   };
@@ -1137,29 +1141,17 @@ function renderBracketSetup(app, mode){
         <select id="bk_class">${DB.classes.map(c=>`<option value="${c.id}" ${c.id===DB.activeClassId?'selected':''}>${c.name}</option>`).join('')}</select>
       </div>
       <div><label>Activité</label><input id="bk_activity" placeholder="Badminton, Ping-pong..."></div>
-      <div><label>Appariement</label>
-        <select id="bk_seed"><option value="random">Aléatoire</option><option value="rank">Classement initial</option></select>
-      </div>
     </div>
-    <p class="muted">En cas de nombre d'élèves non multiple de 2, certains reçoivent automatiquement un « exempt » (qualification directe) au 1er tour, prioritairement les mieux classés.</p>
-    <div class="row" style="margin-top:12px;"><button class="btn" id="bk_start">🏁 Commencer une séance</button></div>
+    <div class="row" style="margin-top:12px;"><button class="btn" id="bk_next">Suivant : participants et classement →</button></div>
   </div>
   <div class="card"><h3>Séances archivées / en cours</h3><div id="bkHistList"></div></div>`;
-  document.getElementById('bk_start').onclick=()=>{
+  document.getElementById('bk_next').onclick=()=>{
     const classId = document.getElementById('bk_class').value;
     if(!classId){ alert('Choisissez une classe.'); return; }
     const cls = getClass(classId);
-    if(!cls || cls.students.length<2){ alert('Il faut au moins 2 élèves.'); return; }
-    const activity = document.getElementById('bk_activity').value.trim();
+    if(!cls){ return; }
     DB.activeClassId = classId;
-    if(document.getElementById('bk_seed').value==='rank'){
-      setupBracketRanking(cls, mode, activity);
-    } else {
-      const shuffled = cls.students.map(s=>s.id).sort(()=>Math.random()-0.5);
-      const session = mode==='knockout' ? createBracketSession(cls, mode, activity, shuffled) : createSpiderSession(cls, activity, shuffled);
-      DB.bracketSessions.push(session);
-      save(); activeSessionId=session.id; render();
-    }
+    setupBracketRanking(cls, mode, document.getElementById('bk_activity').value.trim());
   };
   const list = document.getElementById('bkHistList');
   const items = DB.bracketSessions.filter(s=>s.mode===mode).sort((a,b)=>b.startedAt-a.startedAt);
@@ -1175,30 +1167,48 @@ function renderBracketSetup(app, mode){
 }
 function setupBracketRanking(cls, mode, activity){
   let order = cls.students.map(s=>s.id);
+  let extras = [];
   const app = document.getElementById('app');
   function draw(){
     app.innerHTML = `
     <div class="card">
-      <h2>Classement initial — ${cls.name}</h2>
-      <p class="muted">Les mieux classés (en haut) évitent de se rencontrer tôt dans le tableau.</p>
+      <h2>Participants et classement — ${cls.name}</h2>
+      <p class="muted">Retirez les absents, ajoutez des participants hors classe si besoin, puis ordonnez (les mieux classés en haut évitent de se rencontrer tôt). Au moins 2 participants requis.</p>
+      <div class="row" style="margin-bottom:10px;">
+        <button class="btn secondary" id="shuffleBtn">🔀 Ordre aléatoire</button>
+        <button class="btn secondary" id="addExtraBtn">➕ Ajouter un participant hors classe</button>
+      </div>
       <div id="initList"></div>
-      <div class="row" style="margin-top:12px;"><button class="btn" id="validateRank">✅ Valider et démarrer</button></div>
+      <div class="row" style="margin-top:12px;"><button class="btn" id="validateRank" ${order.length<2?'disabled':''}>✅ Valider et démarrer</button></div>
     </div>`;
     const list = document.getElementById('initList');
     order.forEach((sid,idx)=>{
-      const stu = getStudent(cls, sid);
+      const stu = getStudent(cls, sid) || extras.find(e=>e.id===sid);
+      if(!stu) return;
+      const isExtra = !!extras.find(e=>e.id===sid);
       const row=document.createElement('div'); row.className='list-item';
-      row.innerHTML = `<span><span class="pill">#${idx+1}</span> ${studentFullName(stu)}</span>
-        <span class="row"><button class="btn ghost" ${idx===0?'disabled':''} data-up>⬆️</button><button class="btn ghost" ${idx===order.length-1?'disabled':''} data-down>⬇️</button></span>`;
+      row.innerHTML = `<span><span class="pill">#${idx+1}</span> ${studentFullName(stu)} ${isExtra?'<span class="pill">hors classe</span>':''}</span>
+        <span class="row">
+          <button class="btn ghost" ${idx===0?'disabled':''} data-up>⬆️</button>
+          <button class="btn ghost" ${idx===order.length-1?'disabled':''} data-down>⬇️</button>
+          <button class="btn danger" data-rm>🗑️</button>
+        </span>`;
       row.querySelector('[data-up]').onclick=()=>{ [order[idx-1],order[idx]]=[order[idx],order[idx-1]]; draw(); };
       row.querySelector('[data-down]').onclick=()=>{ [order[idx+1],order[idx]]=[order[idx],order[idx+1]]; draw(); };
+      row.querySelector('[data-rm]').onclick=()=>{ order.splice(idx,1); extras=extras.filter(e=>e.id!==sid); draw(); };
       list.appendChild(row);
     });
   }
   draw();
   document.addEventListener('click', function handler(e){
+    if(e.target && e.target.id==='shuffleBtn'){ order.sort(()=>Math.random()-0.5); draw(); }
+    if(e.target && e.target.id==='addExtraBtn'){
+      const fn = prompt('Prénom du participant :');
+      if(fn && fn.trim()){ const id=uid('extra'); extras.push({id, firstName:fn.trim(), lastName:''}); order.push(id); draw(); }
+    }
     if(e.target && e.target.id==='validateRank'){
-      const session = mode==='knockout' ? createBracketSession(cls, mode, activity, order) : createSpiderSession(cls, activity, order);
+      if(order.length<2) return;
+      const session = mode==='knockout' ? createBracketSession(cls, mode, activity, order, extras) : createSpiderSession(cls, activity, order, extras);
       DB.bracketSessions.push(session);
       save();
       document.removeEventListener('click', handler);
@@ -1222,78 +1232,91 @@ function roundLabel(session, ri){
   }
   return 'Tour '+(ri+1);
 }
-function renderMatchCard(cls, sessionId, ri, m){
-  const a = m.aId?getStudent(cls,m.aId):null, b = m.bId?getStudent(cls,m.bId):null;
+function renderMatchCard(session, ri, m){
+  const a = m.aId?bracketStudent(session,m.aId):null, b = m.bId?bracketStudent(session,m.bId):null;
   if(m.bye){
     return `<div class="list-item"><span>${a?studentName(a):'—'} <span class="pill">exempt</span></span></div>`;
   }
   if(!a||!b) return `<div class="list-item"><span class="muted">en attente...</span></div>`;
   const done = !!m.winnerId;
-  return `<div class="list-item" style="cursor:${done?'default':'pointer'};" ${done?'':`onclick="openBracketMatchModal('${sessionId}',${ri},'${m.id}')"`}>
-    <span>${studentName(a)} vs ${studentName(b)} ${done?('— 🏆 '+studentName(getStudent(cls,m.winnerId))):''}</span>
+  return `<div class="list-item" style="cursor:${done?'default':'pointer'};" ${done?'':`onclick="openBracketMatchModal('${session.id}',${ri},'${m.id}')"`}>
+    <span>${studentName(a)} vs ${studentName(b)} ${done?('— 🏆 '+studentName(bracketStudent(session,m.winnerId))):''}</span>
   </div>`;
 }
-/* ---- Tournoi araignée (repêchage) ---- */
-function createSpiderSession(cls, activity, orderedIds){
+/* ---- Tournoi araignée (regroupement par parcours exact + repêchage même tour) ---- */
+function createSpiderSession(cls, activity, orderedIds, extras){
   return {
-    id:uid('sp'), mode:'spider', classId:cls.id, activity, startedAt:nowTs(), status:'active',
-    students: orderedIds.map((sid,i)=>({studentId:sid, seed:i+1, eliminatedRound:null, recalled:false, champion:false, consolationWins:0})),
-    winnersRounds:[], loneHistory:[], pendingLone:null, loserPool:[], losersRounds:[]
+    id:uid('sp'), mode:'spider', classId:cls.id, activity, startedAt:nowTs(), status:'active', extras:extras||[],
+    students: orderedIds.map((sid,i)=>({studentId:sid, seed:i+1, history:[], done:false, champion:false})),
+    rounds:[], loneHistory:[]
   };
 }
-function spiderActivePool(session){
-  if(session.winnersRounds.length===0) return session.students.map(s=>s.studentId);
-  const last = session.winnersRounds[session.winnersRounds.length-1];
-  if(!last.every(m=>m.winnerId)) return null;
-  return last.map(m=>m.winnerId);
-}
-function spiderBuildNextRound(session){
-  if(session.pendingLone) return;
-  const pool = spiderActivePool(session);
-  if(pool===null) return;
-  if(pool.length<=1){
-    if(pool.length===1) session.students.find(s=>s.studentId===pool[0]).champion=true;
-    return;
-  }
-  if(pool.length%2===1){ session.pendingLone='awaiting_draw'; return; }
-  const ordered = session.students.filter(s=>pool.includes(s.studentId)).sort((a,b)=>a.seed-b.seed).map(s=>s.studentId);
-  const round=[];
-  for(let i=0;i<ordered.length;i+=2) round.push(makeMatch(ordered[i],ordered[i+1]));
-  session.winnersRounds.push(round);
-}
-function spiderDrawLone(session){
-  const pool = spiderActivePool(session);
-  let candidates = pool.filter(sid=>!session.loneHistory.includes(sid));
-  if(candidates.length===0) candidates = pool.slice();
-  session.pendingLone = candidates[Math.floor(Math.random()*candidates.length)];
-  save(); render();
-}
-function spiderConfirmLone(session){
-  const loneId = session.pendingLone;
-  session.loneHistory.push(loneId);
-  const pool = spiderActivePool(session);
-  const others = session.students.filter(s=>pool.includes(s.studentId) && s.studentId!==loneId).sort((a,b)=>a.seed-b.seed).map(s=>s.studentId);
-  const round=[];
-  for(let i=0;i<others.length;i+=2) round.push(makeMatch(others[i],others[i+1]));
-  const available = session.loserPool.map(sid=>session.students.find(s=>s.studentId===sid)).sort((a,b)=>a.seed-b.seed);
-  const recalledStu = available[0];
-  if(recalledStu){
-    round.push({id:uid('mt'), aId:loneId, bId:recalledStu.studentId, winnerId:null, bye:false, type:'repechage', recalledId:recalledStu.studentId});
-    session.loserPool = session.loserPool.filter(sid=>sid!==recalledStu.studentId);
-  } else {
-    round.push({id:uid('mt'), aId:loneId, bId:null, winnerId:loneId, bye:true, type:'bye'});
-  }
-  session.winnersRounds.push(round);
-  session.pendingLone = null;
-  save(); render();
-}
 function currentSpiderSession(){ return DB.bracketSessions.find(s=>s.id===activeSessionId); }
+function spiderGroups(session){
+  const groups={};
+  session.students.forEach(st=>{
+    if(st.done) return;
+    const key = st.history.join('');
+    (groups[key]=groups[key]||[]).push(st);
+  });
+  return groups;
+}
+function spiderRoundComplete(round){
+  return round.matches.every(m=>m.winnerId && !m.awaitingOpponent) && round.pending.every(p=>p.resolved);
+}
+function finalizeChampion(session){
+  const champ = session.students.find(s=>s.history.length>0 && s.history.every(h=>h==='W'));
+  if(champ) champ.champion = true;
+}
+function spiderBuildRound(session){
+  if(session.rounds.length){
+    const last = session.rounds[session.rounds.length-1];
+    if(!spiderRoundComplete(last)) return;
+  }
+  const groups = spiderGroups(session);
+  const keys = Object.keys(groups);
+  if(keys.length===0){ finalizeChampion(session); return; }
+  const round = {matches:[], pending:[]};
+  keys.forEach(key=>{
+    const group = groups[key].slice().sort((a,b)=>a.seed-b.seed);
+    if(group.length===1){ group[0].done=true; return; }
+    if(group.length%2===0){
+      for(let i=0;i<group.length;i+=2) round.matches.push({id:uid('mt'),aId:group[i].studentId,bId:group[i+1].studentId,winnerId:null,group:key});
+    } else {
+      round.pending.push({key, loneId:null, resolved:false, memberIds:group.map(s=>s.studentId)});
+    }
+  });
+  if(round.matches.length===0 && round.pending.length===0){ finalizeChampion(session); return; }
+  session.rounds.push(round);
+}
+function addHistory(session, sid, result){
+  const st = session.students.find(s=>s.studentId===sid);
+  if(st) st.history.push(result);
+}
+function spiderDrawLone(session, key){
+  const round = session.rounds[session.rounds.length-1];
+  const p = round.pending.find(x=>x.key===key);
+  const candidates0 = p.memberIds.filter(sid=>!session.loneHistory.includes(sid));
+  const candidates = candidates0.length ? candidates0 : p.memberIds;
+  p.loneId = candidates[Math.floor(Math.random()*candidates.length)];
+  save(); render();
+}
+function spiderConfirmLone(session, key){
+  const round = session.rounds[session.rounds.length-1];
+  const p = round.pending.find(x=>x.key===key);
+  session.loneHistory.push(p.loneId);
+  const others = p.memberIds.filter(sid=>sid!==p.loneId);
+  const ordered = session.students.filter(s=>others.includes(s.studentId)).sort((a,b)=>a.seed-b.seed).map(s=>s.studentId);
+  for(let i=0;i<ordered.length;i+=2) round.matches.push({id:uid('mt'),aId:ordered[i],bId:ordered[i+1],winnerId:null,group:key});
+  round.matches.push({id:uid('mt'),aId:p.loneId,bId:null,winnerId:null,group:key,type:'repechage',awaitingOpponent:true});
+  p.resolved = true;
+  save(); render();
+}
 function openSpiderMatchModal(sessionId, ri, matchId){
   const session = DB.bracketSessions.find(s=>s.id===sessionId);
-  const cls = getClass(session.classId);
-  const m = session.winnersRounds[ri].find(x=>x.id===matchId);
-  if(m.bye || m.winnerId) return;
-  const a=getStudent(cls,m.aId), b=getStudent(cls,m.bId);
+  const m = session.rounds[ri].matches.find(x=>x.id===matchId);
+  if(!m || m.winnerId || m.awaitingOpponent || !m.bId) return;
+  const a=bracketStudent(session,m.aId), b=bracketStudent(session,m.bId);
   openModal(`
     <h3>Qui a gagné ?${m.type==='repechage'?' <span class="pill">match repêchage</span>':''}</h3>
     <div class="eligible-grid">
@@ -1305,8 +1328,7 @@ function openSpiderMatchModal(sessionId, ri, matchId){
 }
 function confirmSpiderWinner(sessionId, ri, matchId, winnerId){
   const session = DB.bracketSessions.find(s=>s.id===sessionId);
-  const cls = getClass(session.classId);
-  const w = getStudent(cls,winnerId);
+  const w = bracketStudent(session,winnerId);
   openModal(`<h3>Confirmer</h3><p>${studentFullName(w)} remporte ce match.</p>
   <div class="row">
     <button class="btn" onclick="applySpiderMatch('${sessionId}',${ri},'${matchId}','${winnerId}')">✅ Confirmer</button>
@@ -1315,70 +1337,62 @@ function confirmSpiderWinner(sessionId, ri, matchId, winnerId){
 }
 function applySpiderMatch(sessionId, ri, matchId, winnerId){
   const session = DB.bracketSessions.find(s=>s.id===sessionId);
-  const m = session.winnersRounds[ri].find(x=>x.id===matchId);
+  const round = session.rounds[ri];
+  const m = round.matches.find(x=>x.id===matchId);
   m.winnerId = winnerId;
-  if(m.type==='repechage'){ const r=session.students.find(s=>s.studentId===m.recalledId); if(r) r.recalled=true; }
   const loserId = m.aId===winnerId ? m.bId : m.aId;
-  if(loserId){
-    const lStu = session.students.find(s=>s.studentId===loserId);
-    lStu.eliminatedRound = ri+1;
-    if(!session.loserPool.includes(loserId)) session.loserPool.push(loserId);
+  if(m.type==='repechage'){
+    addHistory(session, winnerId, 'W');
+    addHistory(session, loserId, 'L');
+  } else {
+    addHistory(session, winnerId, 'W');
+    const placeholder = round.matches.find(x=>x.group===m.group && x.awaitingOpponent);
+    if(placeholder){ placeholder.bId = loserId; placeholder.awaitingOpponent = false; }
+    else addHistory(session, loserId, 'L');
   }
-  session.students.find(s=>s.studentId===winnerId).eliminatedRound = null;
-  spiderBuildNextRound(session);
+  spiderBuildRound(session);
   save(); closeModal(); render();
 }
-function spiderPairLosers(session){
-  const available = session.loserPool.slice();
-  if(available.length<2) return;
-  const ordered = session.students.filter(s=>available.includes(s.studentId)).sort((a,b)=>a.seed-b.seed).map(s=>s.studentId);
-  let carry=null;
-  if(ordered.length%2===1) carry=ordered.pop();
-  const round=[];
-  for(let i=0;i<ordered.length;i+=2) round.push(makeMatch(ordered[i],ordered[i+1]));
-  session.losersRounds.push(round);
-  session.loserPool = carry?[carry]:[];
-  save(); render();
-}
-function openLosersMatchModal(sessionId, ri, matchId){
-  const session = DB.bracketSessions.find(s=>s.id===sessionId);
-  const cls = getClass(session.classId);
-  const m = session.losersRounds[ri].find(x=>x.id===matchId);
-  if(m.winnerId) return;
-  const a=getStudent(cls,m.aId), b=getStudent(cls,m.bId);
-  openModal(`
-    <h3>Qui a gagné ? <span class="pill">match des perdants</span></h3>
-    <div class="eligible-grid">
-      <button class="pick-btn" onclick="applyLosersMatch('${sessionId}',${ri},'${matchId}','${m.aId}')">${studentFullName(a)}</button>
-      <button class="pick-btn" onclick="applyLosersMatch('${sessionId}',${ri},'${matchId}','${m.bId}')">${studentFullName(b)}</button>
-    </div>
-    <div class="row" style="margin-top:10px;"><button class="btn ghost" onclick="closeModal()">Annuler</button></div>
-  `);
-}
-function applyLosersMatch(sessionId, ri, matchId, winnerId){
-  const session = DB.bracketSessions.find(s=>s.id===sessionId);
-  const m = session.losersRounds[ri].find(x=>x.id===matchId);
-  m.winnerId = winnerId;
-  const wStu = session.students.find(s=>s.studentId===winnerId);
-  wStu.consolationWins = (wStu.consolationWins||0)+1;
-  if(!session.loserPool.includes(winnerId)) session.loserPool.push(winnerId);
-  save(); closeModal(); render();
-}
-function spiderFinished(session){ return session.students.some(s=>s.champion); }
+function spiderFinished(session){ return session.students.every(s=>s.done); }
 function spiderStandings(session){
   return session.students.slice().sort((a,b)=>{
-    if(a.champion!==b.champion) return a.champion?-1:1;
-    const ra=a.eliminatedRound??999, rb=b.eliminatedRound??999;
-    if(ra!==rb) return rb-ra;
-    const ca=a.consolationWins||0, cb=b.consolationWins||0;
-    if(ca!==cb) return cb-ca;
+    const ha=a.history, hb=b.history, len=Math.min(ha.length,hb.length);
+    for(let i=0;i<len;i++){ if(ha[i]!==hb[i]) return ha[i]==='W' ? -1 : 1; }
+    if(ha.length!==hb.length) return hb.length-ha.length;
     return a.seed-b.seed;
   });
 }
+function groupLabel(key){ return key==='' ? '1er tour' : key.split('').map(c=>c==='W'?'V':'D').join(''); }
+function sortedRoundMatches(round){
+  return round.matches.slice().sort((a,b)=>{
+    const wa=(a.group.match(/W/g)||[]).length, wb=(b.group.match(/W/g)||[]).length;
+    return wb-wa;
+  });
+}
+function renderSpiderMatchCard(session, ri, m){
+  const a=m.aId?bracketStudent(session,m.aId):null, b=m.bId?bracketStudent(session,m.bId):null;
+  if(m.awaitingOpponent) return `<div class="list-item"><span>${a?studentName(a):'—'} <span class="pill">attend le 1er perdant du groupe</span></span></div>`;
+  const done=!!m.winnerId;
+  const tag = m.type==='repechage' ? ' <span class="pill">repêchage</span>' : '';
+  return `<div class="list-item" style="cursor:${done?'default':'pointer'};" ${done?'':`onclick="openSpiderMatchModal('${session.id}',${ri},'${m.id}')"`}>
+    <span>${studentName(a)} vs ${studentName(b)}${tag} ${done?('— 🏆 '+studentName(bracketStudent(session,m.winnerId))):''}</span>
+  </div>`;
+}
+function renderPendingBanner(session, p){
+  if(p.loneId===null){
+    return `<div class="card row"><span>Groupe « ${groupLabel(p.key)} » : nombre impair ce tour-ci, il faut tirer au sort le joueur sans adversaire.</span>
+    <button class="btn" onclick="spiderDrawLone(currentSpiderSession(),'${p.key}')">🎲 Tirer au sort</button></div>`;
+  }
+  const stu = bracketStudent(session, p.loneId);
+  return `<div class="card row"><span>🎲 <strong>${studentFullName(stu)}</strong> (groupe « ${groupLabel(p.key)} ») n'a pas d'adversaire — il/elle affrontera le 1er perdant de ce groupe ce tour-ci.</span>
+  <button class="btn" onclick="spiderConfirmLone(currentSpiderSession(),'${p.key}')">✅ Confirmer</button>
+  <button class="btn ghost" onclick="spiderDrawLone(currentSpiderSession(),'${p.key}')">🎲 Relancer</button></div>`;
+}
 function renderSpiderGame(app, session){
-  const cls = getClass(session.classId);
-  spiderBuildNextRound(session);
+  spiderBuildRound(session);
   const finished = spiderFinished(session);
+  const cls = getClass(session.classId);
+  const pendingAll = session.rounds.length ? session.rounds[session.rounds.length-1].pending.filter(p=>!p.resolved) : [];
   app.innerHTML = `
   <div class="row" style="margin-bottom:8px;">
     <button class="btn ghost" onclick="activeSessionId=null;render();">← Retour</button>
@@ -1386,60 +1400,23 @@ function renderSpiderGame(app, session){
     ${finished?'<span class="badge">Terminé</span>':''}
     <button class="btn danger" style="margin-left:auto;" onclick="endBracketSession()">🏁 Fin de séance</button>
   </div>
-  ${session.pendingLone==='awaiting_draw' ? `<div class="card row"><span>Nombre impair ce tour-ci : il faut tirer au sort le joueur sans adversaire.</span>
-    <button class="btn" onclick="spiderDrawLone(currentSpiderSession())">🎲 Tirer au sort</button></div>` : ''}
-  ${(session.pendingLone && session.pendingLone!=='awaiting_draw') ? (()=>{
-    const stu=getStudent(cls,session.pendingLone);
-    return `<div class="card row"><span>🎲 <strong>${studentFullName(stu)}</strong> n'a pas d'adversaire ce tour-ci — il/elle affrontera le meilleur perdant disponible (repêchage).</span>
-    <button class="btn" onclick="spiderConfirmLone(currentSpiderSession())">✅ Confirmer</button>
-    <button class="btn ghost" onclick="spiderDrawLone(currentSpiderSession())">🎲 Relancer le tirage</button></div>`;
-  })() : ''}
+  ${pendingAll.map(p=>renderPendingBanner(session,p)).join('')}
   <div class="card" style="overflow-x:auto;">
-    <h3>Tableau des gagnants</h3>
     <div class="row" style="align-items:flex-start;gap:20px;flex-wrap:nowrap;">
-      ${session.winnersRounds.map((round,ri)=>`
+      ${session.rounds.map((round,ri)=>`
         <div style="min-width:190px;">
           <h4 class="muted">Tour ${ri+1}</h4>
-          ${round.map(m=>renderSpiderMatchCard(cls, session.id, ri, m)).join('')}
+          ${sortedRoundMatches(round).map(m=>renderSpiderMatchCard(session, ri, m)).join('')}
         </div>`).join('')}
     </div>
   </div>
-  <div class="card" style="overflow-x:auto;">
-    <div class="row" style="justify-content:space-between;">
-      <h3>Tableau des perdants (classement)</h3>
-      ${session.loserPool.length>=2?`<button class="btn secondary" onclick="spiderPairLosers(currentSpiderSession())">⚖️ Apparier les perdants en attente (${session.loserPool.length})</button>`:''}
-    </div>
-    ${session.losersRounds.length===0?'<p class="muted">Pas encore de match côté perdants.</p>':`
-    <div class="row" style="align-items:flex-start;gap:20px;flex-wrap:nowrap;">
-      ${session.losersRounds.map((round,ri)=>`
-        <div style="min-width:190px;">
-          <h4 class="muted">Tour perdants ${ri+1}</h4>
-          ${round.map(m=>{
-            const a=getStudent(cls,m.aId), b=getStudent(cls,m.bId);
-            const done=!!m.winnerId;
-            return `<div class="list-item" style="cursor:${done?'default':'pointer'};" ${done?'':`onclick="openLosersMatchModal('${session.id}',${ri},'${m.id}')"`}>
-              <span>${studentName(a)} vs ${studentName(b)} ${done?('— 🏆 '+studentName(getStudent(cls,m.winnerId))):''}</span>
-            </div>`;
-          }).join('')}
-        </div>`).join('')}
-    </div>`}
-  </div>
-  ${finished ? renderSpiderStandings(session,cls) : ''}
+  ${finished ? renderSpiderStandings(session) : ''}
   `;
 }
-function renderSpiderMatchCard(cls, sessionId, ri, m){
-  const a=m.aId?getStudent(cls,m.aId):null, b=m.bId?getStudent(cls,m.bId):null;
-  if(m.bye) return `<div class="list-item"><span>${a?studentName(a):'—'} <span class="pill">exempt</span></span></div>`;
-  const done = !!m.winnerId;
-  const tag = m.type==='repechage' ? ' <span class="pill">repêchage</span>' : '';
-  return `<div class="list-item" style="cursor:${done?'default':'pointer'};" ${done?'':`onclick="openSpiderMatchModal('${sessionId}',${ri},'${m.id}')"`}>
-    <span>${studentName(a)} vs ${studentName(b)}${tag} ${done?('— 🏆 '+studentName(getStudent(cls,m.winnerId))):''}</span>
-  </div>`;
-}
-function renderSpiderStandings(session, cls){
+function renderSpiderStandings(session){
   const ranked = spiderStandings(session);
   return `<div class="card"><h3>🏆 Classement final</h3>${ranked.map((e,i)=>{
-    const stu=getStudent(cls,e.studentId); if(!stu) return '';
+    const stu=bracketStudent(session,e.studentId); if(!stu) return '';
     return `<div class="list-item"><span>#${i+1} ${studentFullName(stu)}</span></div>`;
   }).join('')}</div>`;
 }
@@ -1460,19 +1437,18 @@ function renderBracketGame(app, session){
       ${session.rounds.map((round,ri)=>`
         <div style="min-width:190px;">
           <h4 class="muted">${roundLabel(session,ri)}</h4>
-          ${round.map(m=>renderMatchCard(cls, session.id, ri, m)).join('')}
+          ${round.map(m=>renderMatchCard(session, ri, m)).join('')}
         </div>`).join('')}
     </div>
   </div>
-  ${finished ? renderBracketStandings(session,cls) : ''}
+  ${finished ? renderBracketStandings(session) : ''}
   `;
 }
 function openBracketMatchModal(sessionId, ri, matchId){
   const session = DB.bracketSessions.find(s=>s.id===sessionId);
-  const cls = getClass(session.classId);
   const m = session.rounds[ri].find(x=>x.id===matchId);
   if(m.bye || m.winnerId) return;
-  const a=getStudent(cls,m.aId), b=getStudent(cls,m.bId);
+  const a=bracketStudent(session,m.aId), b=bracketStudent(session,m.bId);
   openModal(`
     <h3>Qui a gagné ?</h3>
     <div class="eligible-grid">
@@ -1484,8 +1460,7 @@ function openBracketMatchModal(sessionId, ri, matchId){
 }
 function confirmBracketWinner(sessionId, ri, matchId, winnerId){
   const session = DB.bracketSessions.find(s=>s.id===sessionId);
-  const cls = getClass(session.classId);
-  const w = getStudent(cls,winnerId);
+  const w = bracketStudent(session,winnerId);
   openModal(`<h3>Confirmer</h3><p>${studentFullName(w)} remporte ce match.</p>
   <div class="row">
     <button class="btn" onclick="applyBracketMatch('${sessionId}',${ri},'${matchId}','${winnerId}')">✅ Confirmer</button>
@@ -1507,19 +1482,14 @@ function applyBracketMatch(sessionId, ri, matchId, winnerId){
   advanceBracket(session);
   save(); closeModal(); render();
 }
-function renderBracketStandings(session, cls){
-  let ranked;
-  if(session.mode==='knockout'){
-    ranked = session.students.slice().sort((a,b)=>{
-      const ra = a.eliminatedRound || (session.rounds.length+1);
-      const rb = b.eliminatedRound || (session.rounds.length+1);
-      return rb-ra || a.seed-b.seed;
-    });
-  } else {
-    ranked = session.students.slice().sort((a,b)=> b.wins-a.wins || a.seed-b.seed);
-  }
+function renderBracketStandings(session){
+  const ranked = session.students.slice().sort((a,b)=>{
+    const ra = a.eliminatedRound || (session.rounds.length+1);
+    const rb = b.eliminatedRound || (session.rounds.length+1);
+    return rb-ra || a.seed-b.seed;
+  });
   return `<div class="card"><h3>🏆 Classement final</h3>${ranked.map((e,i)=>{
-    const stu = getStudent(cls,e.studentId); if(!stu) return '';
+    const stu = bracketStudent(session,e.studentId); if(!stu) return '';
     return `<div class="list-item"><span>#${i+1} ${studentFullName(stu)}</span><span class="muted">${e.wins}V - ${e.losses}D</span></div>`;
   }).join('')}</div>`;
 }
