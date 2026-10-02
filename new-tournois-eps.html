@@ -1141,6 +1141,7 @@ function renderBracketSetup(app, mode){
         <select id="bk_class">${DB.classes.map(c=>`<option value="${c.id}" ${c.id===DB.activeClassId?'selected':''}>${c.name}</option>`).join('')}</select>
       </div>
       <div><label>Activité</label><input id="bk_activity" placeholder="Badminton, Ping-pong..."></div>
+      ${mode==='spider'?'<div><label>Score pour gagner un match</label><input id="bk_winscore" type="number" value="25" style="width:90px;"></div>':''}
     </div>
     <div class="row" style="margin-top:12px;"><button class="btn" id="bk_next">Suivant : participants et classement →</button></div>
   </div>
@@ -1151,7 +1152,8 @@ function renderBracketSetup(app, mode){
     const cls = getClass(classId);
     if(!cls){ return; }
     DB.activeClassId = classId;
-    setupBracketRanking(cls, mode, document.getElementById('bk_activity').value.trim());
+    const winScore = mode==='spider' ? (+document.getElementById('bk_winscore').value||25) : null;
+    setupBracketRanking(cls, mode, document.getElementById('bk_activity').value.trim(), winScore);
   };
   const list = document.getElementById('bkHistList');
   const items = DB.bracketSessions.filter(s=>s.mode===mode).sort((a,b)=>b.startedAt-a.startedAt);
@@ -1165,7 +1167,7 @@ function renderBracketSetup(app, mode){
     </span></div>`;
   }).join('');
 }
-function setupBracketRanking(cls, mode, activity){
+function setupBracketRanking(cls, mode, activity, winScore){
   let order = cls.students.map(s=>s.id);
   let extras = [];
   const app = document.getElementById('app');
@@ -1208,7 +1210,7 @@ function setupBracketRanking(cls, mode, activity){
     }
     if(e.target && e.target.id==='validateRank'){
       if(order.length<2) return;
-      const session = mode==='knockout' ? createBracketSession(cls, mode, activity, order, extras) : createSpiderSession(cls, activity, order, extras);
+      const session = mode==='knockout' ? createBracketSession(cls, mode, activity, order, extras) : createSpiderSession(cls, activity, order, extras, winScore);
       DB.bracketSessions.push(session);
       save();
       document.removeEventListener('click', handler);
@@ -1244,9 +1246,9 @@ function renderMatchCard(session, ri, m){
   </div>`;
 }
 /* ---- Tournoi araignée (regroupement par parcours exact + repêchage même tour) ---- */
-function createSpiderSession(cls, activity, orderedIds, extras){
+function createSpiderSession(cls, activity, orderedIds, extras, winScore){
   return {
-    id:uid('sp'), mode:'spider', classId:cls.id, activity, startedAt:nowTs(), status:'active', extras:extras||[],
+    id:uid('sp'), mode:'spider', classId:cls.id, activity, startedAt:nowTs(), status:'active', extras:extras||[], winScore:winScore||25,
     students: orderedIds.map((sid,i)=>({studentId:sid, seed:i+1, history:[], done:false, champion:false})),
     rounds:[], loneHistory:[]
   };
@@ -1320,26 +1322,41 @@ function openSpiderMatchModal(sessionId, ri, matchId){
   openModal(`
     <h3>Qui a gagné ?${m.type==='repechage'?' <span class="pill">match repêchage</span>':''}</h3>
     <div class="eligible-grid">
-      <button class="pick-btn" onclick="confirmSpiderWinner('${sessionId}',${ri},'${matchId}','${m.aId}')">${studentFullName(a)}</button>
-      <button class="pick-btn" onclick="confirmSpiderWinner('${sessionId}',${ri},'${matchId}','${m.bId}')">${studentFullName(b)}</button>
+      <button class="pick-btn" onclick="enterSpiderScore('${sessionId}',${ri},'${matchId}','${m.aId}')">${studentFullName(a)}</button>
+      <button class="pick-btn" onclick="enterSpiderScore('${sessionId}',${ri},'${matchId}','${m.bId}')">${studentFullName(b)}</button>
     </div>
     <div class="row" style="margin-top:10px;"><button class="btn ghost" onclick="closeModal()">Annuler</button></div>
   `);
 }
-function confirmSpiderWinner(sessionId, ri, matchId, winnerId){
+function enterSpiderScore(sessionId, ri, matchId, winnerId){
   const session = DB.bracketSessions.find(s=>s.id===sessionId);
-  const w = bracketStudent(session,winnerId);
-  openModal(`<h3>Confirmer</h3><p>${studentFullName(w)} remporte ce match.</p>
-  <div class="row">
-    <button class="btn" onclick="applySpiderMatch('${sessionId}',${ri},'${matchId}','${winnerId}')">✅ Confirmer</button>
-    <button class="btn ghost" onclick="openSpiderMatchModal('${sessionId}',${ri},'${matchId}')">← Retour</button>
-  </div>`);
+  const m = session.rounds[ri].matches.find(x=>x.id===matchId);
+  const loserId = m.aId===winnerId ? m.bId : m.aId;
+  const w=bracketStudent(session,winnerId), l=bracketStudent(session,loserId);
+  openModal(`
+    <h3>Score du match</h3>
+    <p class="muted">${studentFullName(w)} (gagnant) vs ${studentFullName(l)} (perdant)</p>
+    <label>Score ${studentFullName(w)}</label>
+    <input id="wScore" type="number" value="${session.winScore}" style="width:100%;margin-bottom:8px;">
+    <label>Score ${studentFullName(l)}</label>
+    <input id="lScore" type="number" value="0" style="width:100%;margin-bottom:12px;">
+    <div class="row">
+      <button class="btn" id="saveScoreBtn">✅ Valider</button>
+      <button class="btn ghost" onclick="openSpiderMatchModal('${sessionId}',${ri},'${matchId}')">← Retour</button>
+    </div>`);
+  document.getElementById('saveScoreBtn').onclick=()=>{
+    const ws=parseInt(document.getElementById('wScore').value), ls=parseInt(document.getElementById('lScore').value);
+    if(isNaN(ws)||isNaN(ls)){ alert('Scores invalides.'); return; }
+    if(ls>=ws){ alert('Le score du perdant doit être inférieur au score du gagnant.'); return; }
+    applySpiderMatch(sessionId, ri, matchId, winnerId, ws, ls);
+  };
 }
-function applySpiderMatch(sessionId, ri, matchId, winnerId){
+function applySpiderMatch(sessionId, ri, matchId, winnerId, winnerScore, loserScore){
   const session = DB.bracketSessions.find(s=>s.id===sessionId);
   const round = session.rounds[ri];
   const m = round.matches.find(x=>x.id===matchId);
   m.winnerId = winnerId;
+  m.winnerScore = winnerScore; m.loserScore = loserScore; m.timestamp = nowTs();
   const loserId = m.aId===winnerId ? m.bId : m.aId;
   if(m.type==='repechage'){
     addHistory(session, winnerId, 'W');
@@ -1347,11 +1364,35 @@ function applySpiderMatch(sessionId, ri, matchId, winnerId){
   } else {
     addHistory(session, winnerId, 'W');
     const placeholder = round.matches.find(x=>x.group===m.group && x.awaitingOpponent);
-    if(placeholder){ placeholder.bId = loserId; placeholder.awaitingOpponent = false; }
+    if(placeholder){ placeholder.bId = loserId; placeholder.awaitingOpponent = false; placeholder.sourceMatchId = m.id; }
     else addHistory(session, loserId, 'L');
   }
   spiderBuildRound(session);
   save(); closeModal(); render();
+}
+function popHistory(session, sid){ const st=session.students.find(s=>s.studentId===sid); if(st && st.history.length) st.history.pop(); }
+function cancelSpiderMatch(sessionId, ri, matchId){
+  const session = DB.bracketSessions.find(s=>s.id===sessionId);
+  if(ri !== session.rounds.length-1){ alert('Seuls les matchs du tour en cours peuvent être annulés (les tours suivants en découlent déjà).'); return; }
+  const round = session.rounds[ri];
+  const m = round.matches.find(x=>x.id===matchId);
+  if(!m || !m.winnerId) return;
+  if(m.type!=='repechage' && round.matches.some(x=>x.group===m.group && x.type==='repechage' && x.sourceMatchId===m.id)){
+    alert('Annulez d\'abord le match de repêchage qui en découle.');
+    return;
+  }
+  if(!confirm('Annuler ce match ?')) return;
+  const loserId = m.aId===m.winnerId ? m.bId : m.aId;
+  popHistory(session, m.winnerId);
+  if(m.type==='repechage'){
+    popHistory(session, loserId);
+  } else {
+    const placeholder = round.matches.find(x=>x.group===m.group && x.type==='repechage' && x.sourceMatchId===m.id);
+    if(placeholder){ placeholder.bId=null; placeholder.awaitingOpponent=true; placeholder.sourceMatchId=null; }
+    else popHistory(session, loserId);
+  }
+  m.winnerId=null; m.winnerScore=null; m.loserScore=null;
+  save(); render();
 }
 function spiderFinished(session){ return session.students.every(s=>s.done); }
 function spiderStandings(session){
@@ -1362,7 +1403,24 @@ function spiderStandings(session){
     return a.seed-b.seed;
   });
 }
-function groupLabel(key){ return key==='' ? '1er tour' : key.split('').map(c=>c==='W'?'V':'D').join(''); }
+function groupLabel(key){ return key==='' ? 'Tour 1' : key.split('').map(c=>c==='W'?'V':'D').join(''); }
+const SPIDER_GROUP_COLORS = ['#e0473e','#2f6fed','#1f9d55','#e0a010','#8a4fe0','#17a2b8','#d4568a','#6b7f99'];
+function spiderCurrentOrder(session){
+  return session.students.slice().sort((a,b)=>{
+    const ha=a.history, hb=b.history, len=Math.min(ha.length,hb.length);
+    for(let i=0;i<len;i++){ if(ha[i]!==hb[i]) return ha[i]==='W' ? -1 : 1; }
+    if(ha.length!==hb.length) return hb.length-ha.length;
+    return a.seed-b.seed;
+  });
+}
+function groupPlaceRange(session, key){
+  const order = spiderCurrentOrder(session);
+  const idxs=[];
+  order.forEach((s,i)=>{ if(!s.done && s.history.join('')===key) idxs.push(i); });
+  if(idxs.length===0) return null;
+  const lo=Math.min(...idxs)+1, hi=Math.max(...idxs)+1;
+  return lo===hi ? String(lo) : (lo+'-'+hi);
+}
 function sortedRoundMatches(round){
   return round.matches.slice().sort((a,b)=>{
     const wa=(a.group.match(/W/g)||[]).length, wb=(b.group.match(/W/g)||[]).length;
@@ -1374,9 +1432,27 @@ function renderSpiderMatchCard(session, ri, m){
   if(m.awaitingOpponent) return `<div class="list-item"><span>${a?studentName(a):'—'} <span class="pill">attend le 1er perdant du groupe</span></span></div>`;
   const done=!!m.winnerId;
   const tag = m.type==='repechage' ? ' <span class="pill">repêchage</span>' : '';
+  const score = done ? ` (${m.winnerScore}-${m.loserScore})` : '';
   return `<div class="list-item" style="cursor:${done?'default':'pointer'};" ${done?'':`onclick="openSpiderMatchModal('${session.id}',${ri},'${m.id}')"`}>
-    <span>${studentName(a)} vs ${studentName(b)}${tag} ${done?('— 🏆 '+studentName(bracketStudent(session,m.winnerId))):''}</span>
+    <span>${studentName(a)} vs ${studentName(b)}${tag} ${done?('— 🏆 '+studentName(bracketStudent(session,m.winnerId))+score):''}</span>
   </div>`;
+}
+function renderSpiderRoundColumn(session, ri, round){
+  const sorted = sortedRoundMatches(round);
+  const blocks=[]; let cur=null;
+  sorted.forEach(m=>{
+    if(!cur || cur.key!==m.group){ cur={key:m.group, matches:[]}; blocks.push(cur); }
+    cur.matches.push(m);
+  });
+  return blocks.map((b,bi)=>{
+    const color = SPIDER_GROUP_COLORS[bi % SPIDER_GROUP_COLORS.length];
+    const range = groupPlaceRange(session, b.key);
+    const label = groupLabel(b.key) + (range ? ' — places '+range : '');
+    return `<div style="border:2px solid ${color};border-radius:8px;margin-bottom:8px;overflow:hidden;">
+      <div style="background:${color};color:#fff;font-size:11px;font-weight:700;padding:4px 8px;">${label}</div>
+      <div>${b.matches.map(m=>renderSpiderMatchCard(session,ri,m)).join('')}</div>
+    </div>`;
+  }).join('');
 }
 function renderPendingBanner(session, p){
   if(p.loneId===null){
@@ -1406,12 +1482,34 @@ function renderSpiderGame(app, session){
       ${session.rounds.map((round,ri)=>`
         <div style="min-width:190px;">
           <h4 class="muted">Tour ${ri+1}</h4>
-          ${sortedRoundMatches(round).map(m=>renderSpiderMatchCard(session, ri, m)).join('')}
+          ${renderSpiderRoundColumn(session, ri, round)}
         </div>`).join('')}
     </div>
   </div>
   ${finished ? renderSpiderStandings(session) : ''}
+  <div class="card">
+    <h3>Historique des matchs</h3>
+    <div style="max-height:320px;overflow-y:auto;">${renderSpiderHistory(session)}</div>
+  </div>
   `;
+}
+function renderSpiderHistory(session){
+  const items=[];
+  session.rounds.forEach((round,ri)=>{
+    round.matches.forEach(m=>{
+      if(!m.winnerId) return;
+      items.push({ri, m});
+    });
+  });
+  items.sort((a,b)=> (b.m.timestamp||0)-(a.m.timestamp||0));
+  if(items.length===0) return '<p class="muted">Aucun match joué.</p>';
+  const lastRound = session.rounds.length-1;
+  return items.map(({ri,m})=>{
+    const w=bracketStudent(session,m.winnerId), l=bracketStudent(session, m.aId===m.winnerId?m.bId:m.aId);
+    const cancellable = ri===lastRound;
+    return `<div class="timeline-item"><span>Tour ${ri+1} (${groupLabel(m.group)}) — ${studentName(w)} bat ${studentName(l)} ${m.winnerScore}-${m.loserScore}${m.type==='repechage'?' <span class="pill">repêchage</span>':''}</span>
+    ${cancellable?`<button class="btn danger" style="padding:2px 8px;font-size:11px;" onclick="cancelSpiderMatch('${session.id}',${ri},'${m.id}')">annuler</button>`:''}</div>`;
+  }).join('');
 }
 function renderSpiderStandings(session){
   const ranked = spiderStandings(session);
