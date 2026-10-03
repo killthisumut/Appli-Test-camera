@@ -714,39 +714,39 @@ function renderMatchZone(session, cls){
   const zone = document.getElementById('matchZone');
   const title = document.getElementById('matchTitle');
   if(matchFlow.step===null){
-    title.textContent = 'Étape 1 : qui a gagné ?';
+    title.textContent = '🏆 Étape 1 : qui a gagné ?';
     const ranking = currentRanking(session);
     zone.innerHTML = `<div class="eligible-grid">${ranking.map(e=>{
       const stu=getStudent(cls,e.studentId); if(!stu) return '';
-      return `<button class="pick-btn" onclick="pickWinner('${e.studentId}')">${studentName(stu)}</button>`;
+      return `<button class="pick-btn" onclick="pickWinner('${e.studentId}')">🏆 ${studentName(stu)}</button>`;
     }).join('')}</div>`;
   } else if(matchFlow.step==='loser'){
     const winner = getStudent(cls, matchFlow.winnerId);
-    title.textContent = 'Étape 2 : contre qui (perdant) ?  — Gagnant : '+studentName(winner);
+    title.textContent = '❌ Étape 2 : contre qui (perdant) ?  — 🏆 Gagnant : '+studentName(winner);
     const opponents = eligibleOpponents(session, matchFlow.winnerId).filter(e=>e.studentId!==matchFlow.winnerId);
     zone.innerHTML = `<div class="eligible-grid">${opponents.map(e=>{
       const stu=getStudent(cls,e.studentId); if(!stu) return '';
-      return `<button class="pick-btn" onclick="pickLoser('${e.studentId}')">${studentName(stu)}</button>`;
+      return `<button class="pick-btn" onclick="pickLoser('${e.studentId}')">❌ ${studentName(stu)}</button>`;
     }).join('')}</div>
-    <div class="row" style="margin-top:10px;"><button class="btn ghost" onclick="matchFlow={step:null};renderMatchZone(currentSession(),curCls());">← Retour</button></div>`;
+    <div class="row" style="margin-top:10px;"><button class="btn ghost" onclick="matchFlow={step:null};renderMatchZone(currentSession(),curCls());">↩️ Retour</button></div>`;
   } else if(matchFlow.step==='ref'){
     const winner=getStudent(cls,matchFlow.winnerId), loser=getStudent(cls,matchFlow.loserId);
-    title.textContent = 'Étape 3 : arbitre (optionnel)';
+    title.textContent = '🧑‍⚖️ Étape 3 : arbitre (optionnel)';
     const others = session.students.filter(e=>e.studentId!==matchFlow.winnerId && e.studentId!==matchFlow.loserId);
     zone.innerHTML = `<div class="eligible-grid">${others.map(e=>{
       const stu=getStudent(cls,e.studentId); if(!stu) return '';
-      return `<button class="pick-btn" onclick="pickRef('${e.studentId}')">${studentName(stu)}</button>`;
+      return `<button class="pick-btn" onclick="pickRef('${e.studentId}')">🧑‍⚖️ ${studentName(stu)}</button>`;
     }).join('')}</div>
     <div class="row" style="margin-top:10px;">
-      <button class="btn secondary" onclick="pickRef(null)">Aucun arbitre</button>
-      <button class="btn ghost" onclick="matchFlow.step='loser';renderMatchZone(currentSession(),curCls());">← Retour</button>
+      <button class="btn secondary" onclick="pickRef(null)">🚫 Aucun arbitre</button>
+      <button class="btn ghost" onclick="matchFlow.step='loser';renderMatchZone(currentSession(),curCls());">↩️ Retour</button>
     </div>`;
   } else if(matchFlow.step==='confirm'){
     const winner=getStudent(cls,matchFlow.winnerId), loser=getStudent(cls,matchFlow.loserId);
     const ref = matchFlow.refId ? getStudent(cls,matchFlow.refId) : null;
-    title.textContent = 'Confirmation';
-    zone.innerHTML = `<p>${studentFullName(winner)} a gagné contre ${studentFullName(loser)}${ref?(' — arbitre : '+studentFullName(ref)):' — aucun arbitre'}.</p>
-    <div class="row"><button class="btn" onclick="confirmMatch()">✅ Confirmer</button><button class="btn ghost" onclick="matchFlow.step='ref';renderMatchZone(currentSession(),curCls());">← Retour</button></div>`;
+    title.textContent = '📋 Confirmation';
+    zone.innerHTML = `<p>🏆 ${studentFullName(winner)} a gagné contre ❌ ${studentFullName(loser)}${ref?(' — 🧑‍⚖️ arbitre : '+studentFullName(ref)):' — 🚫 aucun arbitre'}.</p>
+    <div class="row"><button class="btn" onclick="confirmMatch()">✅ Confirmer</button><button class="btn ghost" onclick="matchFlow.step='ref';renderMatchZone(currentSession(),curCls());">↩️ Retour</button></div>`;
   }
 }
 function currentSession(){ return DB.atpSessions.find(s=>s.id===activeSessionId); }
@@ -1095,7 +1095,7 @@ function bracketStudent(session, sid){
   const cls = getClass(session.classId);
   return getStudent(cls, sid) || (session.extras||[]).find(e=>e.id===sid);
 }
-function createBracketSession(cls, mode, activity, orderedIds, extras){
+function createBracketSession(cls, mode, activity, orderedIds, extras, winScore){
   const n = orderedIds.length;
   const size = nextPow2(n);
   const slots = seedSlots(size);
@@ -1106,7 +1106,7 @@ function createBracketSession(cls, mode, activity, orderedIds, extras){
     round1.push(makeMatch(seedToStudent[slots[i]]||null, seedToStudent[slots[i+1]]||null));
   }
   const session = {
-    id:uid('bk'), mode, classId:cls.id, activity, startedAt:nowTs(), status:'active', extras:extras||[],
+    id:uid('bk'), mode, classId:cls.id, activity, startedAt:nowTs(), status:'active', extras:extras||[], winScore:winScore||25,
     students: orderedIds.map((sid,i)=>({studentId:sid, seed:i+1, wins:0, losses:0, byes:0, history:[], eliminated:false, eliminatedRound:null})),
     rounds:[round1]
   };
@@ -1141,7 +1141,7 @@ function renderBracketSetup(app, mode){
         <select id="bk_class">${DB.classes.map(c=>`<option value="${c.id}" ${c.id===DB.activeClassId?'selected':''}>${c.name}</option>`).join('')}</select>
       </div>
       <div><label>Activité</label><input id="bk_activity" placeholder="Badminton, Ping-pong..."></div>
-      ${mode==='spider'?'<div><label>Score pour gagner un match</label><input id="bk_winscore" type="number" value="25" style="width:90px;"></div>':''}
+      <div><label>Score pour gagner un match</label><input id="bk_winscore" type="number" value="25" style="width:90px;"></div>
     </div>
     <div class="row" style="margin-top:12px;"><button class="btn" id="bk_next">Suivant : participants et classement →</button></div>
   </div>
@@ -1152,7 +1152,7 @@ function renderBracketSetup(app, mode){
     const cls = getClass(classId);
     if(!cls){ return; }
     DB.activeClassId = classId;
-    const winScore = mode==='spider' ? (+document.getElementById('bk_winscore').value||25) : null;
+    const winScore = +document.getElementById('bk_winscore').value||25;
     setupBracketRanking(cls, mode, document.getElementById('bk_activity').value.trim(), winScore);
   };
   const list = document.getElementById('bkHistList');
@@ -1210,7 +1210,7 @@ function setupBracketRanking(cls, mode, activity, winScore){
     }
     if(e.target && e.target.id==='validateRank'){
       if(order.length<2) return;
-      const session = mode==='knockout' ? createBracketSession(cls, mode, activity, order, extras) : createSpiderSession(cls, activity, order, extras, winScore);
+      const session = mode==='knockout' ? createBracketSession(cls, mode, activity, order, extras, winScore) : createSpiderSession(cls, activity, order, extras, winScore);
       DB.bracketSessions.push(session);
       save();
       document.removeEventListener('click', handler);
@@ -1241,8 +1241,9 @@ function renderMatchCard(session, ri, m){
   }
   if(!a||!b) return `<div class="list-item"><span class="muted">en attente...</span></div>`;
   const done = !!m.winnerId;
+  const score = done ? ` (${m.winnerScore}-${m.loserScore})` : '';
   return `<div class="list-item" style="cursor:${done?'default':'pointer'};" ${done?'':`onclick="openBracketMatchModal('${session.id}',${ri},'${m.id}')"`}>
-    <span>${studentName(a)} vs ${studentName(b)} ${done?('— 🏆 '+studentName(bracketStudent(session,m.winnerId))):''}</span>
+    <span>${studentName(a)} vs ${studentName(b)} ${done?('— 🏆 '+studentName(bracketStudent(session,m.winnerId))+score):''}</span>
   </div>`;
 }
 /* ---- Tournoi araignée (regroupement par parcours exact + repêchage même tour) ---- */
@@ -1403,8 +1404,16 @@ function spiderStandings(session){
     return a.seed-b.seed;
   });
 }
-function groupLabel(key){ return key==='' ? 'Tour 1' : key.split('').map(c=>c==='W'?'V':'D').join(''); }
-const SPIDER_GROUP_COLORS = ['#e0473e','#2f6fed','#1f9d55','#e0a010','#8a4fe0','#17a2b8','#d4568a','#6b7f99'];
+function groupLabel(key){ return key==='' ? 'Tour 1' : key.split('').map(c=>c==='W'?'V':(c==='B'?'E':'D')).join(''); }
+function spiderGroupColor(key){
+  const n = key.length;
+  if(n===0) return '#6b7f99';
+  let bin=0;
+  for(let i=0;i<n;i++) bin = bin*2 + (key[i]==='W'?1:0);
+  const value = bin/(Math.pow(2,n)-1); // 0=que des défaites, 1=que des victoires, pondéré par l'ordre (1er tour compte le plus)
+  const hue = value*120; // 0=rouge, 120=vert
+  return `hsl(${hue},62%,42%)`;
+}
 function spiderCurrentOrder(session){
   return session.students.slice().sort((a,b)=>{
     const ha=a.history, hb=b.history, len=Math.min(ha.length,hb.length);
@@ -1445,7 +1454,7 @@ function renderSpiderRoundColumn(session, ri, round){
     cur.matches.push(m);
   });
   return blocks.map((b,bi)=>{
-    const color = SPIDER_GROUP_COLORS[bi % SPIDER_GROUP_COLORS.length];
+    const color = spiderGroupColor(b.key);
     const range = groupPlaceRange(session, b.key);
     const label = groupLabel(b.key) + (range ? ' — places '+range : '');
     return `<div style="border:2px solid ${color};border-radius:8px;margin-bottom:8px;overflow:hidden;">
@@ -1515,8 +1524,40 @@ function renderSpiderStandings(session){
   const ranked = spiderStandings(session);
   return `<div class="card"><h3>🏆 Classement final</h3>${ranked.map((e,i)=>{
     const stu=bracketStudent(session,e.studentId); if(!stu) return '';
-    return `<div class="list-item"><span>#${i+1} ${studentFullName(stu)}</span></div>`;
+    return `<div class="list-item" style="cursor:pointer;" onclick="openSpiderStudentStats('${session.id}','${e.studentId}')"><span>#${i+1} ${studentFullName(stu)}</span></div>`;
   }).join('')}</div>`;
+}
+function spiderStudentMatches(session, sid){
+  const list=[];
+  session.rounds.forEach((round,ri)=>{ round.matches.forEach(m=>{ if(m.winnerId && (m.aId===sid||m.bId===sid)) list.push(m); }); });
+  return list;
+}
+function openSpiderStudentStats(sessionId, studentId){
+  const session = DB.bracketSessions.find(s=>s.id===sessionId);
+  const stu = bracketStudent(session, studentId);
+  const entry = session.students.find(s=>s.studentId===studentId);
+  const rank = spiderStandings(session).findIndex(s=>s.studentId===studentId)+1;
+  const matches = spiderStudentMatches(session, studentId);
+  const wins = matches.filter(m=>m.winnerId===studentId).length;
+  const losses = matches.length - wins;
+  const myScores = matches.map(m=> m.winnerId===studentId ? m.winnerScore : m.loserScore);
+  const avgPts = myScores.length ? (myScores.reduce((a,b)=>a+b,0)/myScores.length).toFixed(1) : '—';
+  const wonMargins = matches.filter(m=>m.winnerId===studentId).map(m=>m.winnerScore-m.loserScore);
+  const lostMargins = matches.filter(m=>m.winnerId!==studentId).map(m=>m.winnerScore-m.loserScore);
+  const fmtRow = (label, v, sign) => `<div class="list-item"><span>${label}</span><span class="muted">${v!==null?(sign+v):'—'}</span></div>`;
+  openModal(`
+    <h3>${studentFullName(stu)}</h3>
+    <p class="muted">Rang #${rank} — Parcours : ${groupLabel(entry.history.join(''))}</p>
+    ${fmtRow('Matchs joués', matches.length, '')}
+    ${fmtRow('Victoires', wins, '')}
+    ${fmtRow('Défaites', losses, '')}
+    ${fmtRow('Points marqués en moyenne', avgPts, '')}
+    ${fmtRow('Match gagné le plus serré', wonMargins.length?Math.min(...wonMargins):null, '+')}
+    ${fmtRow('Match gagné le moins serré', wonMargins.length?Math.max(...wonMargins):null, '+')}
+    ${fmtRow('Match perdu le plus serré', lostMargins.length?Math.min(...lostMargins):null, '-')}
+    ${fmtRow('Match perdu le moins serré', lostMargins.length?Math.max(...lostMargins):null, '-')}
+    <div class="row" style="margin-top:10px;"><button class="btn ghost" onclick="closeModal()">Fermer</button></div>
+  `);
 }
 
 function renderBracketGame(app, session){
@@ -1550,25 +1591,40 @@ function openBracketMatchModal(sessionId, ri, matchId){
   openModal(`
     <h3>Qui a gagné ?</h3>
     <div class="eligible-grid">
-      <button class="pick-btn" onclick="confirmBracketWinner('${sessionId}',${ri},'${matchId}','${m.aId}')">${studentFullName(a)}</button>
-      <button class="pick-btn" onclick="confirmBracketWinner('${sessionId}',${ri},'${matchId}','${m.bId}')">${studentFullName(b)}</button>
+      <button class="pick-btn" onclick="enterBracketScore('${sessionId}',${ri},'${matchId}','${m.aId}')">${studentFullName(a)}</button>
+      <button class="pick-btn" onclick="enterBracketScore('${sessionId}',${ri},'${matchId}','${m.bId}')">${studentFullName(b)}</button>
     </div>
     <div class="row" style="margin-top:10px;"><button class="btn ghost" onclick="closeModal()">Annuler</button></div>
   `);
 }
-function confirmBracketWinner(sessionId, ri, matchId, winnerId){
+function enterBracketScore(sessionId, ri, matchId, winnerId){
   const session = DB.bracketSessions.find(s=>s.id===sessionId);
-  const w = bracketStudent(session,winnerId);
-  openModal(`<h3>Confirmer</h3><p>${studentFullName(w)} remporte ce match.</p>
-  <div class="row">
-    <button class="btn" onclick="applyBracketMatch('${sessionId}',${ri},'${matchId}','${winnerId}')">✅ Confirmer</button>
-    <button class="btn ghost" onclick="openBracketMatchModal('${sessionId}',${ri},'${matchId}')">← Retour</button>
-  </div>`);
+  const m = session.rounds[ri].find(x=>x.id===matchId);
+  const loserId = m.aId===winnerId ? m.bId : m.aId;
+  const w=bracketStudent(session,winnerId), l=bracketStudent(session,loserId);
+  openModal(`
+    <h3>Score du match</h3>
+    <p class="muted">${studentFullName(w)} (gagnant) vs ${studentFullName(l)} (perdant)</p>
+    <label>Score ${studentFullName(w)}</label>
+    <input id="wScore" type="number" value="${session.winScore}" style="width:100%;margin-bottom:8px;">
+    <label>Score ${studentFullName(l)}</label>
+    <input id="lScore" type="number" value="0" style="width:100%;margin-bottom:12px;">
+    <div class="row">
+      <button class="btn" id="saveBkScoreBtn">✅ Valider</button>
+      <button class="btn ghost" onclick="openBracketMatchModal('${sessionId}',${ri},'${matchId}')">← Retour</button>
+    </div>`);
+  document.getElementById('saveBkScoreBtn').onclick=()=>{
+    const ws=parseInt(document.getElementById('wScore').value), ls=parseInt(document.getElementById('lScore').value);
+    if(isNaN(ws)||isNaN(ls)){ alert('Scores invalides.'); return; }
+    if(ls>=ws){ alert('Le score du perdant doit être inférieur au score du gagnant.'); return; }
+    applyBracketMatch(sessionId, ri, matchId, winnerId, ws, ls);
+  };
 }
-function applyBracketMatch(sessionId, ri, matchId, winnerId){
+function applyBracketMatch(sessionId, ri, matchId, winnerId, winnerScore, loserScore){
   const session = DB.bracketSessions.find(s=>s.id===sessionId);
   const m = session.rounds[ri].find(x=>x.id===matchId);
   m.winnerId = winnerId;
+  m.winnerScore = winnerScore; m.loserScore = loserScore;
   const loserId = m.aId===winnerId ? m.bId : m.aId;
   const wStu = session.students.find(s=>s.studentId===winnerId);
   const lStu = session.students.find(s=>s.studentId===loserId);
@@ -1588,8 +1644,42 @@ function renderBracketStandings(session){
   });
   return `<div class="card"><h3>🏆 Classement final</h3>${ranked.map((e,i)=>{
     const stu = bracketStudent(session,e.studentId); if(!stu) return '';
-    return `<div class="list-item"><span>#${i+1} ${studentFullName(stu)}</span><span class="muted">${e.wins}V - ${e.losses}D</span></div>`;
+    return `<div class="list-item" style="cursor:pointer;" onclick="openBracketStudentStats('${session.id}','${e.studentId}')"><span>#${i+1} ${studentFullName(stu)}</span><span class="muted">${e.wins}V - ${e.losses}D</span></div>`;
   }).join('')}</div>`;
+}
+function bracketStudentMatches(session, sid){
+  const list=[];
+  session.rounds.forEach(round=>round.forEach(m=>{ if(m.winnerId && !m.bye && (m.aId===sid||m.bId===sid)) list.push(m); }));
+  return list;
+}
+function openBracketStudentStats(sessionId, studentId){
+  const session = DB.bracketSessions.find(s=>s.id===sessionId);
+  const stu = bracketStudent(session, studentId);
+  const entry = session.students.find(s=>s.studentId===studentId);
+  const ranked = session.students.slice().sort((a,b)=>{
+    const ra=a.eliminatedRound||(session.rounds.length+1), rb=b.eliminatedRound||(session.rounds.length+1);
+    return rb-ra || a.seed-b.seed;
+  });
+  const rank = ranked.findIndex(s=>s.studentId===studentId)+1;
+  const matches = bracketStudentMatches(session, studentId);
+  const myScores = matches.map(m=> m.winnerId===studentId ? m.winnerScore : m.loserScore);
+  const avgPts = myScores.length ? (myScores.reduce((a,b)=>a+b,0)/myScores.length).toFixed(1) : '—';
+  const wonMargins = matches.filter(m=>m.winnerId===studentId).map(m=>m.winnerScore-m.loserScore);
+  const lostMargins = matches.filter(m=>m.winnerId!==studentId).map(m=>m.winnerScore-m.loserScore);
+  const fmtRow = (label, v, sign) => `<div class="list-item"><span>${label}</span><span class="muted">${v!==null?(sign+v):'—'}</span></div>`;
+  openModal(`
+    <h3>${studentFullName(stu)}</h3>
+    <p class="muted">Rang #${rank} — Parcours : ${groupLabel(entry.history.join(''))}</p>
+    ${fmtRow('Matchs joués', matches.length, '')}
+    ${fmtRow('Victoires', entry.wins, '')}
+    ${fmtRow('Défaites', entry.losses, '')}
+    ${fmtRow('Points marqués en moyenne', avgPts, '')}
+    ${fmtRow('Match gagné le plus serré', wonMargins.length?Math.min(...wonMargins):null, '+')}
+    ${fmtRow('Match gagné le moins serré', wonMargins.length?Math.max(...wonMargins):null, '+')}
+    ${fmtRow('Match perdu le plus serré', lostMargins.length?Math.min(...lostMargins):null, '-')}
+    ${fmtRow('Match perdu le moins serré', lostMargins.length?Math.max(...lostMargins):null, '-')}
+    <div class="row" style="margin-top:10px;"><button class="btn ghost" onclick="closeModal()">Fermer</button></div>
+  `);
 }
 function endBracketSession(){
   const session = currentBracketSession();
