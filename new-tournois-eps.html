@@ -794,7 +794,26 @@ function doEndATPSession(){
   const session = currentSession();
   session.title = document.getElementById('endTitle').value.trim();
   session.status='archived';
-  save(); closeModal(); activeSessionId=null; render();
+  save();
+  showATPSessionSummary(session);
+}
+function showATPSessionSummary(session){
+  const cls = getClass(session.classId);
+  const rows = session.students.slice().sort((a,b)=>b.points-a.points).map(e=>{
+    const stu=getStudent(cls,e.studentId); if(!stu) return '';
+    const played = e.wins+e.losses;
+    return `<tr style="border-top:1px solid var(--line);"><td>${studentFullName(stu)}</td><td>${played}</td><td>${e.wins}</td><td>${e.losses}</td><td>${e.refs}</td><td>${played+e.refs}</td></tr>`;
+  }).join('');
+  openModal(`
+    <h3>📋 Récapitulatif — ${session.title||session.activity||'séance'}</h3>
+    <div style="max-height:420px;overflow-y:auto;">
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <tr style="text-align:left;color:var(--sub);"><th>Élève</th><th>Joués</th><th>V</th><th>D</th><th>Arb.</th><th>Total impliqué</th></tr>
+      ${rows}
+    </table>
+    </div>
+    <div class="row" style="margin-top:12px;"><button class="btn" onclick="closeModal();activeSessionId=null;render();">Fermer</button></div>
+  `);
 }
 
 function renderATPTeacherPanel(session, cls){
