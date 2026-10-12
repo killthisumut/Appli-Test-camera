@@ -127,6 +127,7 @@ const TABS = [
   {id:'swiss', label:'Ronde Suisse'},
   {id:'elim', label:'Élimination directe'},
   {id:'spider', label:'Tournoi araignée'},
+  {id:'judo', label:'Type judo'},
   {id:'stats', label:'Statistiques'}
 ];
 let currentTab = 'home';
@@ -303,6 +304,7 @@ function render(){
   else if(currentTab==='swiss') renderSwiss(app);
   else if(currentTab==='elim') renderElim(app);
   else if(currentTab==='spider') renderSpider(app);
+  else if(currentTab==='judo') renderJudo(app);
   else if(currentTab==='stats') renderStats(app);
 }
 
@@ -315,6 +317,7 @@ function renderHome(app){
     {tab:'swiss', icon:'♟️', title:'Ronde Suisse', desc:'Tableau de colonnes par nombre de victoires.'},
     {tab:'elim', icon:'🏅', title:'Élimination directe', desc:'Bracket classique. Perdre = être éliminé.'},
     {tab:'spider', icon:'🕸️', title:'Tournoi araignée', desc:'Les perdants continuent entre eux, tout le monde est classé.'},
+    {tab:'judo', icon:'🥋', title:'Tournoi type judo', desc:'Élimination + seconde chance pour les meilleurs perdants, tout le monde est classé.'},
     {tab:'stats', icon:'📊', title:'Statistiques', desc:'Vue professeur et suivi des séances en cours.'}
   ];
   app.innerHTML = `
@@ -482,11 +485,11 @@ function allSessions(){ return [...DB.atpSessions,...DB.swissSessions,...DB.brac
 function sessionKind(s){
   if(DB.atpSessions.includes(s)) return 'atp';
   if(DB.swissSessions.includes(s)) return 'swiss';
-  if(DB.bracketSessions.includes(s)) return s.mode==='knockout' ? 'elim' : 'spider';
+  if(DB.bracketSessions.includes(s)) return s.mode==='knockout' ? 'elim' : s.mode==='judo' ? 'judo' : 'spider';
   return null;
 }
 function sessionKindLabel(kind){
-  return {atp:'ATP', swiss:'Ronde Suisse', elim:'Élimination directe', spider:'Tournoi araignée'}[kind] || kind;
+  return {atp:'ATP', swiss:'Ronde Suisse', elim:'Élimination directe', spider:'Tournoi araignée', judo:'Type judo'}[kind] || kind;
 }
 function deleteSession(type, id){
   if(!confirm('Supprimer définitivement cette séance ?')) return;
@@ -630,7 +633,12 @@ function doResumeATP(id, mode){
   const s = DB.atpSessions.find(x=>x.id===id);
   const cls = getClass(s.classId);
   syncSessionWithClass(s, cls);
-  if(mode==='continue'){ s.students.forEach(st=>st.sessionPoints=0); }
+  if(mode==='continue'){
+    s.previousRuns = s.previousRuns||[];
+    s.previousRuns.push({endedAt:nowTs(), matches:s.matches, stats:s.students.map(st=>({studentId:st.studentId, points:st.points, wins:st.wins, losses:st.losses, refs:st.refs}))});
+    s.matches = [];
+    s.students.forEach(st=>{ st.sessionPoints=0; st.wins=0; st.losses=0; st.refs=0; });
+  }
   s.status='active'; DB.activeClassId=cls.id;
   matchFlow={step:null,winnerId:null,loserId:null,refId:null};
   save(); closeModal(); activeSessionId=id; render();
@@ -1150,8 +1158,8 @@ function renderElim(app){ renderBracketSetup(app,'knockout'); }
 function renderSpider(app){ renderBracketSetup(app,'spider'); }
 function renderBracketSetup(app, mode){
   const running = DB.bracketSessions.find(s=>s.id===activeSessionId && s.status==='active' && s.mode===mode);
-  if(running){ mode==='knockout' ? renderBracketGame(app, running) : renderSpiderGame(app, running); return; }
-  const label = mode==='knockout' ? 'Élimination directe' : 'Tournoi araignée';
+  if(running){ mode==='knockout' ? renderBracketGame(app, running) : mode==='judo' ? renderJudoGame(app, running) : renderSpiderGame(app, running); return; }
+  const label = mode==='knockout' ? 'Élimination directe' : mode==='judo' ? 'Tournoi type judo' : 'Tournoi araignée';
   app.innerHTML = `
   <div class="card">
     <h2>${label} — Nouvelle séance</h2>
@@ -1182,7 +1190,7 @@ function renderBracketSetup(app, mode){
     return `<div class="list-item"><span>${cls?cls.name:'?'} — ${s.title||s.activity||'(sans titre)'} — ${fmtTime(s.startedAt)} ${s.status==='active'?'<span class="pill">en cours</span>':'<span class="pill">archivée</span>'}</span>
     <span class="row">
       ${s.status==='archived'?`<button class="btn ghost" onclick="resumeBracket('${s.id}')">▶️ Reprendre</button>`:`<button class="btn" onclick="activeSessionId='${s.id}';render();">Ouvrir</button>`}
-      <button class="btn danger" onclick="deleteSession('${mode==='knockout'?'elim':'spider'}','${s.id}')">🗑️</button>
+      <button class="btn danger" onclick="deleteSession('${mode==='knockout'?'elim':mode==='judo'?'judo':'spider'}','${s.id}')">🗑️</button>
     </span></div>`;
   }).join('');
 }
@@ -1194,13 +1202,13 @@ function setupBracketRanking(cls, mode, activity, winScore){
     app.innerHTML = `
     <div class="card">
       <h2>Participants et classement — ${cls.name}</h2>
-      <p class="muted">Retirez les absents, ajoutez des participants hors classe si besoin, puis ordonnez (les mieux classés en haut évitent de se rencontrer tôt). Au moins 2 participants requis.</p>
+      <p class="muted">Retirez les absents, ajoutez des participants hors classe si besoin, puis ordonnez (les mieux classés en haut évitent de se rencontrer tôt). Minimum 2 participants (5 pour le tournoi type judo).</p>
       <div class="row" style="margin-bottom:10px;">
         <button class="btn secondary" id="shuffleBtn">🔀 Ordre aléatoire</button>
         <button class="btn secondary" id="addExtraBtn">➕ Ajouter un participant hors classe</button>
       </div>
       <div id="initList"></div>
-      <div class="row" style="margin-top:12px;"><button class="btn" id="validateRank" ${order.length<2?'disabled':''}>✅ Valider et démarrer</button></div>
+      <div class="row" style="margin-top:12px;"><button class="btn" id="validateRank" ${order.length<(mode==='judo'?5:2)?'disabled':''}>✅ Valider et démarrer</button></div>
     </div>`;
     const list = document.getElementById('initList');
     order.forEach((sid,idx)=>{
@@ -1228,8 +1236,8 @@ function setupBracketRanking(cls, mode, activity, winScore){
       if(fn && fn.trim()){ const id=uid('extra'); extras.push({id, firstName:fn.trim(), lastName:''}); order.push(id); draw(); }
     }
     if(e.target && e.target.id==='validateRank'){
-      if(order.length<2) return;
-      const session = mode==='knockout' ? createBracketSession(cls, mode, activity, order, extras, winScore) : createSpiderSession(cls, activity, order, extras, winScore);
+      if(order.length<(mode==='judo'?5:2)) return;
+      const session = mode==='knockout' ? createBracketSession(cls, mode, activity, order, extras, winScore) : mode==='judo' ? createJudoSession(cls, activity, order, extras, winScore) : createSpiderSession(cls, activity, order, extras, winScore);
       DB.bracketSessions.push(session);
       save();
       document.removeEventListener('click', handler);
@@ -1714,6 +1722,215 @@ function doEndBracketSession(){
   session.title = document.getElementById('endTitle').value.trim();
   session.status='archived';
   save(); closeModal(); activeSessionId=null; render();
+}
+
+/* ================== TOURNOI TYPE JUDO ================== */
+/* ---- Tournoi type judo : moteur (graphe de matchs) ---- */
+function judoBuild(N, orderOverride){
+  const M=[], by={};
+  const deps=ref=>ref.k==='seed'?[]:ref.k==='first'?ref.ms:ref.k==='LR'?[ref.m,ref.r]:[ref.m];
+  const mk=(a,b,type,extra)=>{
+    const d=deps(a).concat(deps(b));
+    const m=Object.assign({id:'m'+M.length,a,b,type,deps:d,depth:1+Math.max(0,...d.map(x=>by[x].depth))},extra||{});
+    M.push(m); by[m.id]=m; return m;
+  };
+  const Wr=m=>({k:'W',m:m.id}), Lr=m=>({k:'L',m:m.id});
+  const level=(list,sym,type,extra)=>{
+    const n=list.length, rr=[]; let lone=null;
+    if(sym){ const h=Math.floor(n/2); for(let i=0;i<h;i++) rr.push(mk(list[i],list[n-1-i],type,extra)); if(n%2) lone=list[h]; }
+    else { for(let i=0;i+1<n;i+=2) rr.push(mk(list[i],list[i+1],type,extra)); if(n%2) lone=list[n-1]; }
+    let R=null;
+    if(lone && rr.length) R=mk(lone,{k:'first',ms:rr.map(m=>m.id)},type,Object.assign({recall:true},extra));
+    const W=rr.map(Wr); if(R) W.push(Wr(R)); else if(lone) W.push(lone);
+    const L=rr.map(m=>R?{k:'LR',m:m.id,r:R.id}:Lr(m));
+    return {W,L};
+  };
+  const classify=(list,sym,tier,off)=>{
+    if(list.length<=1) return list.slice();
+    const lv=level(list,sym,'cls',{tier,off,n:list.length});
+    return classify(lv.W,false,tier,off).concat(classify(lv.L,false,tier,off+lv.W.length));
+  };
+  const knock=(list,side)=>{
+    const levels=[]; let cur=list.slice(), first=true;
+    while(cur.length>1){ const lv=level(cur,first,'rep',{side,lvl:levels.length+1}); levels.push(lv.L); cur=lv.W; first=false; }
+    return {winner:cur[0], levels};
+  };
+  // tableau principal SANS exempt : à chaque tour, effectif impair => l'élève seul rejoue contre le 1er perdant du tour
+  const order=orderOverride||seedSlots(nextPow2(N)).filter(s=>s<=N);
+  let cur=order.map(n=>({k:'seed',n})); const rW=[], rL=[]; let r=1;
+  while(cur.length>1){ const lv=level(cur,false,'main',{round:r}); rW.push(lv.W); rL.push(lv.L); cur=lv.W; r++; }
+  const K=rL.length, finW=cur[0], finL=rL[K-1][0];
+  const tiers=[], T=size=>{ const t={size,start:0}; tiers.push(t); return t; };
+  const dlv=level(rL[0],false,'D',{});
+  const DV=dlv.W, DD=dlv.L, VD=rL[1];
+  const parts=[{tier:null,list:[finW,finL],start:1}];
+  if(K===3){
+    const pool=DV.concat(VD), t=T(pool.length);
+    parts.push({tier:t,list:classify(pool,true,t,0)});
+  } else {
+    const d=DV.length, hd=Math.floor(d/2), hv=Math.floor(VD.length/2);
+    const A=knock(DV.slice(0,hd).concat(VD.slice(hv)),'A'), B=knock(VD.slice(0,hv).concat(DV.slice(hd)),'B');
+    const g=[B.winner,A.winner].concat(rL[K-2].slice().reverse()), tg=T(g.length);
+    parts.push({tier:tg,list:classify(g,true,tg,0)});
+    for(let q=K-2;q>=3;q--){ const l=rL[q-1], t=T(l.length); parts.push({tier:t,list:classify(l,false,t,0)}); }
+    const maxL=Math.max(A.levels.length,B.levels.length);
+    for(let l=maxL;l>=1;l--){ const li=(A.levels[l-1]||[]).concat(B.levels[l-1]||[]), t=T(li.length); parts.push({tier:t,list:classify(li,false,t,0)}); }
+  }
+  const tdd=T(DD.length); parts.push({tier:tdd,list:classify(DD,false,tdd,0)});
+  let pos=1; parts.forEach(p=>{ if(p.tier) p.tier.start=pos; pos+=p.list.length; });
+  const nm=q=>q===K?'Finale':q===K-1?'Demi-finales':q===K-2?'Quarts de finale':'Tour '+q;
+  M.forEach(m=>{
+    if(m.type==='main') m.label='Tableau principal — '+nm(m.round);
+    else if(m.type==='D') m.label='Perdants du 1er tour (seconde chance)';
+    else if(m.type==='rep') m.label='Repêchage '+m.side+' — niveau '+m.lvl;
+    else { const a=m.tier.start+m.off; m.label='Places '+a+(m.n>1?'-'+(a+m.n-1):''); }
+  });
+  return {N,K,matches:M,ranking:[].concat(...parts.map(p=>p.list))};
+}
+function judoCompute(s){
+  const by={}; s.matches.forEach(m=>by[m.id]=m);
+  const res=ref=>{
+    if(ref.k==='seed') return ref.n<=s.n?s.ids[ref.n-1]:'none';
+    if(ref.k==='W') return by[ref.m].winnerId;
+    if(ref.k==='L') return by[ref.m].loserId;
+    if(ref.k==='first'){
+      const c=ref.ms.map(i=>by[i]).filter(m=>m.res&&m.loserId&&m.loserId!=='none').sort((x,y)=>x.res.seq-y.res.seq);
+      return c.length?c[0].loserId:null;
+    }
+    const R=by[ref.r]; if(!R.recalledFrom) return null;
+    return R.recalledFrom===ref.m?R.loserId:by[ref.m].loserId;
+  };
+  s.matches.forEach(m=>{
+    m.recalledFrom=null;
+    if(m.b.k==='first'){ const c=m.b.ms.map(i=>by[i]).filter(x=>x.res&&x.loserId&&x.loserId!=='none').sort((x,y)=>x.res.seq-y.res.seq); if(c.length) m.recalledFrom=c[0].id; }
+    m.aId=res(m.a); m.bId=res(m.b); m.winnerId=null; m.loserId=null; m.wo=false;
+    if(m.aId==null||m.bId==null) return;
+    if(m.aId==='none'&&m.bId==='none'){ m.winnerId='none'; m.loserId='none'; }
+    else if(m.aId==='none'){ m.winnerId=m.bId; m.loserId='none'; m.wo=true; }
+    else if(m.bId==='none'){ m.winnerId=m.aId; m.loserId='none'; m.wo=true; }
+    else if(m.res){ m.winnerId=m.res.side==='a'?m.aId:m.bId; m.loserId=m.res.side==='a'?m.bId:m.aId; }
+  });
+}
+function judoPlayable(m){ return m.aId&&m.bId&&m.aId!=='none'&&m.bId!=='none'&&!m.res; }
+function judoCancel(s,id,dry){
+  const gone=new Set([id]); let ch=true;
+  while(ch){ ch=false; s.matches.forEach(m=>{ if(!gone.has(m.id)&&m.deps.some(d=>gone.has(d))){ gone.add(m.id); ch=true; } }); }
+  let n=0; s.matches.forEach(m=>{ if(gone.has(m.id)&&m.res){ n++; if(!dry) delete m.res; } });
+  if(!dry) judoCompute(s);
+  return n;
+}
+function judoRanked(s){ // ids dans l'ordre, null si pas encore connu
+  const by={}; s.matches.forEach(m=>by[m.id]=m);
+  const res=ref=>{ if(ref.k==='W') return by[ref.m].winnerId; if(ref.k==='L') return by[ref.m].loserId;
+    const R=by[ref.r]; if(!R.recalledFrom) return null; return R.recalledFrom===ref.m?R.loserId:by[ref.m].loserId; };
+  return s.ranking.map(res);
+}
+function judoFinished(s){ return s.matches.every(m=>m.winnerId); }
+function createJudoSession(cls,activity,ids,extras,winScore){
+  const b=judoBuild(ids.length);
+  const s={id:uid('jd'),mode:'judo',classId:cls.id,activity,startedAt:nowTs(),status:'active',extras:extras||[],winScore:winScore||25,
+    n:ids.length,ids:ids.slice(),matches:b.matches,ranking:b.ranking,seq:0};
+  judoCompute(s); return s;
+}
+
+
+/* ---- Tournoi type judo : affichage ---- */
+function renderJudo(app){ renderBracketSetup(app,'judo'); }
+const JUDO_COLORS = {main:'#1f9d55', D:'#e0473e', rep:'#e08a10', cls:'#2f6fed'};
+const JUDO_ORDER = {main:0, D:1, rep:2, cls:3};
+function currentJudoSession(){ return DB.bracketSessions.find(s=>s.id===activeSessionId); }
+function judoName(s,id){ const st=id&&id!=='none'?bracketStudent(s,id):null; return st?studentName(st):'…'; }
+function renderJudoMatchCard(s, m){
+  if(m.wo) return `<div class="list-item"><span>${judoName(s,m.winnerId)} <span class="pill">exempt</span></span></div>`;
+  if(m.recall && !m.bId) return `<div class="list-item"><span>${judoName(s,m.aId)} <span class="pill">attend le 1er perdant du groupe</span></span></div>`;
+  const tag = m.recall ? ' <span class="pill">repêchage</span>' : '';
+  if(m.res) return `<div class="list-item"><span>${judoName(s,m.aId)} vs ${judoName(s,m.bId)}${tag} — 🏆 ${judoName(s,m.winnerId)} (${m.res.ws}-${m.res.ls})</span></div>`;
+  const ok = judoPlayable(m);
+  return `<div class="list-item" style="cursor:${ok?'pointer':'default'};opacity:${ok?1:.55};" ${ok?`onclick="openJudoMatch('${s.id}','${m.id}')"`:''}>
+    <span>${judoName(s,m.aId)} vs ${judoName(s,m.bId)}${tag}</span></div>`;
+}
+function renderJudoGame(app, s){
+  judoCompute(s);
+  const cls = getClass(s.classId), finished = judoFinished(s);
+  const cols = {};
+  s.matches.forEach(m=>{ if(m.winnerId==='none') return; (cols[m.depth]=cols[m.depth]||[]).push(m); });
+  const colHtml = Object.keys(cols).map(Number).sort((a,b)=>a-b).map(d=>{
+    const groups = {};
+    cols[d].forEach(m=>{ (groups[m.label]=groups[m.label]||{type:m.type,items:[]}).items.push(m); });
+    const boxes = Object.keys(groups).sort((x,y)=>JUDO_ORDER[groups[x].type]-JUDO_ORDER[groups[y].type]).map(label=>{
+      const g=groups[label], c=JUDO_COLORS[g.type];
+      return `<div style="border:2px solid ${c};border-radius:8px;margin-bottom:8px;overflow:hidden;">
+        <div style="background:${c};color:#fff;font-size:11px;font-weight:700;padding:4px 8px;">${label}</div>
+        <div>${g.items.map(m=>renderJudoMatchCard(s,m)).join('')}</div></div>`;
+    }).join('');
+    return `<div style="min-width:200px;"><h4 class="muted">Étape ${d}</h4>${boxes}</div>`;
+  }).join('');
+  const played = s.matches.filter(m=>m.res).sort((a,b)=>b.res.seq-a.res.seq);
+  const hist = played.length ? played.map(m=>`<div class="timeline-item"><span>${m.label} — ${judoName(s,m.winnerId)} bat ${judoName(s,m.loserId)} ${m.res.ws}-${m.res.ls}</span>
+    <button class="btn danger" style="padding:2px 8px;font-size:11px;" onclick="cancelJudoMatch('${s.id}','${m.id}')">annuler</button></div>`).join('') : '<p class="muted">Aucun match joué.</p>';
+  let standings = '';
+  if(finished){
+    standings = `<div class="card"><h3>🏆 Classement final</h3>${judoRanked(s).map((id,i)=>`<div class="list-item" style="cursor:pointer;" onclick="openJudoStats('${s.id}','${id}')"><span>#${i+1} ${studentFullName(bracketStudent(s,id))}</span></div>`).join('')}</div>`;
+  }
+  app.innerHTML = `
+  <div class="row" style="margin-bottom:8px;">
+    <button class="btn ghost" onclick="activeSessionId=null;render();">← Retour</button>
+    <span class="pill">${cls.name} — ${s.activity||''} — Tournoi type judo</span>
+    ${finished?'<span class="badge">Terminé</span>':''}
+    <button class="btn danger" style="margin-left:auto;" onclick="endBracketSession()">🏁 Fin de séance</button>
+  </div>
+  <div class="card" style="overflow-x:auto;"><div class="row" style="align-items:flex-start;gap:20px;flex-wrap:nowrap;">${colHtml}</div></div>
+  ${standings}
+  <div class="card"><h3>Historique des matchs</h3><div style="max-height:320px;overflow-y:auto;">${hist}</div></div>`;
+}
+function openJudoMatch(sid, mid){
+  const s = DB.bracketSessions.find(x=>x.id===sid), m = s.matches.find(x=>x.id===mid);
+  if(!judoPlayable(m)) return;
+  openModal(`<h3>Qui a gagné ?${m.recall?' <span class="pill">repêchage</span>':''}</h3>
+    <div class="eligible-grid">
+      <button class="pick-btn" onclick="enterJudoScore('${sid}','${mid}','a')">${studentFullName(bracketStudent(s,m.aId))}</button>
+      <button class="pick-btn" onclick="enterJudoScore('${sid}','${mid}','b')">${studentFullName(bracketStudent(s,m.bId))}</button>
+    </div>
+    <div class="row" style="margin-top:10px;"><button class="btn ghost" onclick="closeModal()">Annuler</button></div>`);
+}
+function enterJudoScore(sid, mid, side){
+  const s = DB.bracketSessions.find(x=>x.id===sid), m = s.matches.find(x=>x.id===mid);
+  const w = bracketStudent(s, side==='a'?m.aId:m.bId), l = bracketStudent(s, side==='a'?m.bId:m.aId);
+  openModal(`<h3>Score du match</h3>
+    <p class="muted">${studentFullName(w)} (gagnant) vs ${studentFullName(l)} (perdant)</p>
+    <label>Score ${studentFullName(w)}</label><input id="jWs" type="number" value="${s.winScore}" style="width:100%;margin-bottom:8px;">
+    <label>Score ${studentFullName(l)}</label><input id="jLs" type="number" value="0" style="width:100%;margin-bottom:12px;">
+    <div class="row"><button class="btn" id="jSave">✅ Valider</button><button class="btn ghost" onclick="openJudoMatch('${sid}','${mid}')">↩️ Retour</button></div>`);
+  document.getElementById('jSave').onclick=()=>{
+    const ws=parseInt(document.getElementById('jWs').value), ls=parseInt(document.getElementById('jLs').value);
+    if(isNaN(ws)||isNaN(ls)){ alert('Scores invalides.'); return; }
+    if(ls>=ws){ alert('Le score du perdant doit être inférieur au score du gagnant.'); return; }
+    s.seq++; m.res={side, ws, ls, seq:s.seq};
+    judoCompute(s); save(); closeModal(); render();
+  };
+}
+function cancelJudoMatch(sid, mid){
+  const s = DB.bracketSessions.find(x=>x.id===sid);
+  const n = judoCancel(s, mid, true);
+  const msg = n>1 ? 'Annuler ce match ? '+(n-1)+' match(s) joué(s) qui en dépendent seront aussi annulés.' : 'Annuler ce match ?';
+  if(!confirm(msg)) return;
+  judoCancel(s, mid); save(); render();
+}
+function openJudoStats(sid, pid){
+  const s = DB.bracketSessions.find(x=>x.id===sid), stu = bracketStudent(s,pid);
+  const rank = judoRanked(s).indexOf(pid)+1;
+  const ms = s.matches.filter(m=>m.res && (m.aId===pid||m.bId===pid)).sort((a,b)=>a.res.seq-b.res.seq);
+  const won = ms.filter(m=>m.winnerId===pid), lost = ms.filter(m=>m.winnerId!==pid);
+  const mine = ms.map(m=> m.winnerId===pid ? m.res.ws : m.res.ls);
+  const avg = mine.length ? (mine.reduce((a,b)=>a+b,0)/mine.length).toFixed(1) : '—';
+  const wm = won.map(m=>m.res.ws-m.res.ls), lm = lost.map(m=>m.res.ws-m.res.ls);
+  const row = (label,v,sign)=>`<div class="list-item"><span>${label}</span><span class="muted">${v!==null&&v!==undefined?(sign+v):'—'}</span></div>`;
+  openModal(`<h3>${studentFullName(stu)}</h3>
+    <p class="muted">Rang #${rank} — Parcours : ${ms.map(m=>m.winnerId===pid?'V':'D').join('')||'—'}</p>
+    ${row('Matchs joués',ms.length,'')}${row('Victoires',won.length,'')}${row('Défaites',lost.length,'')}${row('Points marqués en moyenne',avg,'')}
+    ${row('Match gagné le plus serré',wm.length?Math.min(...wm):null,'+')}${row('Match gagné le moins serré',wm.length?Math.max(...wm):null,'+')}
+    ${row('Match perdu le plus serré',lm.length?Math.min(...lm):null,'-')}${row('Match perdu le moins serré',lm.length?Math.max(...lm):null,'-')}
+    <div class="row" style="margin-top:10px;"><button class="btn ghost" onclick="closeModal()">Fermer</button></div>`);
 }
 
 /* ================== STATS TAB ================== */
