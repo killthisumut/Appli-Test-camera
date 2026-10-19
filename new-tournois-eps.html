@@ -517,6 +517,59 @@ function syncSessionWithClass(session, cls){
 let activeSessionId = null;
 let matchFlow = { step:null, winnerId:null, loserId:null, refId:null };
 
+function atpDefaults(){ return {mode:'normal', win:5, loss:2, ref:1, winMin:3, winMax:10, lossUpset:-5, lossExp:1}; }
+function atpSettingsFields(sc, gap){
+  sc = Object.assign(atpDefaults(), sc||{}); gap = gap||10;
+  const f=(id,label,v)=>`<div><label>${label}</label><input id="${id}" type="number" value="${v}" style="width:90px;"></div>`;
+  return `<div class="row" style="margin-bottom:8px;">
+    <div><label>Mode de calcul des points</label><select id="atp_mode" onchange="atpToggleMode()">
+      <option value="normal" ${sc.mode!=='fair'?'selected':''}>Normal (points fixes)</option>
+      <option value="fair" ${sc.mode==='fair'?'selected':''}>Équitable (selon l'écart de classement)</option></select></div>
+    ${f('atp_gap','Écart de classement (±)',gap)}${f('atp_pr','Points arbitrage',sc.ref)}
+  </div>
+  <div class="row" id="atp_normal" style="margin-bottom:8px;">${f('atp_pw','Points victoire',sc.win)}${f('atp_pl','Points défaite',sc.loss)}</div>
+  <div class="row" id="atp_fair" style="margin-bottom:8px;">
+    ${f('atp_wmin','Victoire mini (contre un joueur bien plus bas)',sc.winMin)}
+    ${f('atp_wmax','Victoire maxi (contre un joueur bien plus haut)',sc.winMax)}
+    ${f('atp_lbig','Défaite maxi : perd contre un joueur bien plus bas (valeur négative = points perdus)',sc.lossUpset)}
+    ${f('atp_lexp','Défaite mini : perd contre un joueur bien plus haut',sc.lossExp)}
+  </div>
+  <p class="muted">Les points d'un élève ne descendent jamais sous 0.</p>`;
+}
+function atpToggleMode(){
+  const fair = document.getElementById('atp_mode').value==='fair';
+  document.getElementById('atp_normal').classList.toggle('hidden', fair);
+  document.getElementById('atp_fair').classList.toggle('hidden', !fair);
+}
+function atpReadSettings(){
+  const n=(id,d)=>{ const v=parseFloat(document.getElementById(id).value); return isNaN(v)?d:v; };
+  const D=atpDefaults();
+  return {
+    rankGap: Math.max(1, Math.round(n('atp_gap',10))),
+    scoring:{ mode:document.getElementById('atp_mode').value, win:n('atp_pw',D.win), loss:n('atp_pl',D.loss), ref:n('atp_pr',D.ref),
+      winMin:n('atp_wmin',D.winMin), winMax:n('atp_wmax',D.winMax), lossUpset:n('atp_lbig',D.lossUpset), lossExp:n('atp_lexp',D.lossExp) }
+  };
+}
+function atpAward(session, winnerId, loserId, refId){
+  const sc = Object.assign(atpDefaults(), session.scoring);
+  let w = sc.win, l = sc.loss;
+  if(sc.mode==='fair'){
+    const rk = currentRanking(session).map(e=>e.studentId);
+    const e = Math.max(-1, Math.min(1, (rk.indexOf(winnerId)-rk.indexOf(loserId))/(session.rankGap||10)));
+    const t = (e+1)/2; // 1 = le gagnant était bien plus bas classé, 0 = bien plus haut
+    w = Math.round(sc.winMin+(sc.winMax-sc.winMin)*t);
+    l = Math.round(sc.lossExp+(sc.lossUpset-sc.lossExp)*t);
+  }
+  const wp = session.students.find(s=>s.studentId===winnerId).points, lp = session.students.find(s=>s.studentId===loserId).points;
+  return {w:Math.max(w,-wp), l:Math.max(l,-lp), r:refId?sc.ref:0};
+}
+function teacherSaveSettings(sessionId){
+  const session = DB.atpSessions.find(s=>s.id===sessionId);
+  const st = atpReadSettings();
+  if(st.scoring.winMin>st.scoring.winMax){ alert('La victoire mini ne peut pas dépasser la victoire maxi.'); return; }
+  session.scoring = st.scoring; session.rankGap = st.rankGap;
+  save(); alert('Paramètres enregistrés : ils s\'appliquent aux prochains matchs.'); render();
+}
 function renderATP(app){
   const running = DB.atpSessions.find(s=>s.id===activeSessionId && s.status==='active');
   if(running){ renderATPGame(app, running); return; }
@@ -528,13 +581,8 @@ function renderATP(app){
         <select id="atp_class">${DB.classes.map(c=>`<option value="${c.id}" ${c.id===DB.activeClassId?'selected':''}>${c.name}</option>`).join('')}</select>
       </div>
       <div><label>Activité</label><input id="atp_activity" placeholder="Badminton, Ping-pong..."></div>
-      <div><label>Écart de classement (±)</label><input id="atp_gap" type="number" value="5" style="width:70px;"></div>
     </div>
-    <div class="row">
-      <div><label>Points victoire</label><input id="atp_pw" type="number" value="5" style="width:70px;"></div>
-      <div><label>Points défaite</label><input id="atp_pl" type="number" value="2" style="width:70px;"></div>
-      <div><label>Points arbitrage</label><input id="atp_pr" type="number" value="1" style="width:70px;"></div>
-    </div>
+    ${atpSettingsFields(null, 10)}
     <div class="row" style="margin-top:12px;">
       <button class="btn" id="atp_start">🏁 Commencer une séance</button>
     </div>
@@ -543,16 +591,19 @@ function renderATP(app){
     <h3>Séances ATP archivées / en cours</h3>
     <div id="atpHistList"></div>
   </div>`;
+  atpToggleMode();
   document.getElementById('atp_start').onclick=()=>{
     const classId = document.getElementById('atp_class').value;
     if(!classId){ alert('Choisissez une classe.'); return; }
     const cls = getClass(classId);
     if(!cls || cls.students.length===0){ alert('Cette classe n\'a aucun élève.'); return; }
+    const st = atpReadSettings();
+    if(st.scoring.winMin>st.scoring.winMax){ alert('La victoire mini ne peut pas dépasser la victoire maxi.'); return; }
     const session = {
       id: uid('atp'), classId, activity: document.getElementById('atp_activity').value.trim(),
       startedAt: nowTs(), status:'active',
-      scoring:{win:+document.getElementById('atp_pw').value||5, loss:+document.getElementById('atp_pl').value||2, ref:+document.getElementById('atp_pr').value||1},
-      rankGap:+document.getElementById('atp_gap').value||5,
+      scoring: st.scoring,
+      rankGap: st.rankGap,
       students: cls.students.map((s,i)=>({studentId:s.id, points:0, sessionPoints:0, wins:0, losses:0, refs:0})),
       matches: [], rankHistory: []
     };
@@ -691,6 +742,7 @@ function renderATPGame(app, session){
   </div>
   ${teacherMode ? renderATPTeacherPanel(session,cls) : ''}
   `;
+  if(teacherMode) atpToggleMode();
   const grid = document.getElementById('rankGrid');
   const half = Math.ceil(ranking.length/2);
   const colL = ranking.slice(0,half), colR = ranking.slice(half);
@@ -753,7 +805,13 @@ function renderMatchZone(session, cls){
     const winner=getStudent(cls,matchFlow.winnerId), loser=getStudent(cls,matchFlow.loserId);
     const ref = matchFlow.refId ? getStudent(cls,matchFlow.refId) : null;
     title.textContent = '📋 Confirmation';
-    zone.innerHTML = `<p>🏆 ${studentFullName(winner)} a gagné contre ❌ ${studentFullName(loser)}${ref?(' — 🧑‍⚖️ arbitre : '+studentFullName(ref)):' — 🚫 aucun arbitre'}.</p>
+    let preview = '';
+    if(session.scoring.mode==='fair'){
+      const a = atpAward(session, matchFlow.winnerId, matchFlow.loserId, matchFlow.refId);
+      const fp = n=>(n>=0?'+':'')+n;
+      preview = `<p style="font-size:18px;font-weight:800;">🏆 ${fp(a.w)} pts &nbsp; ❌ ${fp(a.l)} pts${ref?` &nbsp; 🧑‍⚖️ ${fp(a.r)} pt`:''}</p>`;
+    }
+    zone.innerHTML = `<p>🏆 ${studentFullName(winner)} a gagné contre ❌ ${studentFullName(loser)}${ref?(' — 🧑‍⚖️ arbitre : '+studentFullName(ref)):' — 🚫 aucun arbitre'}.</p>${preview}
     <div class="row"><button class="btn" onclick="confirmMatch()">✅ Confirmer</button><button class="btn ghost" onclick="matchFlow.step='ref';renderMatchZone(currentSession(),curCls());">↩️ Retour</button></div>`;
   }
 }
@@ -766,11 +824,12 @@ function confirmMatch(){
   const w = session.students.find(s=>s.studentId===matchFlow.winnerId);
   const l = session.students.find(s=>s.studentId===matchFlow.loserId);
   const r = matchFlow.refId ? session.students.find(s=>s.studentId===matchFlow.refId) : null;
-  w.points+=session.scoring.win; w.sessionPoints+=session.scoring.win; w.wins++;
-  l.points+=session.scoring.loss; l.sessionPoints+=session.scoring.loss; l.losses++;
-  if(r){ r.points+=session.scoring.ref; r.sessionPoints+=session.scoring.ref; r.refs++; }
+  const a = atpAward(session, matchFlow.winnerId, matchFlow.loserId, matchFlow.refId);
+  w.points+=a.w; w.sessionPoints+=a.w; w.wins++;
+  l.points+=a.l; l.sessionPoints+=a.l; l.losses++;
+  if(r){ r.points+=a.r; r.sessionPoints+=a.r; r.refs++; }
   session.matches.push({id:uid('m'), winnerId:matchFlow.winnerId, loserId:matchFlow.loserId, refId:matchFlow.refId,
-    timestamp:nowTs(), pointsWinner:session.scoring.win, pointsLoser:session.scoring.loss, pointsRef:r?session.scoring.ref:0});
+    timestamp:nowTs(), pointsWinner:a.w, pointsLoser:a.l, pointsRef:a.r});
   session.rankHistory.push(currentRanking(session).map(e=>e.studentId));
   if(session.rankHistory.length>50) session.rankHistory.shift();
   matchFlow={step:null,winnerId:null,loserId:null,refId:null};
@@ -783,9 +842,9 @@ function cancelATPMatch(sessionId, matchId){
   if(!confirm('Annuler ce match ? Les points seront restitués.')) return;
   const w = session.students.find(s=>s.studentId===m.winnerId);
   const l = session.students.find(s=>s.studentId===m.loserId);
-  if(w){ w.points-=m.pointsWinner; w.sessionPoints-=m.pointsWinner; w.wins--; }
-  if(l){ l.points-=m.pointsLoser; l.sessionPoints-=m.pointsLoser; l.losses--; }
-  if(m.refId){ const r=session.students.find(s=>s.studentId===m.refId); if(r){ r.points-=m.pointsRef; r.sessionPoints-=m.pointsRef; r.refs--; } }
+  if(w){ w.points=Math.max(0,w.points-m.pointsWinner); w.sessionPoints-=m.pointsWinner; w.wins--; }
+  if(l){ l.points=Math.max(0,l.points-m.pointsLoser); l.sessionPoints-=m.pointsLoser; l.losses--; }
+  if(m.refId){ const r=session.students.find(s=>s.studentId===m.refId); if(r){ r.points=Math.max(0,r.points-m.pointsRef); r.sessionPoints-=m.pointsRef; r.refs--; } }
   session.matches = session.matches.filter(x=>x.id!==matchId);
   save(); render();
 }
@@ -841,6 +900,10 @@ function renderATPTeacherPanel(session, cls){
     <div class="row" style="margin-top:10px;">
       <button class="btn secondary" onclick="teacherAddStudent('${session.id}')">➕ Ajouter un élève à la séance</button>
     </div>
+    <h3 style="margin-top:16px;">⚙️ Paramètres du tournoi</h3>
+    ${atpSettingsFields(session.scoring, session.rankGap)}
+    <div class="row"><button class="btn" onclick="teacherSaveSettings('${session.id}')">💾 Enregistrer les paramètres</button></div>
+    <p class="muted">Les changements s'appliquent aux prochains matchs ; les matchs déjà joués gardent leurs points.</p>
   </div>`;
 }
 function teacherEditPoints(sessionId, studentId){
@@ -1849,12 +1912,29 @@ function renderJudoMatchCard(s, m){
   return `<div class="list-item" style="cursor:${ok?'pointer':'default'};opacity:${ok?1:.55};" ${ok?`onclick="openJudoMatch('${s.id}','${m.id}')"`:''}>
     <span>${judoName(s,m.aId)} vs ${judoName(s,m.bId)}${tag}</span></div>`;
 }
+function judoFam(m){ return m.type==='main' ? 'main'+m.round : m.type==='D' ? 'D' : m.type==='rep' ? 'rep'+m.lvl : m.label; }
+function judoColumns(s){
+  const fam={}, groups={};
+  s.matches.forEach(m=>{ const f=judoFam(m); fam[m.id]=f; (groups[f]=groups[f]||[]).push(m); });
+  const col={}; Object.keys(groups).forEach(f=>col[f]=1);
+  for(let it=0; it<200; it++){
+    let ch=false;
+    Object.keys(groups).forEach(f=>{
+      let v=1;
+      groups[f].forEach(m=>m.deps.forEach(d=>{ if(fam[d]!==f) v=Math.max(v,col[fam[d]]+1); }));
+      if(v>col[f]){ col[f]=v; ch=true; }
+    });
+    if(!ch) break;
+  }
+  const out={}; s.matches.forEach(m=>out[m.id]=col[fam[m.id]]);
+  return out;
+}
 function renderJudoGame(app, s){
   judoCompute(s);
   const cls = getClass(s.classId), finished = judoFinished(s);
-  const cols = {};
-  s.matches.forEach(m=>{ if(m.winnerId==='none') return; (cols[m.depth]=cols[m.depth]||[]).push(m); });
-  const colHtml = Object.keys(cols).map(Number).sort((a,b)=>a-b).map(d=>{
+  const cols = {}, colOf = judoColumns(s);
+  s.matches.forEach(m=>{ if(m.winnerId==='none') return; (cols[colOf[m.id]]=cols[colOf[m.id]]||[]).push(m); });
+  const colHtml = Object.keys(cols).map(Number).sort((a,b)=>a-b).map((d,i)=>{
     const groups = {};
     cols[d].forEach(m=>{ (groups[m.label]=groups[m.label]||{type:m.type,items:[]}).items.push(m); });
     const boxes = Object.keys(groups).sort((x,y)=>JUDO_ORDER[groups[x].type]-JUDO_ORDER[groups[y].type]).map(label=>{
@@ -1863,7 +1943,7 @@ function renderJudoGame(app, s){
         <div style="background:${c};color:#fff;font-size:11px;font-weight:700;padding:4px 8px;">${label}</div>
         <div>${g.items.map(m=>renderJudoMatchCard(s,m)).join('')}</div></div>`;
     }).join('');
-    return `<div style="min-width:200px;"><h4 class="muted">Étape ${d}</h4>${boxes}</div>`;
+    return `<div style="min-width:200px;"><h4 class="muted">Étape ${i+1}</h4>${boxes}</div>`;
   }).join('');
   const played = s.matches.filter(m=>m.res).sort((a,b)=>b.res.seq-a.res.seq);
   const hist = played.length ? played.map(m=>`<div class="timeline-item"><span>${m.label} — ${judoName(s,m.winnerId)} bat ${judoName(s,m.loserId)} ${m.res.ws}-${m.res.ls}</span>
