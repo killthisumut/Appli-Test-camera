@@ -763,7 +763,7 @@ function renderATPGame(app, session){
   tl.innerHTML = matchesSorted.map(m=>{
     const w=getStudent(cls,m.winnerId), l=getStudent(cls,m.loserId);
     const near = session.matches.filter(mm=>(mm.winnerId===m.winnerId||mm.loserId===m.winnerId||mm.winnerId===m.loserId||mm.loserId===m.loserId) && mm.id!==m.id && Math.abs(mm.timestamp-m.timestamp)<cheatWindowMs).length>0;
-    return `<div class="timeline-item"><span>${fmtTimeShort(m.timestamp)} ${w?studentName(w):'?'} bat ${l?studentName(l):'?'} (+${m.pointsWinner}) ${near?'<span class="cheat">⚠️</span>':''}</span>
+    return `<div class="timeline-item"><span>${fmtTimeShort(m.timestamp)} ${w?studentName(w):'?'} bat ${l?studentName(l):'?'} (+${m.pointsWinner}) ${m.irregular?'<span class="pill">hors règle</span>':''} ${near?'<span class="cheat">⚠️</span>':''}</span>
     <button class="btn danger" style="padding:2px 8px;font-size:11px;" onclick="cancelATPMatch('${session.id}','${m.id}')">annuler</button></div>`;
   }).join('') || '<p class="muted">Aucun match enregistré.</p>';
 
@@ -819,21 +819,43 @@ function currentSession(){ return DB.atpSessions.find(s=>s.id===activeSessionId)
 function pickWinner(id){ matchFlow={step:'loser',winnerId:id,loserId:null,refId:null}; render(); }
 function pickLoser(id){ matchFlow.loserId=id; matchFlow.step='ref'; render(); }
 function pickRef(id){ matchFlow.refId=id; matchFlow.step='confirm'; render(); }
-function confirmMatch(){
-  const session = currentSession();
-  const w = session.students.find(s=>s.studentId===matchFlow.winnerId);
-  const l = session.students.find(s=>s.studentId===matchFlow.loserId);
-  const r = matchFlow.refId ? session.students.find(s=>s.studentId===matchFlow.refId) : null;
-  const a = atpAward(session, matchFlow.winnerId, matchFlow.loserId, matchFlow.refId);
+function recordATPMatch(session, winnerId, loserId, refId, irregular){
+  const w = session.students.find(s=>s.studentId===winnerId);
+  const l = session.students.find(s=>s.studentId===loserId);
+  const r = refId ? session.students.find(s=>s.studentId===refId) : null;
+  const a = atpAward(session, winnerId, loserId, refId);
   w.points+=a.w; w.sessionPoints+=a.w; w.wins++;
   l.points+=a.l; l.sessionPoints+=a.l; l.losses++;
   if(r){ r.points+=a.r; r.sessionPoints+=a.r; r.refs++; }
-  session.matches.push({id:uid('m'), winnerId:matchFlow.winnerId, loserId:matchFlow.loserId, refId:matchFlow.refId,
-    timestamp:nowTs(), pointsWinner:a.w, pointsLoser:a.l, pointsRef:a.r});
+  session.matches.push({id:uid('m'), winnerId, loserId, refId, timestamp:nowTs(),
+    pointsWinner:a.w, pointsLoser:a.l, pointsRef:a.r, irregular:!!irregular});
   session.rankHistory.push(currentRanking(session).map(e=>e.studentId));
   if(session.rankHistory.length>50) session.rankHistory.shift();
+}
+function confirmMatch(){
+  recordATPMatch(currentSession(), matchFlow.winnerId, matchFlow.loserId, matchFlow.refId);
   matchFlow={step:null,winnerId:null,loserId:null,refId:null};
   save(); render();
+}
+function openIrregularMatch(sessionId){
+  const session = DB.atpSessions.find(s=>s.id===sessionId), cls = getClass(session.classId);
+  const options = session.students.map(e=>getStudent(cls,e.studentId)).filter(Boolean)
+    .sort((a,b)=>studentFullName(a).localeCompare(studentFullName(b),'fr'))
+    .map(s=>`<option value="${s.id}">${studentFullName(s)}</option>`).join('');
+  const sel = (id,label,first)=>`<label>${label}</label><select id="${id}" style="width:100%;margin-bottom:8px;"><option value="">${first}</option>${options}</select>`;
+  openModal(`<h3>⚠️ Match non conforme</h3>
+    <p class="muted">Enregistré même si l'écart de classement n'est pas respecté. Les points sont calculés comme pour un match classique.</p>
+    ${sel('irr_w','🏆 Vainqueur','— choisir —')}${sel('irr_l','❌ Perdant','— choisir —')}${sel('irr_r','🧑‍⚖️ Arbitre','🚫 Aucun arbitre')}
+    <div class="row" style="margin-top:6px;"><button class="btn" onclick="saveIrregularMatch('${sessionId}')">✅ Valider le match</button><button class="btn ghost" onclick="closeModal()">Annuler</button></div>`);
+}
+function saveIrregularMatch(sessionId){
+  const session = DB.atpSessions.find(s=>s.id===sessionId);
+  const w = document.getElementById('irr_w').value, l = document.getElementById('irr_l').value, r = document.getElementById('irr_r').value||null;
+  if(!w || !l){ alert('Choisissez un vainqueur et un perdant.'); return; }
+  if(w===l){ alert('Le vainqueur et le perdant doivent être deux élèves différents.'); return; }
+  if(r && (r===w || r===l)){ alert('L\'arbitre doit être un autre élève.'); return; }
+  recordATPMatch(session, w, l, r, true);
+  save(); closeModal(); render();
 }
 function cancelATPMatch(sessionId, matchId){
   const session = DB.atpSessions.find(s=>s.id===sessionId);
@@ -866,16 +888,18 @@ function doEndATPSession(){
 }
 function showATPSessionSummary(session){
   const cls = getClass(session.classId);
+  const irr = session.matches.filter(m=>m.irregular);
   const rows = session.students.slice().sort((a,b)=>b.points-a.points).map(e=>{
     const stu=getStudent(cls,e.studentId); if(!stu) return '';
     const played = e.wins+e.losses;
-    return `<tr style="border-top:1px solid var(--line);"><td>${studentFullName(stu)}</td><td>${played}</td><td>${e.wins}</td><td>${e.losses}</td><td>${e.refs}</td><td>${played+e.refs}</td></tr>`;
+    const nIrr = irr.filter(m=>m.winnerId===e.studentId||m.loserId===e.studentId||m.refId===e.studentId).length;
+    return `<tr style="border-top:1px solid var(--line);"><td>${studentFullName(stu)}</td><td>${played}</td><td>${e.wins}</td><td>${e.losses}</td><td>${e.refs}</td><td>${played+e.refs}</td>${irr.length?`<td>${nIrr}</td>`:''}</tr>`;
   }).join('');
   openModal(`
     <h3>📋 Récapitulatif — ${session.title||session.activity||'séance'}</h3>
     <div style="max-height:420px;overflow-y:auto;">
     <table style="width:100%;border-collapse:collapse;font-size:13px;">
-      <tr style="text-align:left;color:var(--sub);"><th>Élève</th><th>Joués</th><th>V</th><th>D</th><th>Arb.</th><th>Total impliqué</th></tr>
+      <tr style="text-align:left;color:var(--sub);"><th>Élève</th><th>Joués</th><th>V</th><th>D</th><th>Arb.</th><th>Total impliqué</th>${irr.length?'<th>Dont hors règle</th>':''}</tr>
       ${rows}
     </table>
     </div>
@@ -899,6 +923,7 @@ function renderATPTeacherPanel(session, cls){
     </table>
     <div class="row" style="margin-top:10px;">
       <button class="btn secondary" onclick="teacherAddStudent('${session.id}')">➕ Ajouter un élève à la séance</button>
+      <button class="btn secondary" onclick="openIrregularMatch('${session.id}')">⚠️ Rentrer un match non conforme</button>
     </div>
     <h3 style="margin-top:16px;">⚙️ Paramètres du tournoi</h3>
     ${atpSettingsFields(session.scoring, session.rankGap)}
@@ -941,7 +966,7 @@ function openStudentDetail(type, sessionId, studentId){
     const opp = oppId ? getStudent(cls, oppId) : null;
     const kind = isRef ? '🎯 Arbitrage' : (isWin ? '🏆 Victoire' : '❌ Défaite');
     const near = matches.some(mm=>mm.id!==m.id && Math.abs(mm.timestamp-m.timestamp)<cheatWindowMs);
-    return `<div class="timeline-item"><span>${kind} ${opp?('— '+studentName(opp)):''} ${fmtTimeShort(m.timestamp)} ${near?'<span class="cheat">⚠️ rapproché</span>':''}</span>
+    return `<div class="timeline-item"><span>${kind} ${opp?('— '+studentName(opp)):''} ${fmtTimeShort(m.timestamp)} ${m.irregular?'<span class="pill">hors règle</span>':''} ${near?'<span class="cheat">⚠️ rapproché</span>':''}</span>
       <button class="btn danger" style="padding:2px 8px;font-size:11px;" onclick="${type==='atp'?`cancelATPMatch('${sessionId}','${m.id}');closeModal();`:`cancelSwissMatch('${sessionId}','${m.id}');closeModal();`}">annuler</button></div>`;
   }).join('') || '<p class="muted">Aucun match.</p>';
   openModal(`
