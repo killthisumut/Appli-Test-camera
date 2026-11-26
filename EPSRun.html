@@ -40,9 +40,13 @@ label{display:block;margin:.7em 0 .25em;color:var(--mut);font-size:.9rem}
 .tbox .th{display:flex;align-items:center;gap:10px;font-size:clamp(1rem,2.6vmin,1.5rem)}.tbox .th>b{flex:none}.tbox .th .ico{margin-left:auto}
 .who{flex:1;min-width:0;text-align:center;font-weight:800;font-size:clamp(1.3rem,min(11cqh,5cqw),3rem);background:#fff;color:#18212f;text-shadow:none;border-radius:999px;padding:.05em .7em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mem:empty{display:none}
 .tbox .tag:not([data-s]){pointer-events:none}
+.tbox.wv{padding:6px 8px;gap:4px}.tbox.wv .th{gap:6px}.tbox.wv .who{font-size:clamp(.85rem,min(9cqw,17cqh),1.9rem);padding:.05em .5em}.tbox.wv .th .ico{flex:none;min-width:0;min-height:28px;padding:.15em .5em;font-size:.9rem}
+.tbox.wv .wvbody{--b:clamp(28px,24cqh,42px);flex:1;min-height:0;display:flex;align-items:center;justify-content:space-between;gap:6px}.tbox.wv .big{flex:none;font-size:clamp(1.8rem,min(30cqh,17cqw),5.5rem)}
+.tbox.wv .ctl{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;align-items:center;max-width:64%}.tbox.wv .ctl .minus{position:static}.tbox.wv .ctl button{min-height:var(--b);min-width:var(--b);padding:0 .5em;font-size:.95rem}.tbox.wv .ex{gap:4px;font-size:.95rem}
 .tbox.tm .tmrow{display:flex;align-items:center;justify-content:space-between;gap:8px}.tbox.tm .big{flex:none;font-size:clamp(1.8rem,min(9vmin,4.5rem),4.5rem);font-size:clamp(1.8rem,min(20cqh,14cqw),4.5rem)}.tbox.tm .minus{position:static}
 .tbox.tm .ex{font-size:clamp(.9rem,min(3.4cqh,3.4cqw),1.2rem)}.tbox.tm .mem{margin:0;flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(6.5em,1fr));gap:4px;align-content:start}
 .tbox.tm .tag{font-size:clamp(.9rem,min(7cqh,5cqw),1.4rem);padding:.1em .6em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center}
+.spin{width:46px;height:46px;margin:12px auto;border:5px solid var(--bd);border-top-color:var(--ac2);border-radius:50%;animation:spin .9s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
 .pal{display:grid;gap:8px}.pr{display:flex;align-items:center;gap:8px}.pr span{width:5.6em;font-size:.9rem;color:var(--mut)}
 .sw{width:46px;height:46px;min-height:0;padding:0;border-radius:12px;border:2px solid var(--bd)}.sw.tr{background:repeating-conic-gradient(#cbd5e1 0 25%,#fff 0 50%) 50%/14px 14px}
 .tbox .big{font-size:clamp(3rem,16vmin,9rem);font-size:clamp(2.5rem,min(34cqh,22cqw),9rem);font-weight:800;text-align:center;flex:1;display:flex;align-items:center;justify-content:center;line-height:1}
@@ -53,14 +57,14 @@ label{display:block;margin:.7em 0 .25em;color:var(--mut);font-size:.9rem}
 .unas{font-size:.95rem;color:var(--mut);max-height:18vh;overflow:auto}.unas .tag{background:var(--card);color:var(--tx);border-color:var(--bd);margin:3px}.unas .tag.on{background:#fde68a;color:#18212f;border-color:#000}
 .bar{display:flex;gap:6px;flex-wrap:wrap}.bar button{display:flex;align-items:center;gap:.4em;padding:.4em .75em}.bar i{font-style:normal;font-size:1.15rem}
 .arr{position:absolute;background:#000b;color:#fff;border:0;font-size:1.5rem;width:52px;height:52px;margin:auto;padding:0}.arr.up{top:6px;left:0;right:0}.arr.down{bottom:6px;left:0;right:0}.arr.left{left:6px;top:0;bottom:0}.arr.right{right:6px;top:0;bottom:0}
-.ex{display:flex;gap:8px;align-items:center;justify-content:center;font-size:1.1rem}.prec{align-self:center;margin:4px 0}
+.ex{display:flex;gap:8px;align-items:center;justify-content:center;font-size:1.1rem}
 #wtabs{margin:0;overflow-x:auto;flex-wrap:nowrap}#wtabs button{white-space:nowrap}
 #tmChip{position:fixed;top:60px;right:10px;z-index:8;background:#18212f;color:#fff;border-radius:14px;padding:6px 10px;display:flex;gap:6px;align-items:center;box-shadow:var(--sh);font-size:1.1rem}#tmChip b{font-size:1.5rem}#tmChip button{min-height:34px;padding:.2em .6em;background:#ffffff22;color:#fff;border-color:#ffffff33}
 @media (max-width:700px){.screen{padding:10px}.bar span{display:none}.bar .pri span,.bar .dan span{display:inline}.grid{grid-template-columns:1fr 1fr}.card .ic{font-size:1.6rem}.card small{display:none}.mem{margin-left:50px}#tmChip{top:54px;font-size:1rem}}
 @media (max-width:420px){.grid{grid-template-columns:1fr}.card small{display:block}}
 @media (min-width:1000px){.screen{padding:20px}.bar button{padding:.5em 1em}}
 @media (orientation:landscape) and (max-height:520px){#top{padding-top:4px;padding-bottom:4px}#counterMain.active{height:calc(100dvh - 46px)}.tbox .big{font-size:clamp(2.5rem,22vmin,7rem)}}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}.spin{animation-duration:3s}}
 .gsw{display:inline-flex;border:1px solid var(--bd);border-radius:999px;overflow:hidden}.gsw button{border:0;border-radius:0;box-shadow:none;min-width:48px;font-size:1.25rem;background:var(--bg);color:var(--mut)}.gsw .on.f{background:#db2777;color:#fff}.gsw .on.m{background:#2563eb;color:#fff}
 .spd{display:flex;align-items:center;gap:6px;margin:0}.spd input{width:5.5em}.stu.head{background:none;box-shadow:none;color:var(--mut);font-size:.8rem;padding-bottom:0}.stu.head>span:not(.n){min-width:96px}
 </style></head><body>
@@ -90,7 +94,7 @@ function lsSet(k,v){localStorage.setItem(k,JSON.stringify(v));}
 // DB = données synchronisées (classes, séances, barèmes) ; SET = réglages propres à l'appareil (thème, GitHub)
 const newDB=()=>({classes:[],sessions:[],baremes:[],activeBareme:{},classBareme:{}});
 let DB={...newDB(),...lsGet(KEYS.db,{})};
-const SET={theme:null,github:{token:'',repo:''},biat:{throwSec:7,penSec:3,shots:3},...lsGet(KEYS.settings,{})};
+const SET={theme:null,github:{token:'',repo:''},...lsGet(KEYS.settings,{})};
 const saveDB=()=>lsSet(KEYS.db,DB),saveSet=()=>lsSet(KEYS.settings,SET);
 if(SET.df){SET.courses={...SET.courses,dfEval:SET.df.courses};delete SET.df;saveSet();}
 // Prénoms : tout caractère qui n'est ni une lettre ni un tiret sépare deux prénoms (« Jean Pierre » = 2, « Jean-Pierre » = 1)
@@ -143,22 +147,25 @@ const help=()=>modal('Aide rapide',`<ol><li><b>Gestion de classe</b> : créez un
 // Synchro GitHub : même principe que tournois-eps (tout envoyer / tout recevoir). Seule DB part dans le fichier : le token reste sur l'appareil.
 const GH_FILE='epsrun-data.json';
 const b64e=s=>btoa(unescape(encodeURIComponent(s))),b64d=s=>decodeURIComponent(escape(atob(s.replace(/\s/g,''))));
+const ghError=c=>c===401?'GitHub a refusé le token (erreur 401). Vérifiez-le dans « Réglages GitHub ».':c===403?'Accès refusé par GitHub (erreur 403) : le token n\'a pas la permission « Contents : Read and write ».':c===404?'Dépôt introuvable (erreur 404) : vérifiez le nom du dépôt et les droits du token.':c===409||c===422?'GitHub a refusé l\'écriture (erreur '+c+'). Recevez d\'abord les données en ligne, puis réessayez.':'GitHub a répondu par une erreur '+c+'.';
 async function gh(method,body){
-  const{token,repo}=SET.github;
-  if(!token||!repo){configGitHub();throw new Error('Renseignez le dépôt et le token GitHub.');}
-  const r=await fetch(`https://api.github.com/repos/${repo}/contents/${GH_FILE}`,{method,headers:{Authorization:'Bearer '+token,Accept:'application/vnd.github+json'},body:body&&JSON.stringify(body)});
-  if(r.status===404&&method==='GET')return null;
-  if(!r.ok)throw new Error('GitHub a répondu '+r.status+(r.status===401?' : token refusé.':'.'));
-  return r.json();
+  const{token,repo}=SET.github,ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),20000);
+  if(!token||!repo)throw new Error('Renseignez le dépôt et le token dans « Réglages GitHub ».');
+  try{const r=await fetch(`https://api.github.com/repos/${repo}/contents/${GH_FILE}`,{method,headers:{Authorization:'Bearer '+token,Accept:'application/vnd.github+json'},body:body&&JSON.stringify(body),signal:ctl.signal});
+    if(r.status===404&&method==='GET')return null;if(!r.ok)throw new Error(ghError(r.status));return await r.json();}
+  catch(e){throw e.name==='AbortError'?new Error('GitHub ne répond pas (délai de 20 secondes dépassé). Vérifiez votre connexion internet.'):e.name==='TypeError'?new Error('Impossible de joindre GitHub. Vérifiez votre connexion internet.'):e;}
+  finally{clearTimeout(timer);}
 }
-const syncRun=async f=>{try{await f();}catch(e){toast(e.message);}};
-const syncSend=()=>ask('Envoyer remplace les données en ligne par celles de cet appareil.',()=>{syncRun(async()=>{
+// Une roue tourne pendant l'opération ; le résultat reste affiché jusqu'à un clic sur « Fermer »
+async function syncRun(title,f){await null;modal(title,'<div class="spin" role="status" aria-label="En cours"></div><p class="empty" style="text-align:center">Veuillez patienter…</p>',[]);
+  try{const msg=await f();modal(title,`<p>✅ ${esc(msg)}</p>`,[{label:'Fermer',primary:true}]);}catch(e){modal(title,`<p>❌ ${esc(e.message)}</p>`,[{label:'Fermer',primary:true}]);}}
+const syncSend=()=>ghOn()?ask('Envoyer remplace les données en ligne par celles de cet appareil.',()=>{syncRun('Envoi vers GitHub',async()=>{
   const cur=await gh('GET');
   await gh('PUT',{message:'EPS Run : synchro '+new Date().toISOString(),content:b64e(JSON.stringify(DB)),...(cur?{sha:cur.sha}:{})});
-  toast('Données envoyées.');});},'Envoyer');
-const syncReceive=()=>ask('Recevoir remplace toutes les données de cet appareil par celles en ligne.',()=>{syncRun(async()=>{
-  const cur=await gh('GET');if(!cur)throw new Error('Aucune donnée en ligne.');
-  DB={...newDB(),...JSON.parse(b64d(cur.content))};saveDB();show('home');toast('Données reçues.');});},'Recevoir');
+  return'Données envoyées vers GitHub.';});},'Envoyer'):configGitHub();
+const syncReceive=()=>ghOn()?ask('Recevoir remplace toutes les données de cet appareil par celles en ligne.',()=>{syncRun('Réception depuis GitHub',async()=>{
+  const cur=await gh('GET');if(!cur)throw new Error('Aucune donnée en ligne : envoyez d\'abord les données depuis un appareil.');
+  DB={...newDB(),...JSON.parse(b64d(cur.content))};saveDB();show('home');return'Données reçues : classes, séances et barèmes mis à jour sur cet appareil.';});},'Recevoir'):configGitHub();
 function configGitHub(){modal('Réglages GitHub',`<label>Dépôt privé (compte/nom)</label><input id="ghRepo" value="${esc(SET.github.repo)}" placeholder="compte/tournois-eps-data"><label>Token d'accès</label><input id="ghToken" type="password" value="${esc(SET.github.token)}">`,
   [{label:'Annuler'},{label:'Enregistrer',primary:true,fn(){SET.github={repo:$('ghRepo').value.trim(),token:$('ghToken').value.trim()};saveSet();toast('Réglages enregistrés.');}}]);}
 
@@ -203,15 +210,26 @@ const DEFAULT_BAREMES=()=>[{"id":"bar_biathlon","activity":"biathlon","name":"Bi
 // Un niveau vaut de sa valeur « min » jusqu'au niveau suivant ; la note sur 20 est facultative et libre pour chaque niveau.
 const PALETTE=[['Rouge','#dc2626'],['Orange','#f97316'],['Jaune','#eab308'],['Vert clair','#84cc16'],['Vert','#16a34a'],['Bleu','#2563eb']];
 const ACTIVITIES={biathlon:'Biathlon',demifond:'Demi-fond',ccm:'Contre-la-montre'};
-const SOURCES={biathlon:{distance:'Distance brute (tours)',speed:'Vitesse réelle (km/h)',shoot:'Réussite au tir (%)'},demifond:{distance:'Distance brute (m)',speed:'Vitesse (km/h)',target:'% de la vitesse cible'},ccm:{time:'Temps final, pénalités comprises (s)'}};
+const SOURCES={biathlon:{distance:'Distance brute (tours)',speed:'Vitesse pondérée : lancers et burpees retirés du temps (km/h)',speedRaw:'Vitesse brute : distance ÷ durée (km/h)',shoot:'Réussite au tir (%)'},demifond:{distance:'Distance brute (m)',speed:'Vitesse (km/h)',target:'% de la vitesse cible'},ccm:{time:'Temps final, pénalités comprises (s)'}};
 const clone=o=>JSON.parse(JSON.stringify(o));
 // Durée de référence (minutes) des barèmes fournis : la distance est ramenée à cette durée avant notation
 const REF_MIN={bar_biathlon:4,bar_demifond:6};
-function ensureBaremes(){DB.baremes.forEach(b=>{b.refMin??=REF_MIN[b.id];});if(DB.baremes.length)return;DB.baremes=DEFAULT_BAREMES();DB.activeBareme=Object.fromEntries(Object.keys(ACTIVITIES).filter(a=>DB.baremes.some(b=>b.activity===a)).map(a=>[a,DB.baremes.find(b=>b.activity===a).id]));DB.classBareme={};saveDB();}
-function getBareme(act,classId){ensureBaremes();const id=DB.classBareme?.[classId]?.[act]||DB.activeBareme?.[act];return DB.baremes.find(b=>b.id===id)||DB.baremes.find(b=>b.activity===act)||null;}
-function levelFor(comp,gender,v){const rows=comp.levels[gender]||comp.levels.all||comp.levels.garcon||comp.levels.fille;let r=null;
-  if(v!=null&&!isNaN(v))for(const x of rows)if(v>=x.min)r=x;return r;}
-const gradeBareme=(b,values,gender)=>b.competences.map(c=>({comp:c,level:levelFor(c,gender,values[c.source])}));
+// Paramètres du calcul d'un barème de biathlon (réglables dans l'éditeur) : lancers par tour, temps de lancer par tour (s), temps par lancer manqué (s)
+const BIAT_PARAMS={shots:3,throwSec:7,penSec:3};
+function ensureBaremes(){let dirty=false;
+  if(!DB.baremes.length){DB.baremes=DEFAULT_BAREMES();DB.activeBareme=Object.fromEntries(Object.keys(ACTIVITIES).filter(a=>DB.baremes.some(b=>b.activity===a)).map(a=>[a,DB.baremes.find(b=>b.activity===a).id]));DB.classBareme={};dirty=true;}
+  DB.baremes.forEach(b=>{b.refMin??=REF_MIN[b.id];if(SET.biat&&b.activity==='biathlon'){b.params??={...SET.biat};dirty=true;}});
+  if(SET.biat){delete SET.biat;saveSet();}if(dirty)saveDB();}
+// Barème d'une séance : choix explicite (id, ou « none »), sinon barème de la classe, sinon barème actif par défaut
+function getBareme(act,classId,pick){ensureBaremes();if(pick==='none')return null;const id=pick||DB.classBareme?.[classId]?.[act]||DB.activeBareme?.[act];return DB.baremes.find(b=>b.id===id)||DB.baremes.find(b=>b.activity===act)||null;}
+const baremeSelect=(act,classId,pick)=>{const list=DB.baremes.filter(b=>b.activity===act);if(!list.length)return'';const cur=getBareme(act,classId,pick)?.id||'none';
+  return`<label>Barème appliqué</label><select id="rBar">${list.map(b=>`<option value="${b.id}"${b.id===cur?' selected':''}>${esc(b.name)}</option>`).join('')}<option value="none"${cur==='none'?' selected':''}>Sans barème</option></select>`;};
+// Niveau atteint (couleur, nom) et note. Note « progressive » (par défaut) : calculée exactement entre la note de ce niveau et celle du niveau suivant
+// (10 tours = 14,29 et 14 tours = 20 → 13,75 tours = 19,64) ; au-delà du dernier niveau, la note du dernier niveau. Mode « palier » : note du niveau atteint.
+function levelFor(comp,gender,v,mode){const rows=comp.levels[gender]||comp.levels.all||comp.levels.garcon||comp.levels.fille;let i=-1;
+  if(v!=null&&!isNaN(v))rows.forEach((x,k)=>{if(v>=x.min)i=k;});if(i<0)return null;const r=rows[i],n=rows[i+1];
+  return mode!=='palier'&&n&&r.note!=null&&n.note!=null&&n.min>r.min?{...r,note:r.note+(n.note-r.note)*(v-r.min)/(n.min-r.min)}:r;}
+const gradeBareme=(b,values,gender)=>b.competences.map(c=>({comp:c,level:levelFor(c,gender,values[c.source],b.noteMode)}));
 // --- Écran liste
 let editB=null,editClasses=[],editDefault=false;
 SCREENS.baremes=()=>{ensureBaremes();$('bareList').innerHTML=Object.entries(ACTIVITIES).map(([a,n])=>`<div class="group">${n}</div>`+DB.baremes.filter(b=>b.activity===a).map(b=>`<div class="stu"><span class="n">${esc(b.name)}</span><small>${DB.activeBareme[a]===b.id?'Actif par défaut':''}</small><button data-a="edit" data-id="${b.id}">Modifier</button><button data-a="dup" data-id="${b.id}">Dupliquer</button><button data-a="del" data-id="${b.id}">Supprimer</button></div>`).join('')+`<div class="row"><button data-a="new" data-act="${a}">+ Nouveau barème</button></div>`).join('');};
@@ -229,7 +247,10 @@ function openEdit(bar){editB=clone(bar);editDefault=DB.activeBareme[bar.activity
 const tbl=(ci,key,rows)=>`<table class="lv"><tr><th>Dès</th><th>Niveau</th><th>Couleur</th><th>Note /20</th><th></th></tr>${rows.map((r,j)=>`<tr><td><input type="number" step="any" data-p="c.${ci}.levels.${key}.${j}.min" value="${r.min}"></td><td><input data-p="c.${ci}.levels.${key}.${j}.label" value="${esc(r.label)}"></td>
  <td><select data-p="c.${ci}.levels.${key}.${j}.color" style="border-left:12px solid ${r.color}">${PALETTE.map(([n,h])=>`<option value="${h}"${h===r.color?' selected':''}>${n}</option>`).join('')}</select></td><td><input type="number" step="any" data-p="c.${ci}.levels.${key}.${j}.note" value="${r.note??''}"></td><td><button data-b="dl:${ci}:${key}:${j}" aria-label="Supprimer ce niveau">×</button></td></tr>`).join('')}</table>
  <div class="row"><button data-b="al:${ci}:${key}">+ Niveau</button><button data-b="lin:${ci}:${key}">Notes en ligne droite</button></div>`;
-SCREENS.baremeEdit=()=>{const b=editB;$('bareForm').innerHTML=`<label>Nom du barème (${ACTIVITIES[b.activity]})</label><input data-p="name" value="${esc(b.name)}"><div class="row"><div><label>Affichage des résultats</label><select data-p="show">${[['both','Couleur et note'],['color','Couleur seulement'],['note','Note seulement']].map(([k,n])=>`<option value="${k}"${(b.show||'both')===k?' selected':''}>${n}</option>`).join('')}</select></div><div><label>Notes sur</label><input data-p="scale" type="number" min="1" value="${b.scale||20}"></div>${b.activity==='ccm'?'':`<div><label>Durée de référence (min)</label><input data-p="refMin" type="number" min="0" step="any" value="${b.refMin||''}"></div>`}</div>${b.activity==='ccm'?'':'<p class="empty">Durée de référence : si la séance dure autrement (2 min au lieu de 4, par exemple), la distance est ramenée à cette durée avant notation. Pour une épreuve en deux courses (par exemple 3 + 3 min), indiquez la durée totale (6 min) et fixez les seuils sur le total des tours : le barème ne dépend que du cumul. Laissez vide pour ne rien ajuster.</p>'}
+const biatParamsHTML=b=>{const p={...BIAT_PARAMS,...b.params},f=(k,l)=>`<div><label>${l}</label><input data-p="params.${k}" type="number" min="${k==='shots'?1:0}" step="any" value="${p[k]}"></div>`;
+  return`<h4>Paramètres du calcul</h4><div class="row">${f('shots','Lancers par tour')}${f('throwSec','Temps de lancer par tour (s)')}${f('penSec','Temps par lancer manqué : burpee (s)')}</div>
+  <p class="empty">Vitesse pondérée = distance ÷ (durée de course − temps de lancer × tours − temps par lancer manqué × lancers manqués). Pour ne rien retirer du temps, choisissez « Vitesse brute » comme valeur d'une compétence.</p>`;};
+SCREENS.baremeEdit=()=>{const b=editB;$('bareForm').innerHTML=`<label>Nom du barème (${ACTIVITIES[b.activity]})</label><input data-p="name" value="${esc(b.name)}"><div class="row"><div><label>Affichage des résultats</label><select data-p="show">${[['both','Couleur et note'],['color','Couleur seulement'],['note','Note seulement']].map(([k,n])=>`<option value="${k}"${(b.show||'both')===k?' selected':''}>${n}</option>`).join('')}</select></div><div><label>Notes sur</label><input data-p="scale" type="number" min="1" value="${b.scale||20}"></div><div><label>Calcul des notes</label><select data-p="noteMode">${[['progressive','Progressives (exactes entre deux niveaux)'],['palier','Par paliers (note du niveau atteint)']].map(([k,n])=>`<option value="${k}"${(b.noteMode||'progressive')===k?' selected':''}>${n}</option>`).join('')}</select></div>${b.activity==='ccm'?'':`<div><label>Durée de référence (min)</label><input data-p="refMin" type="number" min="0" step="any" value="${b.refMin||''}"></div>`}</div>${b.activity==='ccm'?'':'<p class="empty">Durée de référence : si la séance dure autrement (2 min au lieu de 4, par exemple), la distance est ramenée à cette durée avant notation. Pour une épreuve en deux courses (par exemple 3 + 3 min), indiquez la durée totale (6 min) et fixez les seuils sur le total des tours : le barème ne dépend que du cumul. Laissez vide pour ne rien ajuster.</p>'}${b.activity==='biathlon'?biatParamsHTML(b):''}
  <label><input type="checkbox" id="bDef" style="width:auto"${editDefault?' checked':''}> Barème actif par défaut</label>
  <label>Utilisé pour ces classes</label><div class="row">${DB.classes.map(c=>`<label><input type="checkbox" class="bCls" style="width:auto" value="${c.id}"${editClasses.includes(c.id)?' checked':''}> ${esc(c.name)}</label>`).join('')||'<span class="empty">Aucune classe.</span>'}</div>`
  +b.competences.map((c,i)=>`<div class="box" style="margin:10px 0;width:auto"><div class="row"><input data-p="c.${i}.name" value="${esc(c.name)}"><select data-p="c.${i}.source">${Object.entries(SOURCES[b.activity]).map(([k,n])=>`<option value="${k}"${k===c.source?' selected':''}>${n}</option>`).join('')}</select><button class="dan" data-b="dc:${i}">Retirer</button></div>
@@ -238,7 +259,7 @@ SCREENS.baremeEdit=()=>{const b=editB;$('bareForm').innerHTML=`<label>Nom du bar
  +`<div class="row"><button data-b="ac">+ Compétence</button></div>`;};
 const setPath=(o,p,v)=>{const k=p.split('.');k.shift();const last=k.pop();let t=o.competences;t=t[k[0]];k.slice(1).forEach(x=>t=t[x]);t[last]=v;};
 $('bareForm').oninput=e=>{const p=e.target.dataset.p;if(!p)return;let v=e.target.value;const f=p.split('.').pop();if(f==='min')v=parseFloat(v)||0;else if(f==='note')v=v===''?null:parseFloat(v);
-  if(!p.startsWith('c.'))editB[p]=p==='scale'?+v||20:p==='refMin'?+v||0:v;else setPath(editB,p,v);if(f==='color')e.target.style.borderLeftColor=v;};
+  if(p.startsWith('params.'))editB.params={...editB.params,[f]:+v};else if(!p.startsWith('c.'))editB[p]=p==='scale'?+v||20:p==='refMin'?+v||0:v;else setPath(editB,p,v);if(f==='color')e.target.style.borderLeftColor=v;};
 $('bareForm').onchange=e=>{if(e.target.dataset.p&&e.target.dataset.p.endsWith('.source'))return;if(e.target.id==='bDef')editDefault=e.target.checked;};
 $('bareForm').onclick=e=>{const t=e.target.closest('[data-b]');if(!t)return;const[a,i,k,j]=t.dataset.b.split(':'),c=editB.competences[i];
   if(a==='ac')editB.competences.push({id:uid(),name:'Nouvelle compétence',source:Object.keys(SOURCES[editB.activity])[0],levels:{all:[{min:0,label:'Niveau 1',color:PALETTE[0][1],note:null}]}});
@@ -262,7 +283,7 @@ function saveBareme(){const b=editB;if(!b.name.trim())return toast('Donnez un no
 // students : on peut placer des élèves ; per : les points vont aux élèves ; waves : vagues (1 élève par équipe à la fois) ; miss : lancers manqués ; act : barème ; lap/min : valeurs par défaut
 const COUNTER_MODES={counterTeam:{title:'Compteur par équipe',students:true},counterIndiv:{title:'Compteur indiv/équipe',students:true,per:true},
   biatTeam:{title:'Biathlon équipe',students:true,miss:true,lap:60},biatIndiv:{title:'Biathlon individuel',waves:true,miss:true,act:'biathlon',lap:60},dfEval:{title:'Évaluation demi-fond',waves:true,act:'demifond',lap:200}};
-const bi=()=>({throwSec:7,penSec:3,shots:3,...SET.biat});
+const bi=bar=>({...BIAT_PARAMS,...bar?.params});
 // Courses d'une évaluation à vagues : durées en minutes (une vague par élève et par course)
 const courses=m=>SET.courses?.[m]||(m==='dfEval'?[3,3]:[4]);
 // Couleurs données aux équipes dans l'ordre (teintes « normal » de la palette)
@@ -296,20 +317,26 @@ const ARROW={up:'↑',down:'↓',left:'←',right:'→'};
 SCREENS.counterMain=()=>render();
 function render(){if(!CS||!CS.teams)return;const n=CS.teams.length,L=layout(n),m=cfg(),box=$('boxes'),gest=inGestion(),tm=m.students&&!m.per&&hasStu();
   box.style.cssText=`grid-auto-flow:${L.flow};grid-template-rows:repeat(${L.rows},1fr);grid-template-columns:repeat(${L.cols},1fr)`;
-  box.innerHTML=CS.teams.map((t,i)=>{const nb=organise?neighbours(i,L,n):{},ws=waveStu(t);let big=points(t),mem='',ex='',who='';
+  box.innerHTML=CS.teams.map((t,i)=>{const nb=organise?neighbours(i,L,n):{},ws=waveStu(t);let big=points(t),mem='',ex='',who='',prec='';
     const tag=(s,c='')=>`<span class="tag${sel.has(s.id)?' on':''}"${gest||m.per?` data-s="${s.id}"`:''}>${esc(s.name)}${c}</span>`;
-    if(m.waves&&CS.started){big=ws?wl(t,ws):'–';who=`<span class="who">${ws?esc(ws.name):'—'}</span>`;if(ws){const p=CS.prec[CS.wave+':'+ws.id]||0;ex=(m.miss?`<span class="ex">✗ ${wm(t,ws)} <button class="ico" data-a="mm">−</button><button class="ico" data-a="mp">+</button></span>`:'')+`<button class="ico prec" data-a="prec">Précision +${p}</button>`;}}
+    if(m.waves&&CS.started){big=ws?wl(t,ws):'–';who=`<span class="who">${ws?esc(ws.name):'—'}</span>`;if(ws){const p=CS.prec[CS.wave+':'+ws.id]||0;ex=m.miss?`<span class="ex">✗ ${wm(t,ws)} <button class="ico" data-a="mm" aria-label="Un lancer manqué de moins">−</button><button class="ico" data-a="mp" aria-label="Un lancer manqué de plus">+</button></span>`:'';prec=`<button class="ico prec" data-a="prec" aria-label="Précision : ajouter un quart de tour">📏 ${p?'+'+String(p).replace('.',','):'0'}</button>`;}}
     else if(m.waves)big='';
     else{if(m.students)mem=t.members.map(s=>tag(s,m.per&&CS.started?' <i>'+points(t,s.id)+'</i>':'')).join('')+(m.per&&CS.started&&t.members.length?`<span class="tag" data-s="">Aucun <i>${points(t,null)}</i></span>`:'');
       if(m.miss)ex=`<span class="ex">✗ ${misses(t)} <button class="ico" data-a="mm">−</button><button class="ico" data-a="mp">+</button></span>`;}
     if(m.waves&&!CS.started)mem=t.members.map(s=>tag(s)).join('');
-    const minus='<button class="minus ico" data-a="minus" aria-label="Retirer le dernier point">−</button>';
-    return`<div class="tbox${tm?' tm':''}" data-i="${i}" style="${boxStyle(t.color)}"><div class="th"><b>${esc(t.name)}</b>${who}<button class="ico" data-a="pal" aria-label="Couleur">✎</button></div>${tm?`<div class="tmrow">${minus}<span class="big">${big}</span>${ex}</div>`:`<div class="big">${big}</div>${ex}`}<div class="mem">${mem}</div>
-     ${tm?'':minus}${Object.entries(nb).filter(([,j])=>j!==undefined).map(([d,j])=>`<button class="arr ${d}" data-a="swap" data-j="${j}">${ARROW[d]}</button>`).join('')}</div>`;}).join('');
+    // Trois présentations : « wv » (vagues en cours : prénom seul, compteur et boutons sur une même ligne), « tm » (modes par équipe avec élèves), standard
+    const minus='<button class="minus ico" data-a="minus" aria-label="Retirer le dernier point">−</button>',v=m.waves&&CS.started?'wv':tm?'tm':'',
+      th=`<div class="th">${v==='wv'?'':`<b>${esc(t.name)}</b>`}${who}<button class="ico" data-a="pal" aria-label="Couleur">✎</button></div>`,
+      core=v==='wv'?`<div class="wvbody"><span class="big">${big}</span><div class="ctl">${minus}${prec}${ex}</div></div>`:v==='tm'?`<div class="tmrow">${minus}<span class="big">${big}</span>${ex}</div>`:`<div class="big">${big}</div>${ex}`,
+      arrows=Object.entries(nb).filter(([,j])=>j!==undefined).map(([d,j])=>`<button class="arr ${d}" data-a="swap" data-j="${j}">${ARROW[d]}</button>`).join('');
+    return`<div class="tbox${v?' '+v:''}" data-i="${i}" style="${boxStyle(t.color)}">${th}${core}<div class="mem">${mem}</div>${v?'':minus}${arrows}</div>`;}).join('');
+  fitNames();
   $('wtabs').hidden=!(m.waves&&CS.started);$('wtabs').innerHTML=CS.waves.map((w,i)=>`<button class="${i===CS.wave?'pri':''}" data-w="${i}">Vague ${w.label}</button>`).join('');
   $('unas').hidden=!gest;$('unas').innerHTML=CS.unassigned.length?'Élèves non assignés — cliquez pour les sélectionner puis cliquez sur une équipe : '+CS.unassigned.map(s=>`<span class="tag${sel.has(s.id)?' on':''}" data-s="${s.id}">${esc(s.name)}</span>`).join(''):'Aucun élève non assigné.';
-  $('cList').hidden=$('cClass').hidden=CS.started;$('cStart').hidden=!(m.per||m.waves||hasStu());$('cStart').lastElementChild.textContent=CS.started?'Retour gestion':m.waves?'Créer les vagues':m.per?'Début de séance':'Démarrer';$('cSet').hidden=!(m.waves||m.miss);
+  $('cList').hidden=$('cClass').hidden=CS.started;$('cStart').hidden=!(m.per||m.waves||hasStu());$('cStart').lastElementChild.textContent=CS.started?'Retour gestion':m.waves?'Créer les vagues':m.per?'Début de séance':'Démarrer';$('cSet').hidden=!m.waves;
   $('cOrg').lastElementChild.textContent=organise?'Valider':'Organiser';$('cUndo').disabled=!hist.length;$('cRedo').disabled=!redo.length;}
+// Le prénom doit toujours être lisible en entier : on réduit la police tant qu'il déborde de sa pastille
+function fitNames(){document.querySelectorAll('#boxes .who').forEach(e=>{e.style.fontSize='';let f=parseFloat(getComputedStyle(e).fontSize)||16;while(e.scrollWidth>e.clientWidth&&f>9){f-=1;e.style.fontSize=f+'px';}});}
 const addEvent=(t,stu,x)=>change(()=>CS.events.push({team:t.id,stu,...x}));
 const assign=t=>change(()=>{const moved=allStudents().filter(s=>sel.has(s.id));CS.unassigned=CS.unassigned.filter(s=>!sel.has(s.id));CS.teams.forEach(x=>x.members=x.members.filter(s=>!sel.has(s.id)));t.members.push(...moved);sel.clear();});
 $('boxes').onclick=e=>{const el=e.target.closest('.tbox');if(!el)return;const i=+el.dataset.i,t=CS.teams[i],a=e.target.closest('[data-a]')?.dataset.a,tag=e.target.closest('[data-s]'),m=cfg(),ws=waveStu(t),gest=inGestion();
@@ -338,38 +365,37 @@ const makeWaves=()=>{const nc=courses(CS.mode).length,M=Math.max(...CS.teams.map
 const cStart=()=>{const m=cfg();if(CS.started)return m.waves?ask('Revenir à la gestion remet les points à zéro.',()=>change(()=>Object.assign(CS,{started:false,waves:[],events:[],prec:{},wave:0})),'Revenir'):change(()=>CS.started=false);
   if(!CS.teams.some(t=>t.members.length))return toast('Placez au moins un élève dans une équipe.');
   change(()=>{CS.started=true;sel.clear();CS.wave=0;if(m.waves)CS.waves=makeWaves();});toast(m.waves?'Vagues créées : '+CS.waves.length+'.':m.per?'Séance commencée : touchez un prénom ou une équipe pour marquer.':'C\'est parti : touchez une équipe (ou un prénom) pour ajouter un tour.');};
-const cSet=()=>{const m=cfg(),b=bi();modal('Réglages – '+m.title,(m.waves?`<label>Durée de chaque course, en minutes, séparées par des virgules (ex. « 4 » pour une course, « 3, 3 » pour deux). Une vague est créée par course ; la récupération est indicative.</label><input id="cCrs" value="${courses(CS.mode).join(', ')}">`:'')
-  +(m.miss?`<label>Lancers par tour</label><input id="bS" type="number" min="1" value="${b.shots}"><label>Temps de lancer par tour (s), retiré du temps de course pour la vitesse pondérée</label><input id="bT" type="number" min="0" step="any" value="${b.throwSec}"><label>Temps par lancer manqué (s), par exemple une pénalité</label><input id="bP" type="number" min="0" step="any" value="${b.penSec}">`:''),
-  [{label:'Annuler'},{label:'Enregistrer',primary:true,fn(){if(m.waves){const c=$('cCrs').value.split(/[,;\s]+/).map(Number).filter(x=>x>0);if(!c.length){toast('Indiquez au moins une durée.');return false;}SET.courses={...SET.courses,[CS.mode]:c};CS.minutes=c.reduce((a,x)=>a+x,0);}
-    if(m.miss)SET.biat={shots:+$('bS').value||3,throwSec:+$('bT').value||0,penSec:+$('bP').value||0};saveSet();if(m.waves&&CS.started&&!CS.events.length){CS.waves=makeWaves();CS.wave=0;}render();toast(m.waves&&CS.started&&CS.events.length?'Réglages enregistrés. Pour les appliquer aux vagues déjà créées : « Retour gestion » (points remis à zéro), puis « Créer les vagues ».':'Réglages enregistrés.');}}]);};
+const cSet=()=>modal('Réglages – '+cfg().title,`<label>Durée de chaque course, en minutes, séparées par des virgules (ex. « 4 » pour une course, « 3, 3 » pour deux). Une vague est créée par course ; la récupération est indicative. Les paramètres du calcul (lancers, temps de lancer, burpee) se règlent dans le barème.</label><input id="cCrs" value="${courses(CS.mode).join(', ')}">`,
+  [{label:'Annuler'},{label:'Enregistrer',primary:true,fn(){const c=$('cCrs').value.split(/[,;\s]+/).map(Number).filter(x=>x>0);if(!c.length){toast('Indiquez au moins une durée.');return false;}SET.courses={...SET.courses,[CS.mode]:c};CS.minutes=c.reduce((a,x)=>a+x,0);saveSet();
+    if(CS.started&&!CS.events.length){CS.waves=makeWaves();CS.wave=0;}render();toast(CS.started&&CS.events.length?'Réglages enregistrés. Pour les appliquer aux vagues déjà créées : « Retour gestion » (points remis à zéro), puis « Créer les vagues ».':'Réglages enregistrés.');}}]);
 const addStudents=l=>change(()=>CS.unassigned.push(...l.filter(s=>!allStudents().some(x=>x.id===s.id))));
 const cList=()=>modal('Ajouter des élèves',`<label>${NAMES_HELP}</label><textarea id="cNames" rows="6"></textarea>`,[{label:'Annuler'},{label:'Ajouter',primary:true,fn(){
   const l=parseNames($('cNames').value).map(name=>({id:uid(),name}));if(!l.length){toast('Liste vide.');return false;}addStudents(l);}}]);
 const cClass=()=>DB.classes.length?modal('Importer une classe','<label>Classe</label><select id="cCls">'+DB.classes.map(c=>`<option value="${c.id}">${esc(c.name)} (${c.students.length})</option>`).join('')+'</select>',
   [{label:'Annuler'},{label:'Importer',primary:true,fn(){const c=getClass($('cCls').value);CS.classId=c.id;addStudents(c.students.map(s=>({id:s.id,name:studentName(s)})));}}]):toast('Créez d\'abord une classe dans Gestion de classe.');
-const restoreCounter=r=>({id:r.id,mode:r.mode,title:r.title,classId:r.classId,note:r.note||'',lapM:r.lapM,minutes:r.minutes,started:r.data.started??r.data.events.length>0,wave:r.data.wave||0,waves:r.data.waves||[],prec:r.data.prec||{},events:r.data.events,unassigned:r.data.unassigned,teams:r.data.teams});
+const restoreCounter=r=>({id:r.id,mode:r.mode,title:r.title,classId:r.classId,baremeId:r.baremeId,note:r.note||'',lapM:r.lapM,minutes:r.minutes,started:r.data.started??r.data.events.length>0,wave:r.data.wave||0,waves:r.data.waves||[],prec:r.data.prec||{},events:r.data.events,unassigned:r.data.unassigned,teams:r.data.teams});
 // Résultats et sauvegarde dans l'historique
-function saveSession(){const r={id:CS.id,mode:CS.mode,title:CS.title,date:new Date().toISOString(),classId:CS.classId,note:CS.note,lapM:CS.lapM,minutes:CS.minutes,data:{teams:CS.teams,unassigned:CS.unassigned,events:CS.events,waves:CS.waves,prec:CS.prec,started:CS.started,wave:CS.wave}};
+function saveSession(){const r={id:CS.id,mode:CS.mode,title:CS.title,date:new Date().toISOString(),classId:CS.classId,baremeId:CS.baremeId,note:CS.note,lapM:CS.lapM,minutes:CS.minutes,data:{teams:CS.teams,unassigned:CS.unassigned,events:CS.events,waves:CS.waves,prec:CS.prec,started:CS.started,wave:CS.wave}};
   const i=DB.sessions.findIndex(s=>s.id===r.id);if(i<0)DB.sessions.push(r);else DB.sessions[i]=r;saveDB();}
 const num=(x,d=1)=>x==null||isNaN(x)?'–':x.toFixed(d).replace('.',',');
 // Une ligne par élève (modes à vagues) : tours (+ précision), distance, vitesse (biathlon : pondérée par 7 s de lancer par tour et 3 s par lancer manqué), % de tir ou de vitesse cible, puis le barème actif de la classe
-function studentStats(){const cl=getClass(CS.classId),bar=getBareme(cfg().act,CS.classId),min=CS.minutes,k=bar?.refMin&&min?bar.refMin/min:1;
+function studentStats(){const cl=getClass(CS.classId),bar=getBareme(cfg().act,CS.classId,CS.baremeId),pr=bi(bar),min=CS.minutes,k=bar?.refMin&&min?bar.refMin/min:1;
   return CS.teams.flatMap(t=>t.members.map(s=>{const info=cl?.students.find(x=>x.id===s.id),laps=lapsOf(e=>e.stu===s.id),miss=missOf(e=>e.stu===s.id),
-    tours=laps+Object.entries(CS.prec).filter(([k])=>k.endsWith(':'+s.id)).reduce((a,[,v])=>a+v,0),dist=tours*CS.lapM,eff=min*60-bi().throwSec*laps-bi().penSec*miss;let v;
-    if(cfg().act==='biathlon')v={distance:tours*k,speed:tours>0&&eff>0?dist/eff*3.6:null,shoot:laps?100*(1-miss/(bi().shots*laps)):null};
+    tours=laps+Object.entries(CS.prec).filter(([k])=>k.endsWith(':'+s.id)).reduce((a,[,v])=>a+v,0),dist=tours*CS.lapM,eff=min*60-pr.throwSec*laps-pr.penSec*miss;let v;
+    if(cfg().act==='biathlon')v={distance:tours*k,speed:tours>0&&eff>0?dist/eff*3.6:null,speedRaw:tours>0&&min>0?dist/(min*60)*3.6:null,shoot:laps?100*(1-miss/(pr.shots*laps)):null};
     else{const sp=dist/(min*60)*3.6;v={distance:dist*k,speed:sp,target:info?.targetSpeed?100*sp/info.targetSpeed:null};}
-    return{s,t,tours,miss,laps,dist,v,k,g:gradeBareme(bar,v,info?.gender||''),bar};}));}
+    return{s,t,tours,miss,laps,dist,v,k,g:bar?gradeBareme(bar,v,info?.gender||''):[],bar};}));}
 const chip=(l,b)=>{if(!l)return'–';const sh=b?.show||'both',nt=l.note!=null&&sh!=='color'?num(l.note,2)+'/'+(b?.scale||20):'';return sh==='note'?(nt||'–'):`<span class="chip" style="background:${l.color}">${esc(l.label)}${nt?' · '+nt:''}</span>`;};
 function resultsHTML(){const m=cfg();
   if(m.waves){const r=studentStats(),bar=r[0]?.bar,note=r[0]&&r[0].k!==1?`<p class="empty">Durée réalisée : ${num(CS.minutes,1)} min ; le barème est prévu pour ${bar.refMin} min : la distance est ramenée à ${bar.refMin} min avant notation.</p>`:'';return note+`<div class="scroll"><table class="lv"><tr><th>Élève</th><th>Équipe</th><th>Tours</th><th>Dist. (m)</th>${m.miss?'<th>✗</th><th>% tir</th>':''}<th>km/h</th>${m.act==='demifond'?'<th>% cible</th>':''}${bar?bar.competences.map(c=>`<th>${esc(c.name)}</th>`).join(''):''}</tr>`
     +r.map(x=>`<tr><td>${esc(x.s.name)}</td><td>${esc(x.t.name)}</td><td>${num(x.tours,2)}</td><td>${Math.round(x.dist)}</td>${m.miss?`<td>${x.miss}</td><td>${num(x.v.shoot,0)}</td>`:''}<td>${num(x.v.speed)}</td>${m.act==='demifond'?`<td>${num(x.v.target,0)}</td>`:''}${x.g.map(c=>`<td>${chip(c.level,x.bar)}</td>`).join('')}</tr>`).join('')+'</table></div>';}
-  const rank=[...CS.teams].sort((a,b)=>points(b)-points(a)),st=m.per,mem=m.students&&!m.per;
-  return`<table class="lv"><tr><th>#</th><th>Équipe</th><th>Tours</th><th>Distance</th>${m.miss?'<th>Lancers</th><th>✗</th><th>% réussite</th>':''}${mem?'<th>Élèves</th>':''}</tr>${rank.map((t,i)=>`<tr><td>${i+1}</td><td>${esc(t.name)}</td><td>${points(t)}</td><td>${(points(t)*CS.lapM/1000).toFixed(2).replace('.',',')} km</td>${m.miss?`<td>${bi().shots*points(t)}</td><td>${misses(t)}</td><td>${points(t)?num(100*(1-misses(t)/(bi().shots*points(t))),0)+' %':'–'}</td>`:''}${mem?`<td>${t.members.map(s=>esc(s.name)).join(', ')||'–'}</td>`:''}</tr>`).join('')}</table>`
+  const rank=[...CS.teams].sort((a,b)=>points(b)-points(a)),st=m.per,mem=m.students&&!m.per,shots=bi(getBareme('biathlon',CS.classId,CS.baremeId)).shots;
+  return`<table class="lv"><tr><th>#</th><th>Équipe</th><th>Tours</th><th>Distance</th>${m.miss?'<th>Lancers</th><th>✗</th><th>% réussite</th>':''}${mem?'<th>Élèves</th>':''}</tr>${rank.map((t,i)=>`<tr><td>${i+1}</td><td>${esc(t.name)}</td><td>${points(t)}</td><td>${(points(t)*CS.lapM/1000).toFixed(2).replace('.',',')} km</td>${m.miss?`<td>${shots*points(t)}</td><td>${misses(t)}</td><td>${points(t)?num(100*(1-misses(t)/(shots*points(t))),0)+' %':'–'}</td>`:''}${mem?`<td>${t.members.map(s=>esc(s.name)).join(', ')||'–'}</td>`:''}</tr>`).join('')}</table>`
   +(st?rank.map(t=>{const rows=t.members.map(s=>[s.name,points(t,s.id)]);if(points(t,null))rows.push(['Aucun élève',points(t,null)]);return rows.length?`<h4>${esc(t.name)} — ${points(t)} pts</h4><table class="lv">${rows.map(([n,p])=>`<tr><td>${esc(n)}</td><td>${p}</td></tr>`).join('')}</table>`:'';}).join(''):'');}
 function cEnd(){saveSession();const w=cfg().waves;modal('Fin de séance',`<label>Nom de la séance</label><input id="rTitle" value="${esc(CS.title)}"><label>Taille de la piste : distance d'un tour (m)</label><input id="rLap" type="number" min="1" value="${CS.lapM}">
-  ${w?`<label>Durée de course totale (minutes)</label><input id="rMin" type="number" min="0.5" step="0.5" value="${CS.minutes}">`:''}<div id="rRes">${resultsHTML()}</div><label>Remarque</label><textarea id="rNote" rows="2">${esc(CS.note)}</textarea>`,
+  ${w?`<label>Durée de course totale (minutes)</label><input id="rMin" type="number" min="0.5" step="0.5" value="${CS.minutes}">`:''}${cfg().act?baremeSelect(cfg().act,CS.classId,CS.baremeId):''}<div id="rRes">${resultsHTML()}</div><label>Remarque</label><textarea id="rNote" rows="2">${esc(CS.note)}</textarea>`,
   [{label:'Fermer'},{label:'Enregistrer',primary:true,fn(){CS.title=$('rTitle').value.trim()||CS.title;CS.note=$('rNote').value;saveSession();toast('Séance enregistrée.');}}]);
-  const upd=()=>{CS.lapM=+$('rLap').value||CS.lapM;if(w)CS.minutes=+$('rMin').value||CS.minutes;$('rRes').innerHTML=resultsHTML();saveSession();};$('rLap').oninput=upd;if(w)$('rMin').oninput=upd;}
+  const upd=()=>{CS.lapM=+$('rLap').value||CS.lapM;if(w)CS.minutes=+$('rMin').value||CS.minutes;$('rRes').innerHTML=resultsHTML();saveSession();};$('rLap').oninput=upd;if(w)$('rMin').oninput=upd;if($('rBar'))$('rBar').onchange=e=>{CS.baremeId=e.target.value;upd();};}
 // Minuteur
 let TM={total:0,left:0,iv:null};
 const tmShow=()=>{$('tmChip').hidden=!TM.total;$('tmTime').textContent=Math.floor(TM.left/60)+':'+String(TM.left%60).padStart(2,'0');$('tmTot').textContent='/ '+Math.floor(TM.total/60)+':'+String(TM.total%60).padStart(2,'0');$('tmPlay').textContent=TM.iv?'⏸':'▶';};
@@ -419,7 +445,7 @@ function ccmStop(){clearInterval(ccTimer);ccTimer=null;}
 function ccmGo(){ccmStop();CC.t0=Date.now();ccTimer=setInterval(()=>{const c=$('ccClock');if(c)c.textContent=fmt(elapsed());},100);}
 function ccmMove(d){const n=CC.wave+d;if(n<0||n>=CC.waves.length)return;ccmStop();CC.t0=null;CC.wave=n;ccmDraw();}
 function ccmUndo(){const k=CC.ev.findLastIndex(e=>e.wave===CC.wave);if(k<0)return toast('Rien à annuler.');CC.ev.splice(k,1);ccmDraw();}
-function ccmRows(){const cl=getClass(CC.classId),bar=getBareme('ccm',CC.classId);
+function ccmRows(){const cl=getClass(CC.classId),bar=getBareme('ccm',CC.classId,CC.baremeId);
   return CC.waves.flatMap((w,i)=>w.map(s=>({s,wave:i+1,...derive(s.id)}))).map(r=>({...r,g:bar?gradeBareme(bar,{time:r.final},cl?.students.find(x=>x.id===r.s.id)?.gender||'')[0]?.level:null,bar})).sort((a,b)=>(a.final==null)-(b.final==null)||a.final-b.final);}
 // Tendance de l'allure : pente des temps de tour (accélère / ralentit) puis régularité (constant / yoyo)
 function ccmTrend(sp){const n=sp.length;if(n<3)return'';const m=sp.reduce((a,b)=>a+b,0)/n,xm=(n-1)/2,slope=sp.reduce((a,v,i)=>a+(i-xm)*(v-m),0)/sp.reduce((a,_,i)=>a+(i-xm)**2,0),rel=slope*(n-1)/m,
@@ -435,9 +461,10 @@ function ccmResultsHTML(){const rows=ccmRows(),bar=rows[0]?.bar,c=CC.cfg,biat=CC
   return rows.map(r=>{const done=r.final!=null,tot=c.shots*r.need;
     return`<details class="rk"><summary><b>${done?++rk:'–'}</b><span class="nm">${esc(r.s.name)}</span><small>vague ${r.wave}</small><b>${done?fmt(r.final):'Non terminé ('+r.laps+'/'+r.need+')'}</b>${done?`<span>🏃 ${kmhOf(run,r.raw)} km/h</span>`:''}`
     +(biat&&done?`<span>🎯 ${r.miss} manqué(s) / ${tot} · ${num(100*(1-r.miss/tot),0)} %</span><span>⏱️ +${r.pen} s → ${kmhOf(run,r.final)} km/h</span>`:'')+(bar&&done?chip(r.g,bar):'')+`</summary><div class="dt">${ccmDetailHTML(r)}</div></details>`;}).join('');}
-const ccmEnd=()=>{saveCcm();modal('Résultats – '+CCM_MODES[CC.mode].title,ccmResultsHTML());};
-const restoreCcm=r=>({id:r.id,mode:r.mode,title:r.title,classId:r.classId,cfg:r.data.cfg,waves:r.data.waves,ev:r.data.ev,wave:0,t0:null});
-function saveCcm(){const r={id:CC.id,mode:CC.mode,title:CC.title,date:new Date().toISOString(),classId:CC.classId,lapM:CC.cfg.piste,note:'',data:{cfg:CC.cfg,waves:CC.waves,ev:CC.ev}};
+const ccmEnd=()=>{saveCcm();modal('Résultats – '+CCM_MODES[CC.mode].title,baremeSelect('ccm',CC.classId,CC.baremeId)+`<div id="vRes">${ccmResultsHTML()}</div>`);
+  if($('rBar'))$('rBar').onchange=e=>{CC.baremeId=e.target.value;saveCcm();$('vRes').innerHTML=ccmResultsHTML();};};
+const restoreCcm=r=>({id:r.id,mode:r.mode,title:r.title,classId:r.classId,baremeId:r.baremeId,cfg:r.data.cfg,waves:r.data.waves,ev:r.data.ev,wave:0,t0:null});
+function saveCcm(){const r={id:CC.id,mode:CC.mode,title:CC.title,date:new Date().toISOString(),classId:CC.classId,baremeId:CC.baremeId,lapM:CC.cfg.piste,note:'',data:{cfg:CC.cfg,waves:CC.waves,ev:CC.ev}};
   const i=DB.sessions.findIndex(s=>s.id===r.id);if(i<0)DB.sessions.push(r);else DB.sessions[i]=r;saveDB();}
 
 // Fractionné : groupes de vitesse + blocs d'effort/récupération. La bande-son est pilotée par une horloge unique (PL) qui déclenche les « tops » (sifflets, annonces) :
@@ -583,11 +610,16 @@ $('history').onclick=e=>{const m=e.target.closest('[data-m]');if(m){HF.mode=m.da
   if(b.dataset.a==='del')return ask(`Supprimer la séance « ${r.title} » ? Cette action est irréversible.`,()=>{DB.sessions=DB.sessions.filter(s=>s.id!==r.id);saveDB();HF.keep=true;SCREENS.history();},'Supprimer');
   if(b.dataset.a==='view')return viewSession(r);resumeSession(r);};
 $('history').onchange=e=>{if(e.target.id==='hCls'){HF.cls=e.target.value;HF.keep=true;SCREENS.history();}};
-function viewSession(r){let html;
+// Résultats d'une séance enregistrée, recalculés depuis ses données (avec le barème choisi pour cette séance)
+function viewHTML(r){let html;
   if(COUNTER_MODES[r.mode]){const p=CS;CS=restoreCounter(r);html=`<p class="empty">Piste : ${r.lapM} m${r.minutes&&COUNTER_MODES[r.mode].waves?' · durée : '+r.minutes+' min':''}</p>`+resultsHTML()+(r.note?`<p><b>Remarque :</b> ${esc(r.note)}</p>`:'');CS=p;}
   else if(CCM_MODES[r.mode]){const p=CC;CC=restoreCcm(r);html=ccmResultsHTML();CC=p;}
   else{const p=FS;FS=restoreFract(r);html=fractSummary();FS=p;}
-  modal(r.title,html,[{label:'Fermer'}]);}
+  return html;}
+// Changer le barème d'une séance déjà enregistrée met les notes à jour et mémorise ce choix
+function viewSession(r){const act=COUNTER_MODES[r.mode]?.act||(CCM_MODES[r.mode]?'ccm':null);
+  modal(r.title,(act?baremeSelect(act,r.classId,r.baremeId):'')+`<div id="vRes">${viewHTML(r)}</div>`,[{label:'Fermer'}]);
+  if($('rBar'))$('rBar').onchange=e=>{r.baremeId=e.target.value;saveDB();$('vRes').innerHTML=viewHTML(r);};}
 function resumeSession(r){
   if(COUNTER_MODES[r.mode]){CS=restoreCounter(r);hist=[];redo=[];sel.clear();organise=false;return show('counterMain');}
   if(CCM_MODES[r.mode]){CC=restoreCcm(r);return show('ccmRace');}
